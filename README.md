@@ -25,6 +25,7 @@
     <img alt="npm latest version" src="https://img.shields.io/npm/v/typescript-monads/latest.svg">
   </a>
 </p>
+
 **typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
 
 # Installation
