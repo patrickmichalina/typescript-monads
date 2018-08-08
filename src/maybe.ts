@@ -28,27 +28,33 @@ export interface IMaybe<T> {
   valueOrCompute(f: () => T): T
 
   /**
-   * Unwrap and apply MaybePattern functions
-   */
-  map<R>(val: IMaybePattern<T, R>): R
-
-  /**
    * Execute functions with side-effects.
    */
-  do(val: IMaybePattern<T, void>): void
+  tap(val: IMaybePattern<T, void>): void
+
+  /**
+   * Unwrap and apply MaybePattern functions
+   */
+  caseOf<R>(val: IMaybePattern<T, R>): R
 
   /**
    * Combine multiple maybe
    */
-  bind<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
+  map<R>(f: (t: T) => R): IMaybe<R>
+
+  /**
+   * Combine multiple maybe
+   */
+  flatMap<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
 }
 
 export function maybe<T>(value?: T): IMaybe<T> {
   return {
-    valueOr: (val: T) => value || val,
-    valueOrCompute: (f: () => T) => value || f(),
-    map: <R>(obj: IMaybePattern<T, R>) => value ? obj.some(value) : obj.none(),
-    do: (obj: IMaybePattern<T, void>) => value ? obj.some(value) : obj.none(),
-    bind: <R>(f: (d: T) => IMaybe<R>) => value ? f(value) : maybe<R>()
+    valueOr: (val: T) => value === null || value === undefined ? val : value,
+    valueOrCompute: (f: () => T) => value === null || value === undefined ? f() : value,
+    tap: (obj: IMaybePattern<T, void>) => value === null || value === undefined ? obj.none() : obj.some(value),
+    caseOf: <R>(obj: IMaybePattern<T, R>) => value === null || value === undefined ? obj.none() : obj.some(value),
+    map: <R>(f: (t: T) => R) => value === null || value === undefined ? maybe<R>() : maybe<R>(f(value)),
+    flatMap: <R>(f: (d: T) => IMaybe<R>) => value === null || value === undefined ? maybe<R>() : f(value)
   }
 }
