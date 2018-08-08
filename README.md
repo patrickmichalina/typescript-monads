@@ -22,3 +22,38 @@
 </p>
 
 **typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
+
+# Usage
+
+* [Maybe](#maybe)
+
+# Maybe
+```ts
+import { maybe } from 'typescript-monads'
+
+// safely map values
+let maybeVisitedBeforeXTimes: number | undefined = 50
+
+const priceWithDiscountForLoyalty = maybe(maybeVisitedBeforeXTimes)
+  .caseOf({
+    some: visits => 15.00 - visits * 0.1,
+    none: () => 15.00
+  })
+
+// handle multiple maybe conditionas together
+const canRideCoaster = getAge() // Maybe<number>
+  .bind(age => getTicket(age)) // Maybe<Ticket>
+  .caseOf({
+    some: ticket => ticket.canRide('coaster1'),
+    none: () => false
+  })
+
+// operations with side-effects
+maybe(process.env.DB_URL)
+  .do({
+    some: dbUrl => {
+      // value exists, can connect
+    },
+    none: () => console.info('no url provided, could not connect to the database')
+  })
+```
