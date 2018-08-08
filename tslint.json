@@ -21,7 +21,7 @@
     "no-let": true,
     "no-object-mutation": true,
     "no-delete": true,
-    "no-method-signature": true,
+    "no-method-signature": false,
     "no-this": true,
     "no-class": true,
     "no-expression-statement": false,
