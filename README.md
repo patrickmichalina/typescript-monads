@@ -20,12 +20,24 @@
     <img alt="semantic-release" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg">
   </a>
 </p>
-
+<p align="center">
+  <a href="https://www.npmjs.com/package/typescript-monads">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/typescript-monads/latest.svg">
+  </a>
+</p>
 **typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
+
+# Installation
+
+```ts
+npm install typescript-monads
+```
 
 # Usage
 
 * [Maybe](#maybe)
+* [Either](#either)
+* [Result](#result)
 
 # Maybe
 ```ts
@@ -57,3 +69,10 @@ maybe(process.env.DB_URL)
     none: () => console.info('no url provided, could not connect to the database')
   })
 ```
+
+
+# Either
+Coming soon
+
+# Result
+Coming soon
