@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/patrickmichalina/typescript-monads"
   },
+  "keywords": [
+    "typescript", "javascript", "monads", "maybe", "result", "either", "functional"
+  ],
   "files": [
     "dist/"
   ],
