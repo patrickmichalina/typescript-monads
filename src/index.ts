@@ -1,1 +1,1 @@
-export { maybe, Maybe } from './maybe'
+export { maybe, IMaybe, IMaybePattern } from './maybe'

@@ -95,7 +95,7 @@ describe('Maybe', () => {
     it('should handle "none" case', () => {
       const sut: string | undefined = undefined
       const nsut: number | undefined = undefined
-      
+
       const maybeSomeNumber = maybe(sut)
         .bind(() => maybe(nsut))
         .valueOr(1)
@@ -106,7 +106,7 @@ describe('Maybe', () => {
     it('should handle "some" case', () => {
       const sut: string | undefined = 'initial'
       const nsut: number | undefined = 20
-      
+
       const maybeSomeNumber = maybe(sut)
         .bind(() => maybe(nsut))
         .valueOr(0)

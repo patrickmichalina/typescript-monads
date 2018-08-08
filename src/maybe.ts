@@ -1,29 +1,54 @@
-interface CaseOf<TIn, TOut> {
-  readonly some: (val: TIn) => TOut
-  readonly none: () => TOut
+/**
+ * Define a contract to unwrap Maybe object
+ */
+export interface IMaybePattern<TIn, TOut> {
+  /**
+   * Function to handle when a value exists.
+   */
+  some(val: TIn): TOut
+
+  /**
+   * Function to handle when a value is undefined.
+   */
+  none(): TOut
 }
 
-export interface Maybe<T> {
+/**
+ * Abstraction for handling possibility of undefined values
+ */
+export interface IMaybe<T> {
   /**
    * Unwrap a Maybe with a default value
    */
-  readonly valueOr: (val: T) => T,
+  valueOr(val: T): T
 
   /**
    * Unwrap a Maybe with a default computed value
    */
-  readonly valueOrCompute: (f: () => T) => T,
-  readonly map: <R>(val: CaseOf<T, R>) => R
-  readonly do: (val: CaseOf<T, void>) => void,
-  readonly bind: <R>(f: (maybe: T) => Maybe<R>) => Maybe<R>
+  valueOrCompute(f: () => T): T
+
+  /**
+   * Unwrap and apply MaybePattern functions
+   */
+  map<R>(val: IMaybePattern<T, R>): R
+
+  /**
+   * Execute functions with side-effects.
+   */
+  do(val: IMaybePattern<T, void>): void
+
+  /**
+   * Combine multiple maybe
+   */
+  bind<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
 }
 
-export function maybe<T>(value?: T): Maybe<T> {
+export function maybe<T>(value?: T): IMaybe<T> {
   return {
     valueOr: (val: T) => value || val,
     valueOrCompute: (f: () => T) => value || f(),
-    map: <R>(obj: CaseOf<T, R>) => value ? obj.some(value) : obj.none(),
-    do: (obj: CaseOf<T, void>) => value ? obj.some(value) : obj.none(),
-    bind: <R>(f: (d: T) => Maybe<R>) => value ? f(value) : maybe<R>()
+    map: <R>(obj: IMaybePattern<T, R>) => value ? obj.some(value) : obj.none(),
+    do: (obj: IMaybePattern<T, void>) => value ? obj.some(value) : obj.none(),
+    bind: <R>(f: (d: T) => IMaybe<R>) => value ? f(value) : maybe<R>()
   }
 }
