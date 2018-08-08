@@ -2,7 +2,7 @@
   "name": "typescript-monads",
   "version": "0.0.0-development",
   "description": "Write better TypeScript code",
-  "main": ".dist/index.js",
+  "main": "dist/index.js",
   "author": "Patrick Michalina <patrickmichalina@mac.com> (https://patrickmichalina.com)",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,7 @@
     "url": "https://github.com/patrickmichalina/typescript-monads"
   },
   "files": [
-    ".dist"
+    "dist/"
   ],
   "scripts": {
     "test": "jest",
