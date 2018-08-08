@@ -1,0 +1,30 @@
+{
+  "extends": ["tslint-immutable"],
+  "rules": {
+    "newline-per-chained-call": false,
+    "prefer-object-spread": true,
+    "no-var-keyword": true,
+    "no-parameter-reassignment": true,
+    "typedef": false,
+    "indent": [true, "spaces", 2],
+    "space-within-parens": false,
+    "object-literal-key-quotes": false,
+    "semicolon": [true, "never"],
+    "align": false,
+    "curly": false,
+    "member-ordering": false,
+    "member-access": [false, "no-public"],
+    "newline-before-return": false,
+    "array-type": false,
+    "readonly-keyword": true,
+    "readonly-array": true,
+    "no-let": true,
+    "no-object-mutation": true,
+    "no-delete": true,
+    "no-method-signature": true,
+    "no-this": true,
+    "no-class": true,
+    "no-expression-statement": false,
+    "no-if-statement": true
+  }
+}
