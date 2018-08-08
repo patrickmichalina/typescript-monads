@@ -27,7 +27,7 @@ jobs:
             path: test-results
         - run:
             name: Post coverage results
-            command: node_modules/.bin/codecov --token=21b041e2-a6d4-4eaa-ac72-d3264fe9adbf
+            command: node_modules/.bin/codecov --token=708e3cfe-7141-47e3-bd74-161f9a5501d2
         - save_cache:
             key: dependency-cache-{{ checksum "package.json" }}
             paths:
