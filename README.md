@@ -30,7 +30,7 @@
 
 # Installation
 
-```ts
+```bash
 npm install typescript-monads
 ```
 
