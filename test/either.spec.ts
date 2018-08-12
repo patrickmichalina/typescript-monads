@@ -34,13 +34,13 @@ describe('Either', () => {
     expect(eitherThing.isLeft()).toBeFalsy()
   })
 
-  it('should map to caseOf right side', () => {
+  it('should map to match right side', () => {
     const leftInput: number | undefined = undefined
     const rightInput = 'tester'
 
     const eitherThing = either(leftInput, rightInput)
 
-    const mapped = eitherThing.caseOf({
+    const mapped = eitherThing.match({
       left: num => '123',
       right: str => `${str}_right`
     })
@@ -48,13 +48,13 @@ describe('Either', () => {
     expect(mapped).toEqual('tester_right')
   })
 
-  it('should map to caseOf left side', () => {
+  it('should map to match left side', () => {
     const leftInput = 123
     const rightInput: string | undefined = undefined
 
     const eitherThing = either(leftInput, rightInput)
 
-    const mapped = eitherThing.caseOf({
+    const mapped = eitherThing.match({
       left: num => `${num}_left`,
       right: str => `${str}_right`
     })
@@ -71,7 +71,7 @@ describe('Either', () => {
 
     const mapped = eitherThing
       .map(rightNum => rightNum + 12)
-      .caseOf({
+      .match({
         left: () => 3,
         right: num => num
       })
@@ -80,7 +80,7 @@ describe('Either', () => {
 
     const mapped2 = eitherThing2
       .map(rightNum => rightNum + 12)
-      .caseOf({
+      .match({
         left: () => 3,
         right: num => num
       })
@@ -96,7 +96,7 @@ describe('Either', () => {
 
     const mapped = eitherThing
       .flatMap(rightNum => either(rightNum, input2))
-      .caseOf({
+      .match({
         left: () => 3,
         right: num => num
       })
@@ -112,7 +112,7 @@ describe('Either', () => {
 
     const mapped = eitherThing
       .flatMap(rightNum => either(rightNum, input2))
-      .caseOf({
+      .match({
         left: () => 3,
         right: num => num
       })

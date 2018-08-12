@@ -75,11 +75,11 @@ describe('Maybe', () => {
     })
   })
 
-  describe('when returning from a caseOf operation', () => {
+  describe('when returning from a match operation', () => {
     it('should handle "none" case', () => {
       const sut: string | undefined = undefined
       const maybeAMappedString = maybe(sut)
-        .caseOf({
+        .match({
           none: () => 'fallback',
           some: _original => _original
         })
@@ -90,7 +90,7 @@ describe('Maybe', () => {
     it('should handle "some" case', () => {
       const sut: string | undefined = 'existing value'
       const maybeAMappedString = maybe(sut)
-        .caseOf({
+        .match({
           none: () => 'fallback',
           some: _original => _original
         })
