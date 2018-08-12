@@ -1,4 +1,4 @@
-import { reader } from '../src/reader'
+import { reader } from '../src'
 
 describe('reader', () => {
   it('should of', () => {
