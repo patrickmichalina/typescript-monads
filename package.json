@@ -24,6 +24,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "release": "semantic-release",
     "lint": "tslint --project tsconfig.json --config tslint.json"
   },
   "devDependencies": {
