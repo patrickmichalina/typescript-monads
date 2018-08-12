@@ -28,7 +28,11 @@
   },
   "release": {
     "pkgRoot": "dist",
-    "assets": ["package.json", "LICENSE", "README.md"]
+    "assets": [
+      "package.json",
+      "LICENSE",
+      "README.md"
+    ]
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
