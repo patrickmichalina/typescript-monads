@@ -49,7 +49,7 @@ import { maybe } from 'typescript-monads'
 let maybeVisitedBeforeXTimes: number | undefined = 50
 
 const priceWithDiscountForLoyalty = maybe(maybeVisitedBeforeXTimes)
-  .caseOf({
+  .match({
     some: visits => 15.00 - visits * 0.1,
     none: () => 15.00
   })
@@ -57,7 +57,7 @@ const priceWithDiscountForLoyalty = maybe(maybeVisitedBeforeXTimes)
 // handle multiple maybe conditionas together
 const canRideCoaster = getAge() // Maybe<number>
   .bind(age => getTicket(age)) // Maybe<Ticket>
-  .caseOf({
+  .match({
     some: ticket => ticket.canRide('coaster1'),
     none: () => false
   })

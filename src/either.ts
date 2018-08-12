@@ -1,7 +1,7 @@
 export interface IEither<L, R> {
   isLeft(): boolean
   isRight(): boolean
-  caseOf<T>(pattern: IEitherPattern<L, R, T>): T
+  match<T>(pattern: IEitherPattern<L, R, T>): T
   map<T>(f: (r: R) => T): IEither<L, T>
   flatMap<T>(f: (r: R) => IEither<L, T>): IEither<L, T>
 }
@@ -44,7 +44,7 @@ export function either<L, R>(left?: L, right?: R): IEither<L, R> {
     isRight() {
       return exists(right)
     },
-    caseOf<T>(pattern: IEitherPattern<L, R, T>) {
+    match<T>(pattern: IEitherPattern<L, R, T>) {
       return exists(right)
         ? pattern.right(right as R)
         : pattern.left(left as L)
