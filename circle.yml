@@ -46,7 +46,7 @@ jobs:
             command: npm run build
         - run:
             name: Semantic Release
-            command: node_modules/.bin/semantic-release
+            command: cd dist && npm run release
 
 workflows:
   version: 2
