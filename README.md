@@ -38,6 +38,7 @@ npm install typescript-monads
 
 * [Maybe](#maybe)
 * [Either](#either)
+* [Reader](#reader)
 * [Result](#result)
 
 # Maybe
@@ -73,7 +74,10 @@ maybe(process.env.DB_URL)
 
 
 # Either
-Coming soon
+TODO
+
+# Reader
+TODO
 
 # Result
-Coming soon
+TODO

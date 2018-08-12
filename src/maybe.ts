@@ -1,3 +1,5 @@
+import { IMonad } from "./monad"
+
 /**
  * Define a contract to unwrap Maybe object
  */
@@ -16,7 +18,7 @@ export interface IMaybePattern<TIn, TOut> {
 /**
  * Abstraction for handling possibility of undefined values
  */
-export interface IMaybe<T> {
+export interface IMaybe<T> extends IMonad<T> {
   /**
    * Unwrap a Maybe with a default value
    */
@@ -46,10 +48,14 @@ export interface IMaybe<T> {
    * Combine multiple maybe
    */
   flatMap<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
+
+  // tslint:disable-next-line:readonly-array
+  of(x?: T, ...args: any[]): IMaybe<T>
 }
 
 export function maybe<T>(value?: T): IMaybe<T> {
   return {
+    of: (x) => maybe(x),
     valueOr: (val: T) => value === null || value === undefined ? val : value,
     valueOrCompute: (f: () => T) => value === null || value === undefined ? f() : value,
     tap: (obj: IMaybePattern<T, void>) => value === null || value === undefined ? obj.none() : obj.some(value),
