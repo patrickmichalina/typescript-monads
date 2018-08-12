@@ -258,5 +258,17 @@ describe('Maybe', () => {
       expect(maybeSomeNumber).toEqual(20)
     })
   })
+
+  describe('when getting monadic unit', () => {
+    it('should get value', () => {
+      const sut: string | undefined = undefined
+
+      const maybeSomeNumber = maybe(sut)
+        .of('ok')
+        .valueOr('fail')
+
+      expect(maybeSomeNumber).toEqual('ok')
+    })
+  })
 })
 
