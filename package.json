@@ -24,8 +24,11 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "release": "semantic-release",
     "lint": "tslint --project tsconfig.json --config tslint.json"
+  },
+  "release": {
+    "pkgRoot": "dist",
+    "assets": ["package.json", "LICENSE", "README.md"]
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
