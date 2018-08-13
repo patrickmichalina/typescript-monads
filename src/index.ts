@@ -1,4 +1,4 @@
-export { monad, IMonad } from './monad'
-export { maybe, IMaybe, IMaybePattern } from './maybe'
-export { either, IEither, IEitherPattern } from './either'
-export { reader, IReader } from './reader'
+export { monad } from './monads/monad'
+export { maybe } from './monads/maybe'
+export { either } from './monads/either'
+export { reader } from './monads/reader'

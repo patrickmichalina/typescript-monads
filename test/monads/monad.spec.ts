@@ -1,4 +1,4 @@
-import { monad } from '../src'
+import { monad } from '../../src'
 
 describe('monad', () => {
   it('should have required functions', () => {

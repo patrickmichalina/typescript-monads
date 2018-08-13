@@ -1,10 +1,4 @@
-
-export interface IReader<E, A> {
-  of(fn: (config: E) => A): IReader<E, A>,
-  run(config: E): A,
-  map<B>(fn: (val: A) => B): IReader<E, B>
-  flatMap<B>(fn: (val: A) => IReader<E, B>): IReader<E, B>,
-}
+import { IReader } from "../interfaces"
 
 // tslint:disable:no-this
 export function reader<E, A>(fn: (config: E) => A): IReader<E, A> {
