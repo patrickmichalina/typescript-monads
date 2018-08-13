@@ -26,12 +26,7 @@
     "lint": "tslint --project tsconfig.json --config tslint.json"
   },
   "release": {
-    "pkgRoot": "dist",
-    "assets": [
-      "package.json",
-      "LICENSE",
-      "README.md"
-    ]
+    "pkgRoot": "dist"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
