@@ -1,4 +1,4 @@
-import { maybe } from "../src/maybe"
+import { maybe } from "../../src"
 
 describe('Maybe', () => {
   describe('when returning a value by default', () => {

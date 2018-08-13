@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test.watch": "jest --watch",
     "build": "tsc",
     "dist": "node_modules/.bin/ts-node ./scripts/publish-prep.ts",
     "lint": "tslint --project tsconfig.json --config tslint.json"
@@ -48,6 +49,7 @@
   "jest": {
     "testURL": "http://localhost",
     "collectCoverage": true,
+    "collectCoverageFrom": ["src/**/*.ts"],
     "reporters": [
       "default",
       "jest-junit"
@@ -55,7 +57,7 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

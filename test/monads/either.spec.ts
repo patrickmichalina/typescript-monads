@@ -1,6 +1,6 @@
-import { either } from '../src'
+import { either } from '../../src'
 
-describe('Either', () => {
+describe(either.name, () => {
   it('when calling should throw if both sides are defined', () => {
     expect(() => {
       const leftInput = 'The String'
