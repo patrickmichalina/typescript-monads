@@ -32,7 +32,17 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Execute functions with side-effects.
    */
-  tap(val: IMaybePattern<T, void>): void
+  tap(val: Partial<IMaybePattern<T, void>>): void
+  
+  /**
+   * Execute a function with side-effects when maybe is a none.
+   */
+  tapNone(f: () => void): void
+  
+  /**
+   * Execute a function with side-effects when maybe is a some.
+   */
+  tapSome(f: (val: T) => void): void
 
   /**
    * Unwrap and apply MaybePattern functions
