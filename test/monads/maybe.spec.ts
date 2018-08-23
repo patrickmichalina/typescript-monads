@@ -270,5 +270,25 @@ describe('Maybe', () => {
       expect(maybeSomeNumber).toEqual('ok')
     })
   })
+
+  describe('when tapSome', () => {
+    it('should work', () => {
+      const sut: string | undefined = 'abc'
+
+      expect.assertions(1)
+      maybe(sut).tapSome(a => expect(a).toEqual('abc'))
+      maybe(sut).tapNone(() => expect(1).toEqual(1))
+    })
+  })
+
+  describe('when tapNone', () => {
+    it('should work', () => {
+      const sut: string | undefined = undefined
+
+      expect.assertions(1)
+      maybe(sut).tapNone(() => expect(1).toEqual(1))
+      maybe(sut).tapSome(() => expect(1).toEqual(1))
+    })
+  })
 })
 
