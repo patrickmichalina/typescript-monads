@@ -38,6 +38,11 @@ export function either<L, R>(left?: L, right?: R): IEither<L, R> {
         ? pattern.right(right as R)
         : pattern.left(left as L)
     },
+    tap<T>(pattern: Partial<IEitherPattern<L, R, T>>) {
+      exists(right)
+        ? pattern.right && pattern.right(right as R)
+        : pattern.left && pattern.left(left as L)
+    },
     map<T>(f: (r: R) => T) {
       return exists(right)
         ? either<L, T>(undefined, f(right as R))
