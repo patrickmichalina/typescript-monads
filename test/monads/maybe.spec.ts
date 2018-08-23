@@ -3,35 +3,35 @@ import { maybe } from "../../src"
 describe('Maybe', () => {
   describe('when returning a value by default', () => {
     it('should handle "none" case', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
       const maybeAString = maybe(sut).valueOr('default output')
 
       expect(maybeAString).toEqual('default output')
     })
 
     it('should handle "some" case', () => {
-      const sut: string | undefined = 'actual input'
+      const sut = 'actual input' as string | undefined
       const maybeAString = maybe(sut).valueOr('default output')
 
       expect(maybeAString).toEqual('actual input')
     })
 
     it('should handle "some" case when input is null', () => {
-      const sut: string | undefined | null = null
+      const sut = null as string | undefined | null
       const maybeAString = maybe(sut).valueOr('default output')
 
       expect(maybeAString).toEqual('default output')
     })
 
     it('should handle "some" case when input is ""', () => {
-      const sut: string | undefined | null = ''
+      const sut = '' as string | undefined | null
       const maybeAString = maybe(sut).valueOr('fallback')
 
       expect(maybeAString).toEqual('')
     })
 
     it('should handle "some" case when input is 0', () => {
-      const sut: number | undefined | null = 0
+      const sut = 0 as number | undefined | null
       const maybeAString = maybe(sut).valueOr(10)
 
       expect(maybeAString).toEqual(0)
@@ -40,7 +40,7 @@ describe('Maybe', () => {
 
   describe('when returning a value by computation', () => {
     it('should handle "none" case', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
       const maybeAString = maybe(sut).valueOrCompute(() => 'default output')
 
       expect(maybeAString).toEqual('default output')
@@ -54,21 +54,21 @@ describe('Maybe', () => {
     })
 
     it('should handle "some" case when input is null', () => {
-      const sut: string | undefined = null
+      const sut = null as string | null
       const maybeAString = maybe(sut).valueOrCompute(() => 'fallback')
 
       expect(maybeAString).toEqual('fallback')
     })
 
     it('should handle "some" case when input is ""', () => {
-      const sut: string | undefined = ''
+      const sut = '' as string | undefined
       const maybeAString = maybe(sut).valueOrCompute(() => 'fallback')
 
       expect(maybeAString).toEqual('')
     })
 
     it('should handle "some" case when input is 0', () => {
-      const sut: number | undefined = 0
+      const sut = 0 as number | undefined
       const maybeAString = maybe(sut).valueOrCompute(() => 10)
 
       expect(maybeAString).toEqual(0)
@@ -77,7 +77,7 @@ describe('Maybe', () => {
 
   describe('when returning from a match operation', () => {
     it('should handle "none" case', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
       const maybeAMappedString = maybe(sut)
         .match({
           none: () => 'fallback',
@@ -88,7 +88,7 @@ describe('Maybe', () => {
     })
 
     it('should handle "some" case', () => {
-      const sut: string | undefined = 'existing value'
+      const sut = 'existing value' as string | undefined
       const maybeAMappedString = maybe(sut)
         .match({
           none: () => 'fallback',
@@ -102,8 +102,8 @@ describe('Maybe', () => {
   describe('when performing side-effect operations', () => {
     it('should handle "none" case', () => {
       // tslint:disable-next-line:no-let
-      let sideEffectStore: string
-      const sut: string | undefined = undefined
+      let sideEffectStore = ''
+      const sut = undefined as string | undefined
 
       maybe(sut)
         .tap({
@@ -118,8 +118,8 @@ describe('Maybe', () => {
 
     it('should handle "some" case', () => {
       // tslint:disable-next-line:no-let
-      let sideEffectStore: string
-      const sut: string | undefined = 'existing value'
+      let sideEffectStore = ''
+      const sut = 'existing value' as string | undefined
 
       maybe(sut)
         .tap({
@@ -139,7 +139,7 @@ describe('Maybe', () => {
     }
 
     it('should handle valid input', () => {
-      const sut: string | undefined = 'initial input'
+      const sut = 'initial input' as string | undefined
 
       const maybeSomeString = maybe(sut)
         .map(_str => getUserService<string>('initial input mapped'))
@@ -163,7 +163,7 @@ describe('Maybe', () => {
     })
 
     it('should handle undefined input', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
 
       const maybeSomeString = maybe(sut)
         .map(_str => getUserService<string>('initial input mapped'))
@@ -187,7 +187,7 @@ describe('Maybe', () => {
     })
 
     it('should handle input of 0', () => {
-      const sut: number | undefined = 0
+      const sut = 0 as number | undefined
 
       const maybeSomeString = maybe(sut)
         .map(_str => getUserService<string>('initial input mapped'))
@@ -211,7 +211,7 @@ describe('Maybe', () => {
     })
 
     it('should handle input of ""', () => {
-      const sut: string | undefined = ''
+      const sut = '' as string | undefined
 
       const maybeSomeString = maybe(sut)
         .map(_str => getUserService<string>('initial input mapped'))
@@ -237,8 +237,8 @@ describe('Maybe', () => {
 
   describe('when flatMapping', () => {
     it('should handle "none" case', () => {
-      const sut: string | undefined = undefined
-      const nsut: number | undefined = undefined
+      const sut = undefined as string | undefined
+      const nsut = undefined as number | undefined
 
       const maybeSomeNumber = maybe(sut)
         .flatMap(() => maybe(nsut))
@@ -248,8 +248,8 @@ describe('Maybe', () => {
     })
 
     it('should handle "some" case', () => {
-      const sut: string | undefined = 'initial'
-      const nsut: number | undefined = 20
+      const sut = 'initial' as string | undefined
+      const nsut = 20 as number | undefined
 
       const maybeSomeNumber = maybe(sut)
         .flatMap(() => maybe(nsut))
@@ -261,7 +261,7 @@ describe('Maybe', () => {
 
   describe('when getting monadic unit', () => {
     it('should get value', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
 
       const maybeSomeNumber = maybe(sut)
         .of('ok')
@@ -273,7 +273,7 @@ describe('Maybe', () => {
 
   describe('when tapSome', () => {
     it('should work', () => {
-      const sut: string | undefined = 'abc'
+      const sut = 'abc' as string | undefined
 
       expect.assertions(1)
       maybe(sut).tapSome(a => expect(a).toEqual('abc'))
@@ -283,7 +283,7 @@ describe('Maybe', () => {
 
   describe('when tapNone', () => {
     it('should work', () => {
-      const sut: string | undefined = undefined
+      const sut = undefined as string | undefined
 
       expect.assertions(1)
       maybe(sut).tapNone(() => expect(1).toEqual(1))
