@@ -119,4 +119,67 @@ describe(either.name, () => {
 
     expect(mapped).toEqual(3)
   })
+
+  it('should tap left', () => {
+    expect.assertions(6)
+
+    const input1 = 123
+    const input2: number | undefined = undefined
+
+    const eitherThing = either(input1, input2)
+
+    const mapped1 = eitherThing
+      .tap({
+        right: _rightSideEffect => fail(),
+        left: leftSideEffect => {
+          expect(leftSideEffect).toEqual(123)
+        }
+      })
+
+    const mapped2 = eitherThing
+      .tap({
+        left: leftSideEffect => expect(leftSideEffect).toEqual(123)
+      })
+    const mapped3 = eitherThing
+      .tap({
+        right: _rightSideEffect => fail()
+      })
+
+    const mapped4 = eitherThing.tap({})
+
+    expect(mapped1).toEqual(undefined)
+    expect(mapped2).toEqual(undefined)
+    expect(mapped3).toEqual(undefined)
+    expect(mapped4).toEqual(undefined)
+  })
+
+  it('should tap right', () => {
+    expect.assertions(6)
+
+    const input1 = undefined
+    const input2: number | undefined = 123
+
+    const eitherThing = either(input1, input2)
+
+    const mapped1 = eitherThing
+      .tap({
+        left: _leftSideEffect => fail(),
+        right: rightSideEffect => expect(rightSideEffect).toEqual(123)
+      })
+
+    const mapped2 = eitherThing
+      .tap({
+        left: _leftSideEffect => fail()
+      })
+    const mapped3 = eitherThing
+      .tap({
+        right: rightSideEffect => expect(rightSideEffect).toEqual(123)
+      })
+    const mapped4 = eitherThing.tap({})
+
+    expect(mapped1).toEqual(undefined)
+    expect(mapped2).toEqual(undefined)
+    expect(mapped3).toEqual(undefined)
+    expect(mapped4).toEqual(undefined)
+  })
 })
