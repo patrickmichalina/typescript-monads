@@ -19,7 +19,7 @@ describe('reader', () => {
 
   it('should flatMap', () => {
 
-    const greet = name => reader<string, string>(ctx => ctx + ", " + name)
+    const greet = (name: string) => reader<string, string>(ctx => ctx + ", " + name)
     const end = (str: string) => reader<string, boolean>(a => a === 'Hello')
       .flatMap(isH => isH ? reader(ctx => str + "!!!") : reader(ctx => str + "."))
 
