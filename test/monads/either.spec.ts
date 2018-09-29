@@ -64,7 +64,7 @@ describe(either.name, () => {
 
   it('should map right biased', () => {
     const input1 = 123
-    const input2: number | undefined = undefined
+    const input2 = undefined as number | undefined
 
     const eitherThing = either(input2, input1)
     const eitherThing2 = either(input1, input2)
@@ -90,7 +90,7 @@ describe(either.name, () => {
 
   it('should flatMap', () => {
     const input1 = 123
-    const input2: number | undefined = undefined
+    const input2 = undefined as number | undefined
 
     const eitherThing = either(input2, input1)
 
@@ -106,7 +106,7 @@ describe(either.name, () => {
 
   it('should flatMap left', () => {
     const input1 = 123
-    const input2: number | undefined = undefined
+    const input2 = undefined as number | undefined
 
     const eitherThing = either(input1, input2)
 
@@ -124,7 +124,7 @@ describe(either.name, () => {
     expect.assertions(6)
 
     const input1 = 123
-    const input2: number | undefined = undefined
+    const input2 = undefined
 
     const eitherThing = either(input1, input2)
 

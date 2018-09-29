@@ -1,5 +1,9 @@
 import { maybeEnv } from '../../src/util'
 
+interface StringDict {
+  readonly [key: string]: string
+}
+
 describe(maybeEnv.name, () => {
   const key = 'TEST_JWT'
   beforeEach(() => {
@@ -14,7 +18,7 @@ describe(maybeEnv.name, () => {
   })
 
   it('should get using custom reader', () => {
-    const env = {
+    const env: StringDict = {
       someKey: 'someVal'
     }
     const maybe = maybeEnv('someKey', { readEnv: (key: string) => env[key] }).valueOr('Fallback')
@@ -22,7 +26,7 @@ describe(maybeEnv.name, () => {
   })
 
   it('should fallback using custom reader', () => {
-    const env = {
+    const env: StringDict = {
       someKey: 'someVal'
     }
     const maybe = maybeEnv('someUndefinedKey', { readEnv: (key: string) => env[key] }).valueOr('Fallback')
