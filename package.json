@@ -22,24 +22,26 @@
     "test": "jest",
     "test.watch": "jest --watch",
     "build": "tsc",
-    "dist": "node_modules/.bin/ts-node ./scripts/publish-prep.ts",
+    "build.system": "tsc -p tsconfig.system.json && uglifyjs dist/packages/system/index.js -o dist/packages/system/index.min.js --source-map",
+    "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tslint --project tsconfig.json --config tslint.json"
   },
   "release": {
     "pkgRoot": "dist"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.2",
-    "@types/node": "^10.11.3",
+    "@types/jest": "^23.3.3",
+    "@types/node": "^10.11.4",
     "codecov": "^3.1.0",
     "jest": "23.6.0",
-    "jest-junit": "^5.1.0",
-    "semantic-release": "^15.9.16",
+    "jest-junit": "^5.2.0",
+    "semantic-release": "^15.9.17",
     "ts-jest": "23.10.3",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-immutable": "^4.7.0",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.1",
+    "uglify-js": "^3.4.9"
   },
   "jest": {
     "testURL": "http://localhost",

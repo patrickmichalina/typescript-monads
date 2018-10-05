@@ -8,27 +8,23 @@ const filesToCopy: ReadonlyArray<string> = [
   'LICENSE'
 ]
 
-function run(dir: string) {
-  return function(files: ReadonlyArray<string>) {
-    mkdir(resolve(dir), dirResolved(files)(dir))
-  }
-}
+const run =
+  (dir: string) =>
+    (files: ReadonlyArray<string>) =>
+      mkdir(resolve(dir), dirResolved(files)(dir))
 
-function mapper(dir: string) {
-  return function (file: string) {
-    return {
-      from: resolve(file),
-      to: resolve(dir, file)
+const mapper =
+  (dir: string) =>
+    (file: string) => {
+      return {
+        from: resolve(file),
+        to: resolve(dir, file)
+      }
     }
-  }
-}
 
-function dirResolved(files: ReadonlyArray<string>) {
-  return function(dir: string) {
-    return function (_err?: any) {
+const dirResolved =
+  (files: ReadonlyArray<string>) =>
+    (dir: string) => (_err?: any) =>
       files.map(mapper(dir)).forEach(paths => copyFileSync(paths.from, paths.to))
-    }
-  }
-}
 
 run(targetDir)(filesToCopy)
