@@ -48,6 +48,9 @@ jobs:
             name: Build
             command: npm run build
         - run:
+            name: Build.System
+            command: npm run build.system
+        - run:
             name: Semantic Release
             command: node_modules/.bin/semantic-release
 
