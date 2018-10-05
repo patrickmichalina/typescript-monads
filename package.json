@@ -21,10 +21,10 @@
   "scripts": {
     "test": "jest",
     "test.watch": "jest --watch",
-    "build": "tsc",
-    "build.system": "tsc -p tsconfig.system.json && uglifyjs dist/packages/system/index.js -o dist/packages/system/index.min.js --source-map",
+    "build": "tsc && npm run rollup && uglifyjs dist/index.js -o dist/index.min.js --source-map",
     "dist": "ts-node ./scripts/publish-prep.ts",
-    "lint": "tslint --project tsconfig.json --config tslint.json"
+    "lint": "tslint --project tsconfig.json --config tslint.json",
+    "rollup": "rollup dist/index.js --file dist/index.js -m --format umd --name \"typescript-monads\""
   },
   "release": {
     "pkgRoot": "dist"
@@ -35,6 +35,7 @@
     "codecov": "^3.1.0",
     "jest": "23.6.0",
     "jest-junit": "^5.2.0",
+    "rollup": "^0.66.4",
     "semantic-release": "^15.9.17",
     "ts-jest": "23.10.3",
     "ts-node": "^7.0.1",

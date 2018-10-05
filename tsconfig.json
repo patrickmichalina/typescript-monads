@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "lib": ["es2015", "dom"],
     "outDir": "dist",
@@ -21,7 +21,8 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true
+    "declaration": true,
+    "sourceMap": true
   },
   "include": [
     "src/**/*.ts"
