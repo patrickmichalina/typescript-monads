@@ -21,10 +21,10 @@
   "scripts": {
     "test": "jest",
     "test.watch": "jest --watch",
-    "build": "tsc && npm run rollup && uglifyjs dist/index.js -o dist/index.min.js --source-map",
     "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tslint --project tsconfig.json --config tslint.json",
-    "rollup": "rollup dist/index.js --file dist/index.js -m --format umd --name \"typescript-monads\""
+    "build": "tsc -p tsconfig.build.json && npm run rollup && uglifyjs dist/index.js -o dist/index.min.js --source-map",
+    "rollup": "rollup dist/index.js -o dist/index.js --format umd --name \"typescript-monads\" -m"
   },
   "release": {
     "pkgRoot": "dist"
