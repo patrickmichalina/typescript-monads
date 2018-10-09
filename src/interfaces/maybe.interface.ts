@@ -22,12 +22,12 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Unwrap a Maybe with a default value
    */
-  valueOr(val: NonNullable<T>): NonNullable<T>
+  valueOr(val: NonNullable<T>): T
 
   /**
    * Unwrap a Maybe with a default computed value
    */
-  valueOrCompute(f: () => NonNullable<T>): NonNullable<T>
+  valueOrCompute(f: () => NonNullable<T>): T
 
   /**
    * Execute functions with side-effects.
@@ -42,7 +42,7 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Execute a function with side-effects when maybe is a some.
    */
-  tapSome(f: (val: NonNullable<T>) => void): void
+  tapSome(f: (val: T) => void): void
 
   /**
    * Unwrap and apply MaybePattern functions
@@ -52,12 +52,12 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Combine multiple maybe
    */
-  map<R>(f: (t: NonNullable<T>) => R): IMaybe<R>
+  map<R>(f: (t: T) => R): IMaybe<R>
 
   /**
    * Combine multiple maybe
    */
-  flatMap<R>(f: (t: NonNullable<T>) => IMaybe<R>): IMaybe<R>
+  flatMap<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
 
   // tslint:disable-next-line:readonly-array
   of(x?: T, ...args: any[]): IMaybe<T>
