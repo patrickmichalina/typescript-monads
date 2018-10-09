@@ -1,8 +1,8 @@
 import { IMaybe, IMaybePattern } from "../interfaces"
 
-export function maybe<T>(value?: T): IMaybe<T> {
+export function maybe<T>(value?: T): IMaybe<NonNullable<T>> {
   return {
-    of: (x) => maybe(x),
+    of: maybe,
     valueOr: (val: NonNullable<T>) => value === null || value === undefined ? val : value as NonNullable<T>,
     valueOrCompute: (f: () => NonNullable<T>) => value === null || value === undefined ? f() : value as NonNullable<T>,
     tap: (obj: Partial<IMaybePattern<T, void>>) => value === null || value === undefined ? obj.none && obj.none() : obj.some && obj.some(value as  NonNullable<T>),
