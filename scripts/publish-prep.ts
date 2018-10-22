@@ -1,30 +1,16 @@
-import { mkdir, copyFileSync } from 'fs'
+import { copy, ensureDir } from 'fs-extra'
 import { resolve } from 'path'
 
-const targetDir = 'dist'
+const targetDir = resolve('dist')
+const srcDir = resolve('src')
 const filesToCopy: ReadonlyArray<string> = [
   'package.json',
   'README.md',
   'LICENSE'
 ]
 
-const run =
-  (dir: string) =>
-    (files: ReadonlyArray<string>) =>
-      mkdir(resolve(dir), dirResolved(files)(dir))
-
-const mapper =
-  (dir: string) =>
-    (file: string) => {
-      return {
-        from: resolve(file),
-        to: resolve(dir, file)
-      }
-    }
-
-const dirResolved =
-  (files: ReadonlyArray<string>) =>
-    (dir: string) => (_err?: any) =>
-      files.map(mapper(dir)).forEach(paths => copyFileSync(paths.from, paths.to))
-
-run(targetDir)(filesToCopy)
+ensureDir(targetDir)
+  .then(() => Promise.all([
+    ...filesToCopy.map(path => copy(path, resolve(targetDir, path))),
+    copy(srcDir, resolve(targetDir, 'src'))
+  ]))
