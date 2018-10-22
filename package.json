@@ -30,9 +30,11 @@
     "pkgRoot": "dist"
   },
   "devDependencies": {
+    "@types/fs-extra": "^5.0.4",
     "@types/jest": "^23.3.5",
     "@types/node": "^10.11.7",
     "codecov": "^3.1.0",
+    "fs-extra": "^7.0.0",
     "jest": "23.6.0",
     "jest-junit": "^5.2.0",
     "rollup": "^0.66.6",
