@@ -1,2 +1,2 @@
 export * from './monads/index'
-export * from './interfaces'
+export * from './interfaces/index'
