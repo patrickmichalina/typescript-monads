@@ -24,7 +24,7 @@
     "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tslint --project tsconfig.json --config tslint.json",
     "build": "tsc -p tsconfig.build.json && npm run rollup && uglifyjs dist/index.js -o dist/index.min.js --source-map",
-    "rollup": "rollup dist/index.js -o dist/index.js --format umd --name \"typescript-monads\" -m"
+    "rollup": "rollup dist/index.js -o dist/index.js --format umd --name \"typescriptMonads\" -m"
   },
   "release": {
     "pkgRoot": "dist"
