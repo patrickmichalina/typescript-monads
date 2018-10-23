@@ -31,10 +31,25 @@
 
 **typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
 
-# Installation
+# Getting Started
 
+## Node or as a module
 ```bash
 npm install typescript-monads
+```
+
+## Browser
+```html
+<head>
+ <script src="https://unpkg.com/typescript-monads"></script>
+ <!-- or use a specific version to avoid a redirect --> 
+ <script src="https://unpkg.com/typescript-monads@3.5.3/index.js"></script>
+</head>
+```
+
+```js
+var someRemoteValue;
+typescriptMonads.maybe(someRemoteValue).tapSome(console.log)
 ```
 
 # Usage
