@@ -61,4 +61,6 @@ export interface IMaybe<T> extends IMonad<T> {
 
   // tslint:disable-next-line:readonly-array
   of(x?: T, ...args: any[]): IMaybe<T>
+  
+  filter(fn: (t: T) => boolean): IMaybe<T>
 }
