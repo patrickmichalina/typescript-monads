@@ -353,7 +353,7 @@ describe('Maybe', () => {
       const sut = undefined as string | undefined
       const maybeThing = maybe(sut).toArray()
 
-      expect(maybeThing).toHaveLength(1)
+      expect(maybeThing).toHaveLength(0)
       expect(maybeThing).toEqual([])
     })
 
