@@ -328,5 +328,23 @@ describe('Maybe', () => {
         })
     })
   })
-})
 
+
+
+
+  describe('when returning a value or undefined', () => {
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+      const maybeAString = maybe(sut).valueOrUndefined()
+
+      expect(maybeAString).toBeUndefined()
+    })
+
+    it('should handle "some" case', () => {
+      const sut = 'actual input' as string | undefined
+      const maybeAString = maybe(sut).valueOrUndefined()
+
+      expect(maybeAString).toEqual('actual input')
+    })
+  })
+})
