@@ -347,4 +347,30 @@ describe('Maybe', () => {
       expect(maybeAString).toEqual('actual input')
     })
   })
+
+  describe('when returning an array', () => {
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+      const maybeThing = maybe(sut).toArray()
+
+      expect(maybeThing).toHaveLength(0)
+      expect(maybeThing).toEqual([])
+    })
+
+    it('should handle "some" case', () => {
+      const sut = 'actual input' as string | undefined
+      const maybeThing = maybe(sut).toArray()
+
+      expect(maybeThing).toHaveLength(1)
+      expect(maybeThing).toEqual(['actual input'])
+    })
+
+    it('should handle "some" case existing array', () => {
+      const sut = ['actual input'] as ReadonlyArray<string> | undefined
+      const maybeThing = maybe(sut).toArray()
+
+      expect(maybeThing).toHaveLength(1)
+      expect(maybeThing).toEqual(['actual input'])
+    })
+  })
 })

@@ -4,6 +4,7 @@ const isEmpty = <T>(value: T) => value === null || value === undefined
 const isNotEmpty = <T>(value: T) => !isEmpty(value)
 const valueOr = <T>(value?: T) => (val: NonNullable<T>) => isEmpty(value) ? val : value as NonNullable<T>
 const valueOrUndefined = <T>(value?: T) => () => isEmpty(value) ? undefined : value as NonNullable<T>
+const toArray = <T>(value?: T) => () => isEmpty(value) ? [] : Array.isArray(value) ? value : [value as NonNullable<T>]
 const valueOrCompute = <T>(value?: T) => (fn: () => NonNullable<T>) => isEmpty(value) ? fn() : value as NonNullable<T>
 const tap = <T>(value?: T) => (obj: Partial<IMaybePattern<T, void>>) => isEmpty(value) ? obj.none && obj.none() : obj.some && obj.some(value as NonNullable<T>)
 const tapNone = <T>(value?: T) => (fn: () => void) => (isEmpty(value)) && fn()
@@ -18,6 +19,7 @@ export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
     valueOr: valueOr(value),
     valueOrUndefined: valueOrUndefined(value),
     valueOrCompute: valueOrCompute(value),
+    toArray: toArray(value),
     tap: tap(value),
     tapNone: tapNone(value),
     tapSome: tapSome(value),

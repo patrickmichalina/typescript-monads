@@ -34,6 +34,11 @@ export interface IMaybe<T> extends IMonad<T> {
   valueOrUndefined(): T | undefined
 
   /**
+   * Unwrap a Maybe with its value or return and empty list
+   */
+  toArray(): ReadonlyArray<T>
+
+  /**
    * Unwrap a Maybe with a default computed value
    */
   valueOrCompute(f: () => NonNullable<T>): T
