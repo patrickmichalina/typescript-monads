@@ -290,5 +290,43 @@ describe('Maybe', () => {
       maybe(sut).tapSome(() => expect(1).toEqual(1))
     })
   })
+
+  describe('when filtering', () => {
+    it('pass value through if predicate is resolves true', () => {
+      const thing: { readonly isGreen: boolean } | undefined = { isGreen: true }
+
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(_thing).toEqual(thing),
+          none: () => expect(1).toEqual(1)
+        })
+    })
+
+    it('should not pass value through if predicate is resolves false', () => {
+      const thing: { readonly isGreen: boolean } | undefined = { isGreen: false }
+
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(true).toBe(false),
+          none: () => expect(1).toEqual(1)
+        })
+    })
+
+    it('should handle undefineds correctly', () => {
+      const thing = undefined as { readonly isGreen: boolean } | undefined
+
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(true).toBe(false),
+          none: () => expect(1).toEqual(1)
+        })
+    })
+  })
 })
 
