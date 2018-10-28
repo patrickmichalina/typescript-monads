@@ -12,6 +12,14 @@ const tapSome = <T>(value?: T) => (fn: (val: NonNullable<T>) => void) => isNotEm
 const match = <T>(value?: T) => <R>(pattern: IMaybePattern<T, R>) => isEmpty(value) ? pattern.none() : pattern.some(value as NonNullable<T>)
 const map = <T>(value?: T) => <R>(fn: (t: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
 const flatMap = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => IMaybe<R>) => isEmpty(value) ? maybe<R>() : fn(value as NonNullable<T>)
+const filter = <T>(value?: T) =>
+  (fn: (d: NonNullable<T>) => boolean) =>
+    isEmpty(value)
+      ? maybe<T>()
+      : fn(value as NonNullable<T>)
+        ? maybe(value as NonNullable<T>)
+        : maybe<T>()
+
 
 export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
   return {
@@ -26,10 +34,6 @@ export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
     match: match(value),
     map: map(value),
     flatMap: flatMap(value),
-    filter: (fn: (d: NonNullable<T>) => boolean) => isEmpty(value)
-      ? maybe()
-      : fn(value as NonNullable<T>)
-        ? maybe(value as NonNullable<T>)
-        : maybe()
+    filter: filter(value)
   }
 }
