@@ -4,6 +4,14 @@
   <a href="https://circleci.com/gh/patrickmichalina/typescript-monads">
     <img alt="circeci" src="https://circleci.com/gh/patrickmichalina/typescript-monads.svg?style=shield">
   </a>
+  <a href="https://codeclimate.com/github/patrickmichalina/typescript-monads/test_coverage">
+    <img src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/test_coverage" />
+  </a>
+  <a href="https://codeclimate.com/github/patrickmichalina/typescript-monads/maintainability">
+    <img alt="codeclimate" src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/maintainability">
+  </a>
+</p>
+<p align="center">
   <a href="https://greenkeeper.io">
     <img alt="greenkeeper" src="https://badges.greenkeeper.io/semantic-release/semantic-release.svg">
   </a>
@@ -13,17 +21,11 @@
   <a href="https://david-dm.org/patrickmichalina/typescript-monads?type=dev">
     <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/typescript-monads/dev-status.svg">
   </a>
-  <a href="https://codeclimate.com/github/patrickmichalina/typescript-monads/test_coverage">
-    <img src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/test_coverage" />
-  </a>
-  <a href="https://codeclimate.com/github/patrickmichalina/typescript-monads/maintainability">
-    <img alt="codeclimate" src="https://api.codeclimate.com/v1/badges/f40c9fff2927e49c3ea2/maintainability">
-  </a>
+</p>
+<p align="center">
   <a href="https://github.com/semantic-release/semantic-release">
     <img alt="semantic-release" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg">
   </a>
-</p>
-<p align="center">
   <a href="https://www.npmjs.com/package/typescript-monads">
     <img alt="npm latest version" src="https://img.shields.io/npm/v/typescript-monads/latest.svg">
   </a>
