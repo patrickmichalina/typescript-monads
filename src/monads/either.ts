@@ -14,15 +14,27 @@ const match = <L, R>(left?: L) => (right?: R) => <T>(pattern: IEitherPattern<L, 
   ? pattern.right(right as R)
   : pattern.left(left as L)
 
-export function either<L, R>(left?: L, right?: R): IEither<L, R> {
+const guardBothExist = <L, R>(left?: L) => (right?: R) => {
   // tslint:disable-next-line:no-if-statement
   if (bothExist(left)(right)) {
     throw new TypeError('Either cannot have both a left and a right')
   }
+}
+
+const guardNeitherExist = <L, R>(left?: L) => (right?: R) => {
   // tslint:disable-next-line:no-if-statement
   if (neitherExist(left)(right)) {
     throw new TypeError('Either requires a left or a right')
   }
+}
+
+const eitherGuards = <L, R>(left?: L) => (right?: R) => {
+  guardBothExist(left)(right)
+  guardNeitherExist(left)(right)
+}
+
+export const either = <L, R>(left?: L, right?: R): IEither<L, R> => {
+  eitherGuards()
 
   return {
     isLeft: existFunc(left),
