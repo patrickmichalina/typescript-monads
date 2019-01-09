@@ -1,20 +1,18 @@
 import { IEither, IEitherPattern } from "../interfaces"
 
-function exists<T>(t: T) {
-  return t !== null && t !== undefined
-}
+const exists = <T>(t: T) => t !== null && t !== undefined
+const bothExist = <L, R>(left?: L) => (right?: R) => exists(left) && exists(right)
+const neitherExist = <L, R>(left?: L) => (right?: R) => !exists(left) && !exists(right)
+const existFunc = <T>(side?: T) => () => exists(side)
 
-function bothExist<L, R>(left?: L) {
-  return function (right?: R) {
-    return exists(left) && exists(right)
-  }
-}
+const tap = <L, R>(left?: L) => (right?: R) => <T>(pattern: Partial<IEitherPattern<L, R, T>>) =>
+  exists(right)
+    ? pattern.right && pattern.right(right as R)
+    : pattern.left && pattern.left(left as L)
 
-function neitherExist<L, R>(left?: L) {
-  return function (right?: R) {
-    return !exists(left) && !exists(right)
-  }
-}
+const match = <L, R>(left?: L) => (right?: R) => <T>(pattern: IEitherPattern<L, R, T>) => exists(right)
+  ? pattern.right(right as R)
+  : pattern.left(left as L)
 
 export function either<L, R>(left?: L, right?: R): IEither<L, R> {
   // tslint:disable-next-line:no-if-statement
@@ -27,31 +25,15 @@ export function either<L, R>(left?: L, right?: R): IEither<L, R> {
   }
 
   return {
-    isLeft() {
-      return exists(left)
-    },
-    isRight() {
-      return exists(right)
-    },
-    match<T>(pattern: IEitherPattern<L, R, T>) {
-      return exists(right)
-        ? pattern.right(right as R)
-        : pattern.left(left as L)
-    },
-    tap<T>(pattern: Partial<IEitherPattern<L, R, T>>) {
-      exists(right)
-        ? pattern.right && pattern.right(right as R)
-        : pattern.left && pattern.left(left as L)
-    },
-    map<T>(f: (r: R) => T) {
-      return exists(right)
-        ? either<L, T>(undefined, f(right as R))
-        : either<L, T>(left)
-    },
-    flatMap<T>(f: (r: R) => IEither<L, T>) {
-      return exists(right) ?
-        f(right as R) :
-        either<L, T>(left)
-    }
+    isLeft: existFunc(left),
+    isRight: existFunc(right),
+    match: match(left)(right),
+    tap: tap(left)(right),
+    map: <T>(f: (r: R) => T) => exists(right)
+      ? either<L, T>(undefined, f(right as R))
+      : either<L, T>(left),
+    flatMap: <T>(f: (r: R) => IEither<L, T>) => exists(right) ?
+      f(right as R) :
+      either<L, T>(left)
   }
 }
