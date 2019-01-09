@@ -34,7 +34,7 @@ const eitherGuards = <L, R>(left?: L) => (right?: R) => {
 }
 
 export const either = <L, R>(left?: L, right?: R): IEither<L, R> => {
-  eitherGuards()
+  eitherGuards(left)(right)
 
   return {
     isLeft: existFunc(left),
