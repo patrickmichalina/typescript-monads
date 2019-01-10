@@ -74,6 +74,11 @@ export interface IMaybe<T> extends IMonad<T> {
   flatMap<R>(f: (t: T) => IMaybe<R>): IMaybe<R>
 
   /**
+   * Combine multiple Maybe, automatically wrapping predicate
+   */
+  flatMapAuto<R>(f: (t: T) => R): IMaybe<NonNullable<R>>
+
+  /**
    * Apply a predicate which if met, continues the Maybe chain,
    * otherwise return an empty Maybe
    */
