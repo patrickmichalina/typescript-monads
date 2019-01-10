@@ -1,4 +1,4 @@
-import { reader, maybe } from ".."
+import { reader, maybe } from '..'
 
 export interface GetFromEnvironmentReader {
   readEnv(key: string): string | undefined

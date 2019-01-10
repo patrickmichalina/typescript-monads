@@ -1,4 +1,4 @@
-import { IReader } from "../interfaces"
+import { IReader } from '../interfaces'
 
 // tslint:disable:no-this
 export const reader = <E, A>(fn: (config: E) => A): IReader<E, A> => {

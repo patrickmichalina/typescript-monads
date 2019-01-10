@@ -31,9 +31,10 @@
   </a>
 </p>
 
-**typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
+**typescript-monads** helps you write safer code by using abstractions over messy control flow and state.
 
-# Getting Started
+# Installation
+You can use this library in the browser, node, or a bundler
 
 ## Node or as a module
 ```bash
@@ -45,7 +46,7 @@ npm install typescript-monads
 <head>
  <script src="https://unpkg.com/typescript-monads"></script>
  <!-- or use a specific version to avoid a redirect --> 
- <script src="https://unpkg.com/typescript-monads@3.5.3/index.js"></script>
+ <script src="https://unpkg.com/typescript-monads@3.8.0/index.min.js"></script>
 </head>
 ```
 
@@ -54,7 +55,7 @@ var someRemoteValue;
 typescriptMonads.maybe(someRemoteValue).tapSome(console.log)
 ```
 
-# Usage
+# Example Usage
 
 * [Maybe](#maybe)
 * [Either](#either)
@@ -91,7 +92,6 @@ maybe(process.env.DB_URL)
     none: () => console.info('no url provided, could not connect to the database')
   })
 ```
-
 
 # Either
 TODO

@@ -1,8 +1,7 @@
 import '../../src/interfaces'
 
-describe('', () => {
-  it('should', () => {
+describe('Interfaces', () => {
+  it('should cover interfaces', () => {
     // stubbed just to get coverage up from interfaces
-    // which are not used
   })
 })

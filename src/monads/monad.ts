@@ -1,4 +1,4 @@
-import { mapping, IMonad } from "../interfaces"
+import { mapping, IMonad } from '../interfaces'
 
 // tslint:disable:readonly-array
 export const monad = <T>(x: T, ...args: any[]): IMonad<T> => {
