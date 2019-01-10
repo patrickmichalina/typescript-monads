@@ -1,4 +1,4 @@
-import { IMaybe, IMaybePattern } from "../interfaces"
+import { IMaybe, IMaybePattern } from '../interfaces'
 
 const isEmpty = <T>(value: T) => value === null || value === undefined
 const isNotEmpty = <T>(value: T) => !isEmpty(value)

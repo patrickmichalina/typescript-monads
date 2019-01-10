@@ -25,6 +25,7 @@
     "no-this": true,
     "no-class": true,
     "no-expression-statement": false,
-    "no-if-statement": true
+    "no-if-statement": true,
+    "quotemark": [true, "single"]
   }
 }

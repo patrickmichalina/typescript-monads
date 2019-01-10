@@ -1,4 +1,4 @@
-import { IMonad } from "./monad.interface"
+import { IMonad } from './monad.interface'
 
 /**
  * Define a contract to unwrap Maybe object

@@ -12,12 +12,12 @@ describe('result', () => {
 
     it('should unwrap', () => {
       expect(ok(1).unwrap()).toEqual(1)
-      expect(ok("Test").unwrap()).toEqual("Test")
+      expect(ok('Test').unwrap()).toEqual('Test')
     })
 
     it('should return proper value when "unwrapOr" is applied', () => {
       expect(ok(1).unwrapOr(25)).toEqual(1)
-      expect(ok("Test").unwrapOr("Some Other")).toEqual("Test")
+      expect(ok('Test').unwrapOr('Some Other')).toEqual('Test')
     })
 
     it('should throw an exception whe "unwrapOrFail" called on an ok value', () => {
@@ -40,6 +40,20 @@ describe('result', () => {
         .valueOrUndefined()
 
       expect(_sut).toEqual(undefined)
+    })
+
+    it('should map function', () => {
+      const sut = ok(1)
+        .map(b => b.toString())
+        .unwrap()
+      expect(sut).toEqual('1')
+    })
+
+    it('should not mapFail', () => {
+      const sut = ok(1)
+        .mapFail(b => '')
+        .unwrap()
+      expect(sut).toEqual(1)
     })
   })
 
@@ -78,6 +92,20 @@ describe('result', () => {
 
     it('should return input object on "unwrapOr"', () => {
       expect(fail('123').unwrapOr('456')).toEqual('456')
+    })
+
+    it('should not map', () => {
+      const sut = fail(1)
+        .map(b => b.toString())
+        .unwrapFail()
+      expect(sut).toEqual(1)
+    })
+
+    it('should mapFail', () => {
+      const sut = fail(1)
+        .mapFail(b => b.toString())
+        .unwrapFail()
+      expect(sut).toEqual('1')
     })
   })
 

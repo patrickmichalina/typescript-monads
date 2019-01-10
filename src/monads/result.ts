@@ -1,11 +1,12 @@
-import { IMaybe } from "../interfaces"
-import { maybe } from "./maybe"
+import { IMaybe } from '../interfaces'
+import { maybe } from './maybe'
 
 const returnTrue = () => true
 const returnFalse = () => false
 const returnValue = <T>(val: T) => () => val
 const returnMaybe = <T>(val: T) => () => maybe<T>(val)
 const throwReferenceError = (message: string) => () => { throw new ReferenceError(message) }
+
 type Predicate = () => boolean
 
 export interface IResult<T, E> {
@@ -16,21 +17,25 @@ export interface IResult<T, E> {
   unwrap(): T | never
   unwrapOr(opt: T): T
   unwrapFail(): E | never
-  // map<M>(fn: (val: T) => M): IResult<M, E>
+  map<M>(fn: (val: T) => M): IResult<M, E>
+  mapFail<M>(fn: (err: E) => M): IResult<T, M>
   // match<U>(fn: Match<T, E, U>): U
-  // map_err<U>(fn: (err: E) => U): Result<T, U>
   // and_then<U>(fn: (val: T) => Result<U, E>): Result<U, E>
 }
 
 export interface IResultOk<T, E = never> extends IResult<T, E> {
   unwrap(): T
   unwrapOr(opt: T): T
-  unwrapFail(): never
+  unwrapFail(): never,
+  map<M>(fn: (val: T) => M): IResultOk<M, never>
+  mapFail<M>(fn: (err: E) => M): IResultOk<T, never>
 }
 export interface IResultFail<T, E> extends IResult<T, E> {
   unwrap(): never
   unwrapOr(opt: T): T
-  unwrapFail(): E
+  unwrapFail(): E,
+  map<M>(fn: (val: T) => M): IResultFail<never, E>
+  mapFail<M>(fn: (err: E) => M): IResultFail<never, M>
 }
 
 export const ok = <T, E = never>(val: T): IResultOk<T, E> => {
@@ -41,7 +46,9 @@ export const ok = <T, E = never>(val: T): IResultOk<T, E> => {
     maybeFail: maybe,
     unwrap: returnValue(val),
     unwrapOr: _ => val,
-    unwrapFail: throwReferenceError('Cannot unwrap a success')
+    unwrapFail: throwReferenceError('Cannot unwrap a success'),
+    map: <M>(fn: (val: T) => M) => ok(fn(val)),
+    mapFail: <M>(_: (err: E) => M) => ok(val)
   }
 }
 
@@ -53,7 +60,9 @@ export const fail = <T, E>(err: E): IResultFail<T, E> => {
     maybeFail: returnMaybe(err),
     unwrap: throwReferenceError('Cannot unwrap a failure'),
     unwrapOr: opt => opt,
-    unwrapFail: returnValue(err)
+    unwrapFail: returnValue(err),
+    map: <M>(_: (val: T) => M) => fail(err),
+    mapFail: <M>(fn: (err: E) => M) => fail(fn(err))
   }
 }
 
@@ -64,14 +73,3 @@ export const result = <T, E>(predicate: Predicate, okValue: T, failValue: E): IR
   predicate()
     ? ok<T, E>(okValue)
     : fail<T, E>(failValue)
-
-// /**
-//  * Utility function to quickly create ok/fail pairs in curried form.
-//  */
-// export const curriedResult =
-//   <T, E>(predicate: Predicate) =>
-//     (okValue: T) =>
-//       (failValue: E): IResult<T, E> =>
-//         predicate()
-//           ? ok<T, E>(okValue)
-//           : fail<T, E>(failValue)
