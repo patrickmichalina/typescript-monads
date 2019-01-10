@@ -86,3 +86,12 @@ export const result = <T, E>(predicate: Predicate, okValue: T, failValue: E): IR
   predicate()
     ? ok<T, E>(okValue)
     : fail<T, E>(failValue)
+
+/**
+* Utility function to quickly create ok/fail pairs, curried variant.
+*/
+export const curriedResult =
+  <T, E>(predicate: Predicate) =>
+    (okValue: T) =>
+      (failValue: E): IResult<T, E> =>
+        result(predicate, okValue, failValue)

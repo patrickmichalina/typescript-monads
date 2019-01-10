@@ -1,4 +1,4 @@
-import { ok, fail, result } from '../../src/monads'
+import { ok, fail, result, curriedResult } from '../../src/monads'
 
 describe('result', () => {
   describe('ok', () => {
@@ -153,6 +153,11 @@ describe('result', () => {
 
     it('should return ok when predicate yields true', () => {
       const sut = result(() => 1 + 1 === 2, true, 'FAILURE!')
+      expect(sut.isOk()).toEqual(true)
+    })
+
+    it('should return curried', () => {
+      const sut = curriedResult(() => 1 + 1 === 2)(true)('FAILURE!')
       expect(sut.isOk()).toEqual(true)
     })
   })
