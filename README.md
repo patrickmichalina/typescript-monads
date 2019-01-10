@@ -31,7 +31,7 @@
   </a>
 </p>
 
-**typescript-monads** helps you write safer code by using abstractions over dubious program state and control flow.
+**typescript-monads** helps you write safer code by using abstractions over messy control flow and state.
 
 # Getting Started
 
@@ -91,7 +91,6 @@ maybe(process.env.DB_URL)
     none: () => console.info('no url provided, could not connect to the database')
   })
 ```
-
 
 # Either
 TODO

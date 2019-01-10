@@ -1,4 +1,4 @@
-import { ok, fail } from '../../src/monads'
+import { ok, fail, result } from '../../src/monads'
 
 describe('result', () => {
   describe('ok', () => {
@@ -78,6 +78,18 @@ describe('result', () => {
 
     it('should return input object on "unwrapOr"', () => {
       expect(fail('123').unwrapOr('456')).toEqual('456')
+    })
+  })
+
+  describe('result', () => {
+    it('should return failure when predicate yields false', () => {
+      const sut = result(() => 1 + 1 === 3, true, 'FAILURE!')
+      expect(sut.isFail()).toEqual(true)
+    })
+
+    it('should return ok when predicate yields true', () => {
+      const sut = result(() => 1 + 1 === 2, true, 'FAILURE!')
+      expect(sut.isOk()).toEqual(true)
     })
   })
 })

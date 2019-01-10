@@ -5,7 +5,8 @@ const returnTrue = () => true
 const returnFalse = () => false
 const returnValue = <T>(val: T) => () => val
 const returnMaybe = <T>(val: T) => () => maybe<T>(val)
-const throwError = (message: string) => () => { throw new Error(message) }
+const throwReferenceError = (message: string) => () => { throw new ReferenceError(message) }
+type Predicate = () => boolean
 
 export interface IResult<T, E> {
   isOk(): boolean
@@ -40,7 +41,7 @@ export const ok = <T, E = never>(val: T): IResultOk<T, E> => {
     maybeFail: maybe,
     unwrap: returnValue(val),
     unwrapOr: _ => val,
-    unwrapFail: throwError('Cannot unwrap a success')
+    unwrapFail: throwReferenceError('Cannot unwrap a success')
   }
 }
 
@@ -50,8 +51,27 @@ export const fail = <T, E>(err: E): IResultFail<T, E> => {
     isFail: returnTrue,
     maybeOk: maybe,
     maybeFail: returnMaybe(err),
-    unwrap: throwError('Cannot unwrap a failure'),
+    unwrap: throwReferenceError('Cannot unwrap a failure'),
     unwrapOr: opt => opt,
     unwrapFail: returnValue(err)
   }
 }
+
+/**
+ * Utility function to quickly create ok/fail pairs.
+ */
+export const result = <T, E>(predicate: Predicate, okValue: T, failValue: E): IResult<T, E> =>
+  predicate()
+    ? ok<T, E>(okValue)
+    : fail<T, E>(failValue)
+
+// /**
+//  * Utility function to quickly create ok/fail pairs in curried form.
+//  */
+// export const curriedResult =
+//   <T, E>(predicate: Predicate) =>
+//     (okValue: T) =>
+//       (failValue: E): IResult<T, E> =>
+//         predicate()
+//           ? ok<T, E>(okValue)
+//           : fail<T, E>(failValue)
