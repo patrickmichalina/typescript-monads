@@ -1,4 +1,4 @@
-import { ok } from '../../src/monads'
+import { ok, fail } from '../../src/monads'
 
 describe('result', () => {
   describe('ok', () => {
@@ -30,7 +30,7 @@ describe('result', () => {
       const _sut = ok('Test')
         .maybeOk()
         .valueOr('Some Other')
-      
+
       expect(_sut).toEqual('Test')
     })
 
@@ -38,8 +38,46 @@ describe('result', () => {
       const _sut = ok('Test')
         .maybeFail()
         .valueOrUndefined()
-      
+
       expect(_sut).toEqual(undefined)
+    })
+  })
+
+  describe('fail', () => {
+    it('should return false when "isOk" invoked', () => {
+      expect(fail(1).isOk()).toEqual(false)
+    })
+
+    it('should return true when "isFail" invoked', () => {
+      expect(fail(1).isFail()).toEqual(true)
+    })
+
+    it('should return empty maybe when "maybeOk" is invoked', () => {
+      const _sut = fail('Test')
+        .maybeOk()
+        .valueOr('Some Other1')
+
+      expect(_sut).toEqual('Some Other1')
+    })
+
+    it('should return fail object when "maybeFail" is invoked', () => {
+      const _sut = fail('Test')
+        .maybeFail()
+        .valueOr('Some Other2')
+
+      expect(_sut).toEqual('Test')
+    })
+
+    it('should throw an exception on "unwrap"', () => {
+      expect(() => { fail(1).unwrap() }).toThrowError()
+    })
+
+    it('should return fail object on "unwrapFail"', () => {
+      expect(fail('123').unwrapFail()).toEqual('123')
+    })
+
+    it('should return input object on "unwrapOr"', () => {
+      expect(fail('123').unwrapOr('456')).toEqual('456')
     })
   })
 })

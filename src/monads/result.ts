@@ -3,6 +3,9 @@ import { maybe } from "./maybe"
 
 const returnTrue = () => true
 const returnFalse = () => false
+const returnValue = <T>(val: T) => () => val
+const returnMaybe = <T>(val: T) => () => maybe<T>(val)
+const throwError = (message: string) => () => { throw new Error(message) }
 
 export interface IResult<T, E> {
   isOk(): boolean
@@ -33,22 +36,22 @@ export const ok = <T, E = never>(val: T): IResultOk<T, E> => {
   return {
     isOk: returnTrue,
     isFail: returnFalse,
-    maybeOk: () => maybe(val),
+    maybeOk: returnMaybe(val),
     maybeFail: maybe,
-    unwrap: () => val,
+    unwrap: returnValue(val),
     unwrapOr: _ => val,
-    unwrapFail: () => { throw new Error() }
+    unwrapFail: throwError('Cannot unwrap a success')
   }
 }
 
 export const fail = <T, E>(err: E): IResultFail<T, E> => {
   return {
-    isOk: returnTrue,
-    isFail: returnFalse,
+    isOk: returnFalse,
+    isFail: returnTrue,
     maybeOk: maybe,
-    maybeFail: () => maybe(err),
-    unwrap: () => { throw new Error('Cannot unwrap a failure') },
+    maybeFail: returnMaybe(err),
+    unwrap: throwError('Cannot unwrap a failure'),
     unwrapOr: opt => opt,
-    unwrapFail: () => err
+    unwrapFail: returnValue(err)
   }
 }
