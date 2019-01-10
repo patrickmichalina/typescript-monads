@@ -45,7 +45,7 @@ npm install typescript-monads
 <head>
  <script src="https://unpkg.com/typescript-monads"></script>
  <!-- or use a specific version to avoid a redirect --> 
- <script src="https://unpkg.com/typescript-monads@3.5.3/index.js"></script>
+ <script src="https://unpkg.com/typescript-monads@3.8.0/index.min.js"></script>
 </head>
 ```
 
