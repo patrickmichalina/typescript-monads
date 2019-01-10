@@ -63,6 +63,16 @@ describe('result', () => {
 
       expect(sut).toEqual('1')
     })
+
+    it('should match', () => {
+      const sut = ok(1)
+        .match({
+          fail: _ => 2,
+          ok: val => val
+        })
+
+      expect(sut).toEqual(1)
+    })
   })
 
   describe('fail', () => {
@@ -122,6 +132,16 @@ describe('result', () => {
         .unwrapFail()
 
       expect(sut).toEqual(1)
+    })
+
+    it('should match', () => {
+      const sut = fail(1)
+        .match({
+          fail: _ => 2,
+          ok: val => val
+        })
+
+      expect(sut).toEqual(2)
     })
   })
 
