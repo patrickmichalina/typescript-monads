@@ -34,6 +34,7 @@ export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
     match: match(value),
     map: map(value),
     flatMap: flatMap(value),
+    flatMapAuto: <R>(fn: (d: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>)),
     filter: filter(value)
   }
 }

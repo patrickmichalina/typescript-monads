@@ -1,4 +1,4 @@
-import { maybe } from "../../src"
+import { maybe } from '../../src'
 
 describe('Maybe', () => {
   describe('when returning a value by default', () => {
@@ -371,6 +371,44 @@ describe('Maybe', () => {
 
       expect(maybeThing).toHaveLength(1)
       expect(maybeThing).toEqual(['actual input'])
+    })
+  })
+
+  describe('flatMapAuto', () => {
+    it('should flatMapAuto', () => {
+      const sut = {
+        thing: undefined
+      } as { readonly thing: string | undefined } | undefined
+
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .valueOrUndefined()
+
+      expect(maybeAString).toBeUndefined()
+    })
+
+    it('should flatMapAuto inner', () => {
+      const sut = {
+        thing: 'testval'
+      } as { readonly thing: string | undefined } | undefined
+
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .map(a => a + 1)
+        .valueOrUndefined()
+
+      expect(maybeAString).toEqual('testval1')
+    })
+
+    it('should flatMapAuto with intial input as empty', () => {
+      const sut = undefined as { readonly thing: string | undefined } | undefined
+
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .map(a => a + 1)
+        .valueOrUndefined()
+
+      expect(maybeAString).toBeUndefined()
     })
   })
 })
