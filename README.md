@@ -33,7 +33,8 @@
 
 **typescript-monads** helps you write safer code by using abstractions over messy control flow and state.
 
-# Getting Started
+# Installation
+You can use this library in the browser, node, or a bundler
 
 ## Node or as a module
 ```bash
@@ -54,7 +55,7 @@ var someRemoteValue;
 typescriptMonads.maybe(someRemoteValue).tapSome(console.log)
 ```
 
-# Usage
+# Example Usage
 
 * [Maybe](#maybe)
 * [Either](#either)

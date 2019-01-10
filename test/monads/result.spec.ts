@@ -55,6 +55,14 @@ describe('result', () => {
         .unwrap()
       expect(sut).toEqual(1)
     })
+
+    it('should flatMap', () => {
+      const sut = ok(1)
+        .flatMap(a => ok(a.toString()))
+        .unwrap()
+
+      expect(sut).toEqual('1')
+    })
   })
 
   describe('fail', () => {
@@ -106,6 +114,14 @@ describe('result', () => {
         .mapFail(b => b.toString())
         .unwrapFail()
       expect(sut).toEqual('1')
+    })
+
+    it('should not flatMap', () => {
+      const sut = fail(1)
+        .flatMap(a => ok(a.toString()))
+        .unwrapFail()
+
+      expect(sut).toEqual(1)
     })
   })
 
