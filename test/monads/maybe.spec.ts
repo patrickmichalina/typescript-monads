@@ -1,6 +1,23 @@
 import { maybe } from '../../src'
 
 describe('Maybe', () => {
+  describe('when returning a value with possible throw', () => {
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+
+      expect(() => {
+        maybe(sut).valueOrThrow('A STRING VALUE IS REQUIRED')
+      }).toThrowError('A STRING VALUE IS REQUIRED')
+    })
+
+    it('should handle "some" case', () => {
+      const sut = 'test' as string | undefined
+      const maybeAString = maybe(sut).valueOrThrow('A STRING VALUE IS REQUIRED')
+
+      expect(maybeAString).toEqual('test')
+    })
+  })
+
   describe('when returning a value by default', () => {
     it('should handle "none" case', () => {
       const sut = undefined as string | undefined
@@ -328,9 +345,6 @@ describe('Maybe', () => {
         })
     })
   })
-
-
-
 
   describe('when returning a value or undefined', () => {
     it('should handle "none" case', () => {

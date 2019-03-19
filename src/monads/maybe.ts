@@ -13,6 +13,7 @@ const match = <T>(value?: T) => <R>(pattern: IMaybePattern<T, R>) => isEmpty(val
 const map = <T>(value?: T) => <R>(fn: (t: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
 const flatMap = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => IMaybe<R>) => isEmpty(value) ? maybe<R>() : fn(value as NonNullable<T>)
 const flatMapAuto = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
+const valueOrThrow = <T>(value?: T) => (msg?: string) => isEmpty(value) ? (() => { throw Error(msg) })() : value as NonNullable<T>
 
 const filter = <T>(value?: T) =>
   (fn: (d: NonNullable<T>) => boolean) =>
@@ -29,6 +30,7 @@ export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
     valueOr: valueOr(value),
     valueOrUndefined: valueOrUndefined(value),
     valueOrCompute: valueOrCompute(value),
+    valueOrThrow: valueOrThrow(value),
     toArray: toArray(value),
     tap: tap(value),
     tapNone: tapNone(value),
