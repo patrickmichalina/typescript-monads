@@ -44,6 +44,11 @@ export interface IMaybe<T> extends IMonad<T> {
   valueOrCompute(f: () => NonNullable<T>): T
 
   /**
+   * Unwrap a Maybe with the final value or throw an error
+   */
+  valueOrThrow(msg?: string): T
+
+  /**
    * Execute functions with side-effects.
    */
   tap(val: Partial<IMaybePattern<T, void>>): void
