@@ -74,6 +74,16 @@ export interface IMaybe<T> extends IMonad<T> {
   map<R>(f: (t: T) => R): IMaybe<R>
 
   /**
+   * Returns true if value is not empty
+   */
+  isSome(): boolean
+
+  /**
+   * Return true if value is empty
+   */
+  isNone(): boolean
+
+  /**
    * Combine multiple Maybe
    */
   flatMap<R>(f: (t: T) => IMaybe<R>): IMaybe<R>

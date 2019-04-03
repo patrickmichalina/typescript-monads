@@ -2,6 +2,8 @@ import { IMaybe, IMaybePattern } from '../interfaces'
 
 const isEmpty = <T>(value: T) => value === null || value === undefined
 const isNotEmpty = <T>(value: T) => !isEmpty(value)
+const isSome = <T>(value: T) => () => isNotEmpty(value)
+const isNone = <T>(value: T) => () => isEmpty(value)
 const valueOr = <T>(value?: T) => (val: NonNullable<T>) => isEmpty(value) ? val : value as NonNullable<T>
 const valueOrUndefined = <T>(value?: T) => () => isEmpty(value) ? undefined : value as NonNullable<T>
 const toArray = <T>(value?: T) => () => isEmpty(value) ? [] : Array.isArray(value) ? value : [value as NonNullable<T>]
@@ -23,10 +25,11 @@ const filter = <T>(value?: T) =>
         ? maybe(value as NonNullable<T>)
         : maybe<T>()
 
-
 export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
   return {
     of: maybe,
+    isSome: isSome(value),
+    isNone: isNone(value),
     valueOr: valueOr(value),
     valueOrUndefined: valueOrUndefined(value),
     valueOrCompute: valueOrCompute(value),

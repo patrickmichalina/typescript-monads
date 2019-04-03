@@ -425,4 +425,45 @@ describe('Maybe', () => {
       expect(maybeAString).toBeUndefined()
     })
   })
+
+  describe('isSome', () => {
+    it('false path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
+
+      expect(maybe(sut).isSome()).toEqual(false)
+      expect(maybe(sut2).isSome()).toEqual(false)
+    })
+
+    it('true path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = false as boolean
+
+      expect(maybe(sut).isSome()).toEqual(true)
+      expect(maybe(sut2).isSome()).toEqual(true)
+      expect(maybe(sut3).isSome()).toEqual(true)
+      expect(maybe(sut).map(a => `${a}_1`).isSome()).toEqual(true)
+    })
+  })
+
+  describe('isNone', () => {
+    it('true path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
+
+      expect(maybe(sut).isNone()).toEqual(true)
+      expect(maybe(sut2).isNone()).toEqual(true)
+    })
+
+    it('false path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = true as boolean | undefined
+
+      expect(maybe(sut).isNone()).toEqual(false)
+      expect(maybe(sut2).isNone()).toEqual(false)
+      expect(maybe(sut3).isNone()).toEqual(false)
+    })
+  })
 })
