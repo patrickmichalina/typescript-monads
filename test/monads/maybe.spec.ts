@@ -425,4 +425,44 @@ describe('Maybe', () => {
       expect(maybeAString).toBeUndefined()
     })
   })
+
+  describe('isTrue', () => {
+    it('', () => {
+      const sut = false as boolean | undefined
+
+      expect(maybe(sut).valueIsTrue()).toEqual(false)
+    })
+
+    it('', () => {
+      const sut = true as boolean | undefined
+
+      expect(maybe(sut).valueIsTrue()).toEqual(true)
+    })
+
+    it('', () => {
+      const sut = 'think' as string | boolean | undefined
+
+      expect(maybe(sut).valueIsTrue()).toEqual(false)
+    })
+  })
+
+  describe('isFalse', () => {
+    it('1', () => {
+      const sut = false as boolean | undefined
+
+      expect(maybe(sut).valueIsFalse()).toEqual(true)
+    })
+
+    it('2', () => {
+      const sut = true as boolean | undefined
+
+      expect(maybe(sut).valueIsFalse()).toEqual(false)
+    })
+
+    it('test', () => {
+      const sut = 'think' as string | boolean | undefined
+
+      expect(maybe(sut).valueIsFalse()).toEqual(false)
+    })
+  })
 })

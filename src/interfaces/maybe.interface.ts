@@ -24,6 +24,16 @@ export interface IMaybe<T> extends IMonad<T> {
   of(x?: T, ...args: any[]): IMaybe<T>
 
   /**
+   * Unwrap value and return true if value is true
+   */
+  valueIsTrue(): boolean
+
+  /**
+   * unwrap value and return true if value is false
+   */
+  valueIsFalse(): boolean
+
+  /**
    * Unwrap a Maybe with a default value
    */
   valueOr(val: NonNullable<T>): T

@@ -14,6 +14,8 @@ const map = <T>(value?: T) => <R>(fn: (t: NonNullable<T>) => R) => isEmpty(value
 const flatMap = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => IMaybe<R>) => isEmpty(value) ? maybe<R>() : fn(value as NonNullable<T>)
 const flatMapAuto = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
 const valueOrThrow = <T>(value?: T) => (msg?: string) => isEmpty(value) ? (() => { throw Error(msg) })() : value as NonNullable<T>
+const valueIsTrue = <T>(value?: T) => () => typeof value === 'boolean' ? value === true ? true : false : false
+const valueIsFalse = <T>(value?: T) => () => typeof value === 'boolean' ? value === false ? true : false : false
 
 const filter = <T>(value?: T) =>
   (fn: (d: NonNullable<T>) => boolean) =>
@@ -23,10 +25,11 @@ const filter = <T>(value?: T) =>
         ? maybe(value as NonNullable<T>)
         : maybe<T>()
 
-
 export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
   return {
     of: maybe,
+    valueIsTrue: valueIsTrue(value),
+    valueIsFalse: valueIsFalse(value),
     valueOr: valueOr(value),
     valueOrUndefined: valueOrUndefined(value),
     valueOrCompute: valueOrCompute(value),
