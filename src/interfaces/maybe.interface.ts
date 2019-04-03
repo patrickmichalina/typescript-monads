@@ -24,16 +24,6 @@ export interface IMaybe<T> extends IMonad<T> {
   of(x?: T, ...args: any[]): IMaybe<T>
 
   /**
-   * Unwrap value and return true if value is true
-   */
-  valueIsTrue(): boolean
-
-  /**
-   * unwrap value and return true if value is false
-   */
-  valueIsFalse(): boolean
-
-  /**
    * Unwrap a Maybe with a default value
    */
   valueOr(val: NonNullable<T>): T
@@ -82,6 +72,16 @@ export interface IMaybe<T> extends IMonad<T> {
    * Map output of non-empty data to a new value
    */
   map<R>(f: (t: T) => R): IMaybe<R>
+
+  /**
+   * Returns true if value is not empty
+   */
+  isSome(): boolean
+
+  /**
+   * Return true if value is empty
+   */
+  isNone(): boolean
 
   /**
    * Combine multiple Maybe

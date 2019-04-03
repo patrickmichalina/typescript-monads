@@ -1,8 +1,5 @@
 import { IMaybe, IMaybePattern } from '../interfaces'
 
-const isTrue = <T>(value: T) => (value as unknown as boolean) === true ? true : false
-const checkBoolValue = <T>(value: T) => (flip = false) => isBool(value) ? flip ? !isTrue(value) : isTrue(value) : false
-const isBool = <T>(value: T) => typeof value === 'boolean'
 const isEmpty = <T>(value: T) => value === null || value === undefined
 const isNotEmpty = <T>(value: T) => !isEmpty(value)
 const valueOr = <T>(value?: T) => (val: NonNullable<T>) => isEmpty(value) ? val : value as NonNullable<T>
@@ -17,8 +14,6 @@ const map = <T>(value?: T) => <R>(fn: (t: NonNullable<T>) => R) => isEmpty(value
 const flatMap = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => IMaybe<R>) => isEmpty(value) ? maybe<R>() : fn(value as NonNullable<T>)
 const flatMapAuto = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
 const valueOrThrow = <T>(value?: T) => (msg?: string) => isEmpty(value) ? (() => { throw Error(msg) })() : value as NonNullable<T>
-const valueIsTrue = <T>(value?: T) => checkBoolValue(value)
-const valueIsFalse = <T>(value?: T) => () => checkBoolValue(value)(true)
 
 const filter = <T>(value?: T) =>
   (fn: (d: NonNullable<T>) => boolean) =>
@@ -31,8 +26,8 @@ const filter = <T>(value?: T) =>
 export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
   return {
     of: maybe,
-    valueIsTrue: valueIsTrue(value),
-    valueIsFalse: valueIsFalse(value),
+    isSome: () => isNotEmpty(value),
+    isNone: () => isEmpty(value),
     valueOr: valueOr(value),
     valueOrUndefined: valueOrUndefined(value),
     valueOrCompute: valueOrCompute(value),

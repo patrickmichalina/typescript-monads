@@ -426,43 +426,44 @@ describe('Maybe', () => {
     })
   })
 
-  describe('isTrue', () => {
-    it('', () => {
-      const sut = false as boolean | undefined
+  describe('isSome', () => {
+    it('false path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
 
-      expect(maybe(sut).valueIsTrue()).toEqual(false)
+      expect(maybe(sut).isSome()).toEqual(false)
+      expect(maybe(sut2).isSome()).toEqual(false)
     })
 
-    it('', () => {
-      const sut = true as boolean | undefined
+    it('true path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = false as boolean
 
-      expect(maybe(sut).valueIsTrue()).toEqual(true)
-    })
-
-    it('', () => {
-      const sut = 'think' as string | boolean | undefined
-
-      expect(maybe(sut).valueIsTrue()).toEqual(false)
+      expect(maybe(sut).isSome()).toEqual(true)
+      expect(maybe(sut2).isSome()).toEqual(true)
+      expect(maybe(sut3).isSome()).toEqual(true)
+      expect(maybe(sut).map(a => `${a}_1`).isSome()).toEqual(true)
     })
   })
 
-  describe('isFalse', () => {
-    it('1', () => {
-      const sut = false as boolean | undefined
+  describe('isNone', () => {
+    it('true path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
 
-      expect(maybe(sut).valueIsFalse()).toEqual(true)
+      expect(maybe(sut).isNone()).toEqual(true)
+      expect(maybe(sut2).isNone()).toEqual(true)
     })
 
-    it('2', () => {
-      const sut = true as boolean | undefined
+    it('false path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = true as boolean | undefined
 
-      expect(maybe(sut).valueIsFalse()).toEqual(false)
-    })
-
-    it('test', () => {
-      const sut = 'think' as string | boolean | undefined
-
-      expect(maybe(sut).valueIsFalse()).toEqual(false)
+      expect(maybe(sut).isNone()).toEqual(false)
+      expect(maybe(sut2).isNone()).toEqual(false)
+      expect(maybe(sut3).isNone()).toEqual(false)
     })
   })
 })
