@@ -23,7 +23,7 @@
     "test.watch": "jest --watch",
     "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tslint --project tsconfig.json --config tslint.json",
-    "build": "tsc -p tsconfig.build.json && npm run rollup && uglifyjs dist/index.js -o dist/index.min.js --source-map",
+    "build": "tsc -p tsconfig.build.json && npm run rollup && terser dist/index.js -o dist/index.min.js --source-map",
     "rollup": "rollup dist/index.js -o dist/index.js --format umd --name \"typescriptMonads\" -m"
   },
   "release": {
@@ -32,20 +32,20 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
     "@types/jest": "^24.0.11",
-    "@types/node": "^11.13.4",
+    "@types/node": "^11.13.8",
     "codecov": "^3.3.0",
     "fs-extra": "^7.0.1",
     "istanbul": "^0.4.5",
     "jest": "24.7.1",
     "jest-junit": "^6.3.0",
-    "rollup": "^1.10.0",
-    "semantic-release": "^15.13.12",
+    "rollup": "^1.10.1",
+    "semantic-release": "^15.13.3",
+    "terser": "^3.17.0",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
-    "tslint": "^5.15.0",
+    "tslint": "^5.16.0",
     "tslint-immutable": "^5.5.2",
-    "typescript": "^3.4.3",
-    "uglify-js": "^3.5.4"
+    "typescript": "^3.4.5"
   },
   "jest": {
     "testURL": "http://localhost",
