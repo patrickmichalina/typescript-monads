@@ -45,3 +45,9 @@ export const maybe = <T>(value?: T): IMaybe<NonNullable<T>> => {
     filter: filter(value)
   }
 }
+
+export const maybeToPromise =
+  (catchResponse: any = 'not found') =>
+    <T>(maybe: IMaybe<T>) => maybe.isSome()
+      ? Promise.resolve(maybe.valueOrUndefined() as T)
+      : Promise.reject(catchResponse)
