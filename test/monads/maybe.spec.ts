@@ -1,4 +1,4 @@
-import { maybe } from '../../src'
+import { maybe, IMaybe, maybeToPromise } from '../../src'
 
 describe('Maybe', () => {
   describe('when returning a value with possible throw', () => {
@@ -464,6 +464,35 @@ describe('Maybe', () => {
       expect(maybe(sut).isNone()).toEqual(false)
       expect(maybe(sut2).isNone()).toEqual(false)
       expect(maybe(sut3).isNone()).toEqual(false)
+    })
+  })
+
+  describe('maybeToPromise', () => {
+    it('should flatmap', () => {
+      const sut = new Promise<IMaybe<string>>((a, b) => a(maybe('test')))
+
+      sut
+        .then(maybeToPromise())
+        .then(result => expect(result).toEqual('test'))
+        .catch(_shouldNotBeHere => expect(false).toBe(true))
+    })
+
+    it('should catch w/ default message', () => {
+      const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
+
+      sut
+        .then(maybeToPromise())
+        .then(_shouldNotBeHere => expect(false).toBe(true))
+        .catch(error => expect(error).toEqual('not found'))
+    })
+
+    it('should catch w/ custom message', () => {
+      const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
+
+      sut
+        .then(maybeToPromise('err'))
+        .then(_shouldNotBeHere => expect(false).toBe(true))
+        .catch(error => expect(error).toEqual('err'))
     })
   })
 })
