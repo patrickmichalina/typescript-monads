@@ -113,7 +113,7 @@ describe('result', () => {
     })
 
     it('should not map', () => {
-      const sut = fail(1)
+      const sut = fail<any, number>(1)
         .map(b => b.toString())
         .unwrapFail()
       expect(sut).toEqual(1)
@@ -127,7 +127,7 @@ describe('result', () => {
     })
 
     it('should not flatMap', () => {
-      const sut = fail(1)
+      const sut = fail<any, number>(1)
         .flatMap(a => ok(a.toString()))
         .unwrapFail()
 
