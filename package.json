@@ -37,7 +37,7 @@
     "fs-extra": "^8.1.0",
     "istanbul": "^0.4.5",
     "jest": "24.8.0",
-    "jest-junit": "^6.4.0",
+    "jest-junit": "^9.0.0",
     "rollup": "^1.21.2",
     "semantic-release": "^15.13.24",
     "terser": "^4.3.1",
