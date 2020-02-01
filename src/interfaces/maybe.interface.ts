@@ -98,4 +98,9 @@ export interface IMaybe<T> extends IMonad<T> {
    * otherwise return an empty Maybe
    */
   filter(fn: (t: T) => boolean): IMaybe<T>
+
+  /**
+   * Apply a function wrapped in Maybe
+   */
+  apply<R>(fab: IMaybe<(t: T) => R>): IMaybe<R>
 }
