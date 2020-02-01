@@ -495,4 +495,23 @@ describe('Maybe', () => {
         .catch(error => expect(error).toEqual('err'))
     })
   })
+
+  describe('apply', () => {
+    it('should return none in nullish cases', () => {
+      const thisNone = maybe<number>()
+      const fnNone = maybe<(n: number) => number>()
+      const thisSome = maybe(5)
+      const fnSome = maybe((a: number) => a * 2)
+
+      expect(thisNone.apply(fnNone).isNone()).toBe(true)
+      expect(thisNone.apply(fnSome).isNone()).toBe(true)
+      expect(thisSome.apply(fnNone).isNone()).toBe(true)
+    })
+
+    it('should apply the function in a maybe in someish cases', () => {
+      const a = maybe(5)
+      const f = maybe((a: number) => a * 2)
+      expect(a.apply(f).valueOrThrow()).toBe(10)
+    })
+  })
 })
