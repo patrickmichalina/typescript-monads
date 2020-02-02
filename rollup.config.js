@@ -1,8 +1,6 @@
 import typescript from '@rollup/plugin-typescript'
 import pkg from './package.json'
 
-const path = require('path')
-
 export default [
   {
     input: 'dist/index.js',
