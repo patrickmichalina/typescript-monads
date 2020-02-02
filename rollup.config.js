@@ -5,7 +5,7 @@ export default [
   {
     input: 'dist/index.js',
     output: {
-      name: 'typescriptMonads',
+      name: 'monads',
       file: pkg.main,
       format: 'umd',
       sourcemap: true
