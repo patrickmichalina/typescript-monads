@@ -16,7 +16,7 @@ export interface IMaybePattern<TIn, TOut> {
 }
 
 /**
- * Abstraction for handling possibility of undefined values
+ * Abstraction for handling possibility of undefined or null values
  */
 export interface IMaybe<T> extends IMonad<T> {
 
