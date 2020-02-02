@@ -52,6 +52,9 @@
     "tslint-immutable": "^6.0.1",
     "typescript": "^3.7.5"
   },
+  "peerDependencies": {
+    "tslib": "^1.10.0"
+  },
   "jest": {
     "testURL": "http://localhost",
     "collectCoverage": true,
