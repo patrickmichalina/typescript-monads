@@ -1,9 +1,11 @@
 import typescript from '@rollup/plugin-typescript'
 import pkg from './package.json'
 
+const path = require('path')
+
 export default [
   {
-    input: 'dist/lib/index.js',
+    input: 'dist/index.js',
     output: {
       name: 'monads',
       file: `dist/${pkg.main}`,

@@ -5,7 +5,7 @@
   "main": "index.js",
   "module": "index.esm.js",
   "commonJs": "index.cjs.js",
-  "typings": "types/index.d.ts",
+  "typings": "index.d.ts",
   "sideEffects": false,
   "author": "Patrick Michalina <patrickmichalina@mac.com> (https://patrickmichalina.com)",
   "license": "MIT",
