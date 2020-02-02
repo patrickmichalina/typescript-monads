@@ -6,7 +6,7 @@ export default [
     input: 'dist/lib/index.js',
     output: {
       name: 'monads',
-      file: pkg.main,
+      file: `dist/${pkg.main}`,
       format: 'umd',
       sourcemap: true
     },
@@ -14,8 +14,8 @@ export default [
   {
   input: 'src/index.ts',
   output: [
-    { file: pkg.module, format: 'es', sourcemap: true },
-    { file: pkg.commonJs, format: 'cjs', sourcemap: true }
+    { file: `dist/${pkg.module}`, format: 'es', sourcemap: true },
+    { file: `dist/${pkg.commonJs}`, format: 'cjs', sourcemap: true }
   ],
   plugins: [typescript()]
 }]
