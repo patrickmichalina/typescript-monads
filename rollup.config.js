@@ -3,7 +3,7 @@ import pkg from './package.json'
 
 export default [
   {
-    input: 'dist/lib/index.js',
+    input: 'dist/index.js',
     output: {
       name: 'monads',
       file: `dist/${pkg.main}`,
