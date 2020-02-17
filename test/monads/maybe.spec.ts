@@ -36,8 +36,8 @@ describe('Maybe', () => {
       }).toThrowError('A STRING VALUE IS REQUIRED')
 
       expect(() => {
-        maybe(sut).valueOrThrowErr(new UserException())
-      }).toThrowError('A STRING VALUE IS REQUIRED')
+        maybe(sut).valueOrThrowErr()
+      }).toThrowError('')
 
     })
 
