@@ -18,6 +18,37 @@ describe('Maybe', () => {
     })
   })
 
+  describe('when returning a value with explicit throw error', () => {
+    // tslint:disable-next-line: no-class
+    class UserException extends Error {
+      constructor(public message = 'A STRING VALUE IS REQUIRED') {
+        super(message)
+      }
+
+      public readonly customProp = '123 - extended error object'
+    }
+
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+
+      expect(() => {
+        maybe(sut).valueOrThrowErr(new UserException())
+      }).toThrowError('A STRING VALUE IS REQUIRED')
+
+      expect(() => {
+        maybe(sut).valueOrThrowErr(new UserException())
+      }).toThrowError('A STRING VALUE IS REQUIRED')
+
+    })
+
+    it('should handle "some" case', () => {
+      const sut = 'test' as string | undefined
+      const maybeAString = maybe(sut).valueOrThrowErr(new UserException('A STRING VALUE IS REQUIRED'))
+
+      expect(maybeAString).toEqual('test')
+    })
+  })
+
   describe('when returning a value by default', () => {
     it('should handle "none" case', () => {
       const sut = undefined as string | undefined
