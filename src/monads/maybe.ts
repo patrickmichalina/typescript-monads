@@ -19,14 +19,7 @@ const flatMapAuto = <T>(value?: T) => <R>(fn: (d: NonNullable<T>) => R) => isEmp
 const valueOrThrow = <T>(value?: T) => (msg?: string) => isEmpty(value) ? (() => { throw Error(msg) })() : value as NonNullable<T>
 const valueOrThrowErr = <T>(value?: T) => (err?: Error) =>
   isEmpty(value)
-    ? (() => {
-      // tslint:disable-next-line: no-if-statement
-      if (err instanceof Error) {
-        throw err
-      } else {
-        throw Error()
-      }
-    })()
+    ? (() => err instanceof Error ? (() => { throw err })() : (() => { throw Error() })())()
     : value as NonNullable<T>
 
 const filter = <T>(value?: T) =>
