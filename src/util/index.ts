@@ -7,3 +7,6 @@ export {
   curry6,
   curry7
 } from './curry'
+export {
+  maybeToObservable
+} from './maybe/maybe-to-observable'

@@ -39,11 +39,13 @@
     "@types/jest": "^25.1.1",
     "@types/node": "^13.7.0",
     "codecov": "^3.6.4",
+    "fast-check": "^1.22.2",
     "fs-extra": "^8.1.0",
     "istanbul": "^0.4.5",
     "jest": "25.1.0",
     "jest-junit": "^10.0.0",
     "rollup": "^1.31.0",
+    "rxjs": "^6.5.4",
     "semantic-release": "^17.0.2",
     "terser": "^4.6.3",
     "ts-jest": "^25.1.0",
@@ -53,7 +55,8 @@
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "rxjs": "^6.0"
   },
   "jest": {
     "testURL": "http://localhost",
