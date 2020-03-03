@@ -49,6 +49,11 @@ export interface IMaybe<T> extends IMonad<T> {
   valueOrThrow(msg?: string): T
 
   /**
+   * Unwrap a Maybe with the final value or throw an error
+   */
+  valueOrThrowErr(err?: Error): T
+
+  /**
    * Execute functions with side-effects.
    */
   tap(val: Partial<IMaybePattern<T, void>>): void
