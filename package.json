@@ -40,7 +40,7 @@
     "@types/node": "^13.7.4",
     "codecov": "^3.6.5",
     "fast-check": "^1.22.2",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.0",
     "istanbul": "^0.4.5",
     "jest": "25.1.0",
     "jest-junit": "^10.0.0",
