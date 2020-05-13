@@ -75,7 +75,7 @@ const priceWithDiscountForLoyalty = maybe(maybeVisitedBeforeXTimes)
     none: () => 15.00
   })
 
-// handle multiple maybe conditionas together
+// handle multiple maybe conditions together
 const canRideCoaster = getAge() // Maybe<number>
   .bind(age => getTicket(age)) // Maybe<Ticket>
   .match({
