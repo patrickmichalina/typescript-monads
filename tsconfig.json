@@ -15,6 +15,7 @@
     "noEmitHelpers": false,
     "noLib": false,
     "noUnusedLocals": true,
+    "strictPropertyInitialization": true,
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": false,
     "skipLibCheck": true,
