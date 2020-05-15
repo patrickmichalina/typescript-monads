@@ -1,5 +1,5 @@
-import { IMaybe } from '../interfaces'
-import { maybe } from './maybe'
+import { maybe } from '../maybe/maybe'
+import { IMaybe } from '../maybe/maybe.interface'
 
 const returnTrue = () => true
 const returnFalse = () => false

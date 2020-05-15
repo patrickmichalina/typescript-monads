@@ -21,7 +21,7 @@ export interface IMaybePattern<TIn, TOut> {
 export interface IMaybe<T> extends IMonad<T> {
 
   // tslint:disable-next-line:readonly-array
-  of(x?: T, ...args: any[]): IMaybe<T>
+  of(x: T, ...args: any[]): IMaybe<T>
 
   /**
    * Unwrap a Maybe with a default value
@@ -96,7 +96,7 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Combine multiple Maybe, automatically wrapping predicate
    */
-  flatMapAuto<R>(f: (t: T) => R): IMaybe<NonNullable<R>>
+  flatMapAuto<R>(fn: (v: T) => R): IMaybe<NonNullable<R>>
 
   /**
    * Apply a predicate which if met, continues the Maybe chain,

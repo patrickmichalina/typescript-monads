@@ -1,14 +1,14 @@
 import { Monad } from '../monad/monad'
 import { IMaybePattern, IMaybe } from './maybe.interface'
 
-export class Maybe<T> extends Monad<T>  {
+export class Maybe<T> extends Monad<T> implements IMaybe<T>  {
 
   constructor(private readonly value?: T) {
     super()
   }
 
-  of<T>(): Monad<T> {
-    throw new Error('Method not implemented.')
+  public of(value: T): IMaybe<T> {
+    return new Maybe<T>(value)
   }
 
   public static none<T>() {
@@ -27,15 +27,15 @@ export class Maybe<T> extends Monad<T>  {
     return this.value === null || this.value === undefined
   }
 
-  public valueOr(value: T) {
-    return this.isSome() ? this.value : value as NonNullable<T>
+  public valueOr(value: NonNullable<T>): NonNullable<T> {
+    return this.isSome() ? this.value as NonNullable<T> : value
   }
 
-  public valueOrUndefined(): NonNullable<T> | undefined {
+  public valueOrUndefined(): T | undefined {
     return this.isSome() ? this.value as NonNullable<T> : undefined
   }
 
-  public valueOrCompute(fn: () => NonNullable<T>): T {
+  public valueOrCompute(fn: () => NonNullable<T>): NonNullable<T> {
     return this.isSome() ? this.value as NonNullable<T> : fn()
   }
 
@@ -77,21 +77,23 @@ export class Maybe<T> extends Monad<T>  {
         : [this.value as NonNullable<T>]
   }
 
-  public map<R>(fn: (t: NonNullable<T>) => R) {
+  public map<R>(fn: (t: NonNullable<T>) => R): IMaybe<R> {
     return this.isSome()
       ? new Maybe<R>(fn(this.value as NonNullable<T>))
       : new Maybe<R>()
   }
 
-  public flatMap<R>(fn: (d: NonNullable<T>) => IMaybe<R>) {
+  public flatMap<R>(fn: (d: NonNullable<T>) => IMaybe<R>): IMaybe<R> {
     return this.isNone() ? new Maybe<R>() : fn(this.value as NonNullable<T>)
   }
 
-  public flatMapAuto<R>(fn: (d: NonNullable<T>) => R) {
-    return this.isNone() ? new Maybe<R>() : new Maybe<R>(fn(this.value as NonNullable<T>))
+  public flatMapAuto<R>(fn: (d: NonNullable<T>) => R): IMaybe<NonNullable<R>> {
+    return this.isNone()
+      ? new Maybe<NonNullable<R>>()
+      : new Maybe<NonNullable<R>>(fn(this.value as NonNullable<T>) as NonNullable<R>)
   }
 
-  public filter(fn: (f: NonNullable<T>) => boolean) {
+  public filter(fn: (f: NonNullable<T>) => boolean): IMaybe<T> {
     return this.isNone()
       ? new Maybe<T>()
       : fn(this.value as NonNullable<T>)
@@ -99,16 +101,9 @@ export class Maybe<T> extends Monad<T>  {
         : new Maybe<T>()
   }
 
-  // const map = <T>(value?: T) => <R>(fn: (t: NonNullable<T>) => R) => isEmpty(value) ? maybe<R>() : maybe<R>(fn(value as NonNullable<T>))
-
-  // public apply<R>(maybeFn: IMaybe<(t: T) => R>) {
-  //   return maybeFn.flatMap(f => this.map(a =>this.value as NonNullable<T>)(f))
-  // }
-
-  // public apply<R>(maybeFn: IMaybe<(t: T) => R>) {
-  // const apply = <R>(maybeFn: IMaybe<(t: T) => R>) => maybeFn.flatMap(f => map(value)(f))
-  //   return maybeFn.flatMap(f => this.map(this.value as NonNullable<T>)(f))
-  // }
+  public apply<R>(fab: IMaybe<(v: T) => R>): IMaybe<R> {
+    return this.flatMap(b => fab.map(fn => fn(b)))
+  }
 }
 
 export function maybe<T>(value?: T) {

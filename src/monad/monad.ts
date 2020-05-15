@@ -1,6 +1,6 @@
-import { IMonad, Mapping } from './monad.interface'
+import { IMonad, Map } from './monad.interface'
 
-export abstract class Monad<T> implements IMonad<T> {
-  abstract of<T>(x: T, ...args: readonly any[]): Monad<T>
-  abstract flatMap<U>(fn: Mapping<T, IMonad<U>>): IMonad<U>
+export abstract class Monad<T> implements IMonad<T>  {
+  abstract of(x: T): IMonad<T>
+  abstract flatMap<R>(fn: Map<T, IMonad<R>>): IMonad<R>
 }

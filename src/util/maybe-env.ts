@@ -1,4 +1,5 @@
-import { reader, maybe } from '../monads/index'
+import { reader } from '../monads/index'
+import { maybe } from '../maybe/maybe'
 
 export interface GetFromEnvironmentReader {
   readEnv(key: string): string | undefined

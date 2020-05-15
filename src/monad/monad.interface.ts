@@ -1,6 +1,6 @@
-export type Mapping<T, U> = (x: T, ...args: readonly any[]) => U
+export type Map<T, U> = (x: T) => U
 
 export interface IMonad<T> {
-  of(x: T, ...args: readonly any[]): IMonad<T>
-  flatMap<U>(fn: Mapping<T, IMonad<U>>): IMonad<U>
+  of(x: T): IMonad<T>
+  flatMap<U>(fn: Map<T, IMonad<U>>): IMonad<U>
 }

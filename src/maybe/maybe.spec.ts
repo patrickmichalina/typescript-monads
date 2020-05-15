@@ -283,41 +283,41 @@ describe('Maybe', () => {
     })
   })
 
-  // describe('when flatMapping', () => {
-  //   it('should handle "none" case', () => {
-  //     const sut = undefined as string | undefined
-  //     const nsut = undefined as number | undefined
+  describe('when flatMapping', () => {
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+      const nsut = undefined as number | undefined
 
-  //     const maybeSomeNumber = maybe(sut)
-  //       .flatMap(a => maybe(nsut))
-  //       .valueOr(1)
+      const maybeSomeNumber = maybe(sut)
+        .flatMap(a => maybe(nsut))
+        .valueOr(1)
 
-  //     expect(maybeSomeNumber).toEqual(1)
-  //   })
+      expect(maybeSomeNumber).toEqual(1)
+    })
 
-  //   it('should handle "some" case', () => {
-  //     const sut = 'initial' as string | undefined
-  //     const nsut = 20 as number | undefined
+    it('should handle "some" case', () => {
+      const sut = 'initial' as string | undefined
+      const nsut = 20 as number | undefined
 
-  //     const maybeSomeNumber = maybe(sut)
-  //       .flatMap(() => maybe(nsut))
-  //       .valueOr(0)
+      const maybeSomeNumber = maybe(sut)
+        .flatMap(() => maybe(nsut))
+        .valueOr(0)
 
-  //     expect(maybeSomeNumber).toEqual(20)
-  //   })
-  // })
+      expect(maybeSomeNumber).toEqual(20)
+    })
+  })
 
-  // describe('when getting monadic unit', () => {
-  //   it('should get value', () => {
-  //     const sut = undefined as string | undefined
+  describe('when getting monadic unit', () => {
+    it('should get value', () => {
+      const sut = undefined as string | undefined
 
-  //     const maybeSomeNumber = maybe(sut)
-  //       .of('ok')
-  //       .valueOr('fail')
+      const maybeSomeNumber = maybe(sut)
+        .of('ok')
+        .valueOr('fail')
 
-  //     expect(maybeSomeNumber).toEqual('ok')
-  //   })
-  // })
+      expect(maybeSomeNumber).toEqual('ok')
+    })
+  })
 
   describe('when tapSome', () => {
     it('should work', () => {
@@ -498,51 +498,22 @@ describe('Maybe', () => {
     })
   })
 
-  // describe('maybeToPromise', () => {
-  //   it('should flatmap', () => {
-  //     const sut = new Promise<IMaybe<string>>((a, b) => a(maybe('test')))
+  describe('apply', () => {
+    it('should return none in nullish cases', () => {
+      const thisNone = maybe<number>()
+      const fnNone = maybe<(n: number) => number>()
+      const thisSome = maybe(5)
+      const fnSome = maybe((a: number) => a * 2)
 
-  //     sut
-  //       .then(maybeToPromise())
-  //       .then(result => expect(result).toEqual('test'))
-  //       .catch(_shouldNotBeHere => expect(false).toBe(true))
-  //   })
+      expect(thisNone.apply(fnNone).isNone()).toBe(true)
+      expect(thisNone.apply(fnSome).isNone()).toBe(true)
+      expect(thisSome.apply(fnNone).isNone()).toBe(true)
+    })
 
-  //   it('should catch w/ default message', () => {
-  //     const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
-
-  //     sut
-  //       .then(maybeToPromise())
-  //       .then(_shouldNotBeHere => expect(false).toBe(true))
-  //       .catch(error => expect(error).toEqual('not found'))
-  //   })
-
-  //   it('should catch w/ custom message', () => {
-  //     const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
-
-  //     sut
-  //       .then(maybeToPromise('err'))
-  //       .then(_shouldNotBeHere => expect(false).toBe(true))
-  //       .catch(error => expect(error).toEqual('err'))
-  //   })
-  // })
-
-  // describe('apply', () => {
-  //   it('should return none in nullish cases', () => {
-  //     const thisNone = maybe<number>()
-  //     const fnNone = maybe<(n: number) => number>()
-  //     const thisSome = maybe(5)
-  //     const fnSome = maybe((a: number) => a * 2)
-
-  //     expect(thisNone.apply(fnNone).isNone()).toBe(true)
-  //     expect(thisNone.apply(fnSome).isNone()).toBe(true)
-  //     expect(thisSome.apply(fnNone).isNone()).toBe(true)
-  //   })
-
-  //   it('should apply the function in a maybe in someish cases', () => {
-  //     const a = maybe(5)
-  //     const f = maybe((a: number) => a * 2)
-  //     expect(a.apply(f).valueOrThrow()).toBe(10)
-  //   })
-  // })
+    it('should apply the function in a maybe in someish cases', () => {
+      const a = maybe(5)
+      const f = maybe((a: number) => a * 2)
+      expect(a.apply(f).valueOrThrow()).toBe(10)
+    })
+  })
 })
