@@ -1,6 +1,6 @@
 import { EMPTY, Observable, of } from 'rxjs'
 import { take } from 'rxjs/operators'
-import { IMaybe } from '../../maybe/maybe.interface'
+import { IMaybe } from '../maybe.interface'
 
 /**
  * Convert a Maybe into an observable

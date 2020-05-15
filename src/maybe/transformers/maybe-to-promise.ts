@@ -1,4 +1,4 @@
-import { IMaybe } from './maybe.interface'
+import { IMaybe } from '../maybe.interface'
 
 export const maybeToPromise =
   (catchResponse: any = 'not found') =>

@@ -1,8 +1,7 @@
 import { assert, integer, property } from 'fast-check'
-import { maybeToObservable } from '../../../src/util'
 import { merge, of } from 'rxjs'
 import { count } from 'rxjs/operators'
-import { maybe } from '../../../src/maybe/public_api'
+import { maybe, maybeToObservable } from '../public_api'
 
 describe('maybeToObservable', () => {
   const numRuns = 100
