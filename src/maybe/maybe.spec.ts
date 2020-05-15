@@ -289,7 +289,7 @@ describe('Maybe', () => {
   //     const nsut = undefined as number | undefined
 
   //     const maybeSomeNumber = maybe(sut)
-  //       .flatMap(() => maybe(nsut))
+  //       .flatMap(a => maybe(nsut))
   //       .valueOr(1)
 
   //     expect(maybeSomeNumber).toEqual(1)
@@ -339,59 +339,59 @@ describe('Maybe', () => {
     })
   })
 
-  // describe('when filtering', () => {
-  //   it('pass value through if predicate is resolves true', () => {
-  //     const thing: { readonly isGreen: boolean } | undefined = { isGreen: true }
+  describe('when filtering', () => {
+    it('pass value through if predicate is resolves true', () => {
+      const thing: { readonly isGreen: boolean } | undefined = { isGreen: true }
 
-  //     expect.assertions(1)
-  //     maybe(thing)
-  //       .filter(a => a.isGreen === true)
-  //       .tap({
-  //         some: _thing => expect(_thing).toEqual(thing),
-  //         none: () => expect(1).toEqual(1)
-  //       })
-  //   })
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(_thing).toEqual(thing),
+          none: () => expect(1).toEqual(1)
+        })
+    })
 
-  //   it('should not pass value through if predicate is resolves false', () => {
-  //     const thing: { readonly isGreen: boolean } | undefined = { isGreen: false }
+    it('should not pass value through if predicate is resolves false', () => {
+      const thing: { readonly isGreen: boolean } | undefined = { isGreen: false }
 
-  //     expect.assertions(1)
-  //     maybe(thing)
-  //       .filter(a => a.isGreen === true)
-  //       .tap({
-  //         some: _thing => expect(true).toBe(false),
-  //         none: () => expect(1).toEqual(1)
-  //       })
-  //   })
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(true).toBe(false),
+          none: () => expect(1).toEqual(1)
+        })
+    })
 
-  //   it('should handle undefineds correctly', () => {
-  //     const thing = undefined as { readonly isGreen: boolean } | undefined
+    it('should handle undefineds correctly', () => {
+      const thing = undefined as { readonly isGreen: boolean } | undefined
 
-  //     expect.assertions(1)
-  //     maybe(thing)
-  //       .filter(a => a.isGreen === true)
-  //       .tap({
-  //         some: _thing => expect(true).toBe(false),
-  //         none: () => expect(1).toEqual(1)
-  //       })
-  //   })
-  // })
+      expect.assertions(1)
+      maybe(thing)
+        .filter(a => a.isGreen === true)
+        .tap({
+          some: _thing => expect(true).toBe(false),
+          none: () => expect(1).toEqual(1)
+        })
+    })
+  })
 
-  // describe('when returning a value or undefined', () => {
-  //   it('should handle "none" case', () => {
-  //     const sut = undefined as string | undefined
-  //     const maybeAString = maybe(sut).valueOrUndefined()
+  describe('when returning a value or undefined', () => {
+    it('should handle "none" case', () => {
+      const sut = undefined as string | undefined
+      const maybeAString = maybe(sut).valueOrUndefined()
 
-  //     expect(maybeAString).toBeUndefined()
-  //   })
+      expect(maybeAString).toBeUndefined()
+    })
 
-  //   it('should handle "some" case', () => {
-  //     const sut = 'actual input' as string | undefined
-  //     const maybeAString = maybe(sut).valueOrUndefined()
+    it('should handle "some" case', () => {
+      const sut = 'actual input' as string | undefined
+      const maybeAString = maybe(sut).valueOrUndefined()
 
-  //     expect(maybeAString).toEqual('actual input')
-  //   })
-  // })
+      expect(maybeAString).toEqual('actual input')
+    })
+  })
 
   describe('when returning an array', () => {
     it('should handle "none" case', () => {
@@ -419,84 +419,84 @@ describe('Maybe', () => {
     })
   })
 
-  // describe('flatMapAuto', () => {
-  //   it('should flatMapAuto', () => {
-  //     const sut = {
-  //       thing: undefined
-  //     } as { readonly thing: string | undefined } | undefined
+  describe('flatMapAuto', () => {
+    it('should flatMapAuto', () => {
+      const sut = {
+        thing: undefined
+      } as { readonly thing: string | undefined } | undefined
 
-  //     const maybeAString = maybe(sut)
-  //       .flatMapAuto(a => a.thing)
-  //       .valueOrUndefined()
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .valueOrUndefined()
 
-  //     expect(maybeAString).toBeUndefined()
-  //   })
+      expect(maybeAString).toBeUndefined()
+    })
 
-  //   it('should flatMapAuto inner', () => {
-  //     const sut = {
-  //       thing: 'testval'
-  //     } as { readonly thing: string | undefined } | undefined
+    it('should flatMapAuto inner', () => {
+      const sut = {
+        thing: 'testval'
+      } as { readonly thing: string | undefined } | undefined
 
-  //     const maybeAString = maybe(sut)
-  //       .flatMapAuto(a => a.thing)
-  //       .map(a => a + 1)
-  //       .valueOrUndefined()
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .map(a => a + 1)
+        .valueOrUndefined()
 
-  //     expect(maybeAString).toEqual('testval1')
-  //   })
+      expect(maybeAString).toEqual('testval1')
+    })
 
-  //   it('should flatMapAuto with intial input as empty', () => {
-  //     const sut = undefined as { readonly thing: string | undefined } | undefined
+    it('should flatMapAuto with intial input as empty', () => {
+      const sut = undefined as { readonly thing: string | undefined } | undefined
 
-  //     const maybeAString = maybe(sut)
-  //       .flatMapAuto(a => a.thing)
-  //       .map(a => a + 1)
-  //       .valueOrUndefined()
+      const maybeAString = maybe(sut)
+        .flatMapAuto(a => a.thing)
+        .map(a => a + 1)
+        .valueOrUndefined()
 
-  //     expect(maybeAString).toBeUndefined()
-  //   })
-  // })
+      expect(maybeAString).toBeUndefined()
+    })
+  })
 
-  // describe('isSome', () => {
-  //   it('false path', () => {
-  //     const sut = undefined as boolean | undefined
-  //     const sut2 = null as boolean | null
+  describe('isSome', () => {
+    it('false path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
 
-  //     expect(maybe(sut).isSome()).toEqual(false)
-  //     expect(maybe(sut2).isSome()).toEqual(false)
-  //   })
+      expect(maybe(sut).isSome()).toEqual(false)
+      expect(maybe(sut2).isSome()).toEqual(false)
+    })
 
-  //   it('true path', () => {
-  //     const sut = 'test' as string | undefined
-  //     const sut2 = 2 as number | undefined
-  //     const sut3 = false as boolean
+    it('true path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = false as boolean
 
-  //     expect(maybe(sut).isSome()).toEqual(true)
-  //     expect(maybe(sut2).isSome()).toEqual(true)
-  //     expect(maybe(sut3).isSome()).toEqual(true)
-  //     expect(maybe(sut).map(a => `${a}_1`).isSome()).toEqual(true)
-  //   })
-  // })
+      expect(maybe(sut).isSome()).toEqual(true)
+      expect(maybe(sut2).isSome()).toEqual(true)
+      expect(maybe(sut3).isSome()).toEqual(true)
+      expect(maybe(sut).map(a => `${a}_1`).isSome()).toEqual(true)
+    })
+  })
 
-  // describe('isNone', () => {
-  //   it('true path', () => {
-  //     const sut = undefined as boolean | undefined
-  //     const sut2 = null as boolean | null
+  describe('isNone', () => {
+    it('true path', () => {
+      const sut = undefined as boolean | undefined
+      const sut2 = null as boolean | null
 
-  //     expect(maybe(sut).isNone()).toEqual(true)
-  //     expect(maybe(sut2).isNone()).toEqual(true)
-  //   })
+      expect(maybe(sut).isNone()).toEqual(true)
+      expect(maybe(sut2).isNone()).toEqual(true)
+    })
 
-  //   it('false path', () => {
-  //     const sut = 'test' as string | undefined
-  //     const sut2 = 2 as number | undefined
-  //     const sut3 = true as boolean | undefined
+    it('false path', () => {
+      const sut = 'test' as string | undefined
+      const sut2 = 2 as number | undefined
+      const sut3 = true as boolean | undefined
 
-  //     expect(maybe(sut).isNone()).toEqual(false)
-  //     expect(maybe(sut2).isNone()).toEqual(false)
-  //     expect(maybe(sut3).isNone()).toEqual(false)
-  //   })
-  // })
+      expect(maybe(sut).isNone()).toEqual(false)
+      expect(maybe(sut2).isNone()).toEqual(false)
+      expect(maybe(sut3).isNone()).toEqual(false)
+    })
+  })
 
   // describe('maybeToPromise', () => {
   //   it('should flatmap', () => {
