@@ -1,11 +1,8 @@
-import { Monad } from '../monad/monad'
 import { IMaybePattern, IMaybe } from './maybe.interface'
 
-export class Maybe<T> extends Monad<T> implements IMaybe<T>  {
+export class Maybe<T> implements IMaybe<T>  {
 
-  constructor(private readonly value?: T) {
-    super()
-  }
+  constructor(private readonly value?: T) { }
 
   public of(value: T): IMaybe<T> {
     return new Maybe<T>(value)
@@ -51,8 +48,8 @@ export class Maybe<T> extends Monad<T> implements IMaybe<T>  {
 
   public tap(obj: Partial<IMaybePattern<T, void>>) {
     return this.isNone()
-      ? obj.none && obj.none()
-      : obj.some && obj.some(this.value as NonNullable<T>)
+      ? typeof obj.none === 'function' && obj.none()
+      : typeof obj.some === 'function' && obj.some(this.value as NonNullable<T>)
   }
 
   public tapNone(fn: () => void): void {

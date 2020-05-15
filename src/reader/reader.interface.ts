@@ -1,5 +1,3 @@
-
-
 export interface IReader<E, A> {
   of(fn: (config: E) => A): IReader<E, A>
   run(config: E): A
