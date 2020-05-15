@@ -105,15 +105,3 @@ export class Maybe<T> extends Monad<T> implements IMaybe<T>  {
     return this.flatMap(b => fab.map(fn => fn(b)))
   }
 }
-
-export function maybe<T>(value?: T) {
-  return new Maybe<T>(value)
-}
-
-export function none<T>() {
-  return Maybe.none<T>()
-}
-
-export function some<T>(value: T) {
-  return maybe(value)
-}

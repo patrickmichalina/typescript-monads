@@ -1,6 +1,6 @@
 import { IMaybe } from './maybe.interface'
-import { maybe } from './maybe'
 import { maybeToPromise } from './maybe.transformers'
+import { maybe } from './public_api'
 
 describe('maybeToPromise', () => {
   it('should flatmap', () => {

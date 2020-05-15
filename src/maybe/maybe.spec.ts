@@ -1,4 +1,4 @@
-import { maybe } from './maybe'
+import { maybe } from './public_api'
 
 describe('Maybe', () => {
   describe('when returning a value with possible throw', () => {

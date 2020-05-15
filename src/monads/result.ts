@@ -1,5 +1,5 @@
-import { maybe } from '../maybe/maybe'
 import { IMaybe } from '../maybe/maybe.interface'
+import { maybe } from '../maybe/public_api'
 
 const returnTrue = () => true
 const returnFalse = () => false
