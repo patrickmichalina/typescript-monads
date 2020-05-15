@@ -1,7 +1,7 @@
-import { reader } from '../../src'
+import { reader } from './reader.factory'
 
 describe('reader', () => {
-  it('should of', () => {
+  it.only('should of', () => {
     const greet = reader<string, string>(ctx => ctx + '_HelloA')
     const greet2 = greet.of(ctx => ctx + '_HelloB')
 
@@ -18,7 +18,6 @@ describe('reader', () => {
   })
 
   it('should flatMap', () => {
-
     const greet = (name: string) => reader<string, string>(ctx => ctx + ', ' + name)
     const end = (str: string) => reader<string, boolean>(a => a === 'Hello')
       .flatMap(isH => isH ? reader(ctx => str + '!!!') : reader(ctx => str + '.'))

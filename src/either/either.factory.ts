@@ -1,4 +1,4 @@
-import { IEither, IEitherPattern } from '../interfaces'
+import { IEitherPattern, IEither } from './either.interface'
 
 const exists = <T>(t: T) => t !== null && t !== undefined
 const bothExist = <L, R>(left?: L) => (right?: R) => exists(left) && exists(right)

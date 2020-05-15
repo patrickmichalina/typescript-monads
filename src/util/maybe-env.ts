@@ -1,5 +1,5 @@
 import { maybe } from '../maybe/public_api'
-import { reader } from '../monads/reader'
+import { reader } from '../reader/reader.factory'
 
 export interface GetFromEnvironmentReader {
   readEnv(key: string): string | undefined
