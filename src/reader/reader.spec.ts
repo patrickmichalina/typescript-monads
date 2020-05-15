@@ -1,7 +1,7 @@
 import { reader } from './reader.factory'
 
 describe('reader', () => {
-  it.only('should of', () => {
+  it('should of', () => {
     const greet = reader<string, string>(ctx => ctx + '_HelloA')
     const greet2 = greet.of(ctx => ctx + '_HelloB')
 
