@@ -1,97 +1,125 @@
-import { IMaybe } from '../maybe/maybe.interface'
-import { maybe } from '../maybe/public_api'
+import { IMaybe, maybe, none } from '../maybe/public_api'
+import { IResultMatchPattern, IResult } from './result.interface'
 
-const returnTrue = () => true
-const returnFalse = () => false
-const returnValue = <T>(val: T) => () => val
-const returnMaybe = <T>(val: T) => () => maybe<T>(val)
-const throwReferenceError = (message: string) => () => { throw new ReferenceError(message) }
+export abstract class Result<TOk, TFail> {
+  public static ok<TOk, TFail>(value: TOk) {
+    return new OkResult<TOk, TFail>(value)
+  }
 
-type Predicate = () => boolean
+  public static fail<TOk, TFail>(value: TFail) {
+    return new FailResult<TOk, TFail>(value)
+  }
 
-export interface IResultMatchPattern<T, E, U> {
-  readonly ok: (val: T) => U
-  readonly fail: (val: E) => U
+  abstract isOk(): boolean
+  abstract isFail(): boolean
+  abstract unwrap(): TOk | never
+  abstract unwrapOr(opt: TOk): TOk
+  abstract unwrapFail(): TFail | never
+  abstract maybeOk(): IMaybe<TOk>
+  abstract maybeFail(): IMaybe<TFail>
+  abstract match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M
+  abstract map<M>(fn: (val: TOk) => M): IResult<M, TFail>
+  abstract mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M>
+  abstract flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail>
 }
 
-export interface IResult<T, E> {
-  isOk(): boolean
-  isFail(): boolean
-  maybeOk(): IMaybe<T>
-  maybeFail(): IMaybe<E>
-  unwrap(): T | never
-  unwrapOr(opt: T): T
-  unwrapFail(): E | never
-  match<M>(fn: IResultMatchPattern<T, E, M>): M
-  map<M>(fn: (val: T) => M): IResult<M, E>
-  mapFail<M>(fn: (err: E) => M): IResult<T, M>
-  flatMap<M>(fn: (val: T) => IResult<M, E>): IResult<M, E>
+export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
+  constructor(private readonly successValue: TOk) {
+    super()
+  }
+
+  isOk(): boolean {
+    return true
+  }
+
+  isFail(): boolean {
+    return false
+  }
+
+  unwrap(): TOk {
+    return this.successValue
+  }
+
+  unwrapOr(_opt: TOk): TOk {
+    return this.unwrap()
+  }
+
+  unwrapFail(): never {
+    throw new ReferenceError('Cannot unwrap a success as a failure')
+  }
+
+  maybeOk(): IMaybe<TOk> {
+    return maybe(this.successValue)
+  }
+
+  maybeFail(): IMaybe<TFail> {
+    return none()
+  }
+
+  match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M {
+    return fn.ok(this.successValue)
+  }
+
+  map<M>(fn: (val: TOk) => M): IResult<M, TFail> {
+    return Result.ok<M, TFail>(fn(this.successValue))
+  }
+
+  mapFail<M>(_: (err: TFail) => M) {
+    return Result.ok(this.successValue)
+  }
+
+  flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
+    return fn(this.successValue)
+  }
+
 }
 
-export interface IResultOk<T, E = never> extends IResult<T, E> {
-  unwrap(): T
-  unwrapOr(opt: T): T
-  unwrapFail(): never
-  match<M>(fn: IResultMatchPattern<T, never, M>): M
-  map<M>(fn: (val: T) => M): IResultOk<M, never>
-  mapFail<M>(fn: (err: E) => M): IResultOk<T, never>
-}
+export class FailResult<TOk, TFail> extends Result<TOk, TFail>  {
+  constructor(private readonly value: TFail) {
+    super()
+  }
 
-export interface IResultFail<T, E> extends IResult<T, E> {
-  unwrap(): never
-  unwrapOr(opt: T): T
-  unwrapFail(): E
-  match<M>(fn: IResultMatchPattern<never, E, M>): M
-  map<M>(fn: (val: T) => M): IResultFail<never, E>
-  mapFail<M>(fn: (err: E) => M): IResultFail<never, M>
-  flatMap<M>(fn: (val: T) => IResult<M, E>): IResultFail<never, E>
-}
+  isOk(): boolean {
+    return false
+  }
 
-export const ok = <T, E = never>(val: T): IResultOk<T, E> => {
-  return {
-    isOk: returnTrue,
-    isFail: returnFalse,
-    maybeOk: returnMaybe(val),
-    maybeFail: maybe,
-    unwrap: returnValue(val),
-    unwrapOr: _ => val,
-    unwrapFail: throwReferenceError('Cannot unwrap a success'),
-    map: <M>(fn: (val: T) => M) => ok(fn(val)),
-    mapFail: <M>(_: (err: E) => M) => ok(val),
-    flatMap: <M>(fn: (val: T) => IResult<M, E>) => fn(val),
-    match: <M>(fn: IResultMatchPattern<T, E, M>) => fn.ok(val)
+  isFail(): boolean {
+    return true
+  }
+
+  unwrap(): TOk {
+    throw new Error('Cannot unwrap a failure')
+  }
+
+  unwrapOr(opt: TOk): TOk {
+    return opt
+  }
+
+  unwrapFail(): TFail {
+    return this.value
+  }
+
+  maybeOk(): IMaybe<TOk> {
+    return none()
+  }
+
+  maybeFail(): IMaybe<TFail> {
+    return maybe(this.value)
+  }
+
+  match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M {
+    return fn.fail(this.value)
+  }
+
+  map<M>(_fn: (val: TOk) => M): IResult<M, TFail> {
+    return Result.fail(this.value)
+  }
+
+  mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M> {
+    return Result.fail(fn(this.value))
+  }
+
+  flatMap<M>(_fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
+    return Result.fail(this.value)
   }
 }
-
-export const fail = <T, E>(err: E): IResultFail<T, E> => {
-  return {
-    isOk: returnFalse,
-    isFail: returnTrue,
-    maybeOk: maybe,
-    maybeFail: returnMaybe(err),
-    unwrap: throwReferenceError('Cannot unwrap a failure'),
-    unwrapOr: opt => opt,
-    unwrapFail: returnValue(err),
-    map: <M>(_: (val: T) => M) => fail(err),
-    mapFail: <M>(fn: (err: E) => M) => fail(fn(err)),
-    flatMap: <M>(_: (val: T) => IResult<M, E>) => fail(err),
-    match: <M>(fn: IResultMatchPattern<T, E, M>) => fn.fail(err)
-  }
-}
-
-/**
- * Utility function to quickly create ok/fail pairs.
- */
-export const result = <T, E>(predicate: Predicate, okValue: T, failValue: E): IResult<T, E> =>
-  predicate()
-    ? ok<T, E>(okValue)
-    : fail<T, E>(failValue)
-
-/**
-* Utility function to quickly create ok/fail pairs, curried variant.
-*/
-export const curriedResult =
-  <T, E>(predicate: Predicate) =>
-    (okValue: T) =>
-      (failValue: E): IResult<T, E> =>
-        result(predicate, okValue, failValue)
