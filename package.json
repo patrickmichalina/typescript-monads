@@ -8,6 +8,9 @@
   "typings": "index.d.ts",
   "sideEffects": false,
   "author": "Patrick Michalina <patrickmichalina@mac.com> (https://patrickmichalina.com)",
+  "contributors": [
+    "Williama Reynolds"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -70,7 +73,7 @@
     "coverageThreshold": {
       "global": {
         "branches": 100,
-        "functions": 95,
+        "functions": 100,
         "lines": 100,
         "statements": 100
       }
@@ -80,7 +83,8 @@
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/dist/"
+      "/dist/",
+      "public_api.ts"
     ],
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts?)$",
     "moduleFileExtensions": [

@@ -1,4 +1,5 @@
 import { maybe } from './public_api'
+import { Maybe } from './maybe'
 
 describe('Maybe', () => {
   describe('when returning a value with possible throw', () => {
@@ -514,6 +515,12 @@ describe('Maybe', () => {
       const a = maybe(5)
       const f = maybe((a: number) => a * 2)
       expect(a.apply(f).valueOrThrow()).toBe(10)
+    })
+  })
+
+  describe('static', () => {
+    it('should return new maybe with some', () => {
+      expect(Maybe.some(1).valueOrThrowErr()).toEqual(1)
     })
   })
 })
