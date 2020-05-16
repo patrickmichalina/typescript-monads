@@ -56,13 +56,13 @@ describe('result', () => {
       expect(sut).toEqual(1)
     })
 
-    // it('should flatMap', () => {
-    //   const sut = ok(1)
-    //     .flatMap(a => ok(a.toString()))
-    //     .unwrap()
+    it('should flatMap', () => {
+      const sut = ok(1)
+        .flatMap(a => ok(a.toString()))
+        .unwrap()
 
-    //   expect(sut).toEqual('1')
-    // })
+      expect(sut).toEqual('1')
+    })
 
     it('should match', () => {
       const sut = ok(1)
@@ -126,13 +126,13 @@ describe('result', () => {
       expect(sut).toEqual('1')
     })
 
-    // it('should not flatMap', () => {
-    //   const sut = fail<any, number>(1)
-    //     .flatMap(a => ok(a.toString()))
-    //     .unwrapFail()
+    it('should not flatMap', () => {
+      const sut = fail<any, number>(1)
+        .flatMap(a => ok(a.toString()))
+        .unwrapFail()
 
-    //   expect(sut).toEqual(1)
-    // })
+      expect(sut).toEqual(1)
+    })
 
     it('should match', () => {
       const sut = fail(1)
