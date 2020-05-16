@@ -64,7 +64,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     return Result.ok<M, TFail>(fn(this.successValue))
   }
 
-  mapFail<M>(_: (err: TFail) => M) {
+  mapFail<M>(_: (err: TFail) => M): IResult<TOk, M> {
     return Result.ok(this.successValue)
   }
 
@@ -111,12 +111,12 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail>  {
     return fn.fail(this.value)
   }
 
-  map<M>(_fn: (val: TOk) => M): IResult<M, TFail> {
-    return Result.fail(this.value)
-  }
-
   mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M> {
     return Result.fail(fn(this.value))
+  }
+
+  map<M>(_fn: (val: TOk) => M): IResult<M, TFail> {
+    return Result.fail(this.value)
   }
 
   flatMap<M>(_fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
