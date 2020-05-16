@@ -85,19 +85,19 @@ describe('result', () => {
     })
 
     it('should return empty maybe when "maybeOk" is invoked', () => {
-      const _sut = fail('Test')
+      const sut = fail<string, string>('Test')
         .maybeOk()
         .valueOr('Some Other1')
 
-      expect(_sut).toEqual('Some Other1')
+      expect(sut).toEqual('Some Other1')
     })
 
     it('should return fail object when "maybeFail" is invoked', () => {
-      const _sut = fail('Test')
+      const sut = fail<string, string>('Test')
         .maybeFail()
         .valueOr('Some Other2')
 
-      expect(_sut).toEqual('Test')
+      expect(sut).toEqual('Test')
     })
 
     it('should throw an exception on "unwrap"', () => {

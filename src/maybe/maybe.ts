@@ -66,7 +66,7 @@ export class Maybe<T> implements IMaybe<T>  {
       : pattern.some(this.value as NonNullable<T>)
   }
 
-  public toArray() {
+  public toArray(): ReadonlyArray<T> {
     return this.isNone()
       ? []
       : Array.isArray(this.value)
