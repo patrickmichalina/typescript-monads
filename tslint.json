@@ -23,7 +23,6 @@
     "no-delete": true,
     "no-method-signature": false,
     "no-expression-statement": false,
-    "no-if-statement": true,
     "quotemark": [true, "single"]
   }
 }

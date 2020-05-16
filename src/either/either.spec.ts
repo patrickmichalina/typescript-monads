@@ -1,6 +1,6 @@
-import { either } from './either'
+import { either } from './either.factory'
 
-describe.skip(either.name, () => {
+describe(either.name, () => {
   it('when calling should throw if both sides are defined', () => {
     expect(() => {
       const leftInput = 'The String'
