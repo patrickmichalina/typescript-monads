@@ -15,16 +15,16 @@
     "noEmitHelpers": false,
     "noLib": false,
     "noUnusedLocals": true,
+    "strictPropertyInitialization": true,
     "noEmitOnError": true,
     "allowSyntheticDefaultImports": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "sourceMap": true
+    "sourceMap": true,
   },
   "include": [
     "src/**/*.ts"
