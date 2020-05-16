@@ -20,14 +20,14 @@ export default [
     ]
   },
   {
-  input: 'src/index.ts',
-  output: [
-    { file: `dist/${pkg.module}`, format: 'es', sourcemap: true },
-    { file: `dist/${pkg.commonJs}`, format: 'cjs', sourcemap: true }
-  ],
-  external: [
-    'rxjs',
-    'rxjs/operators'
-  ],
-  plugins: [typescript()]
-}]
+    input: 'src/index.ts',
+    output: [
+      { file: `dist/${pkg.module}`, format: 'es', sourcemap: true },
+      { file: `dist/${pkg.commonJs}`, format: 'cjs', sourcemap: true }
+    ],
+    external: [
+      'rxjs',
+      'rxjs/operators'
+    ],
+    plugins: [typescript()]
+  }]
