@@ -456,6 +456,17 @@ describe('Maybe', () => {
 
       expect(maybeAString).toBeUndefined()
     })
+
+    it('should be nonnullable value outlet', () => {
+      const imgWidth = maybe('url.com')
+        .flatMapAuto(imgUrl => /width=[0-9]*/.exec(imgUrl))
+        .flatMapAuto(a => a[0].split('=')[1])
+        .map(a => +a)
+        .valueOr(0)
+
+      expect(imgWidth).toEqual(0)
+    })
+
   })
 
   describe('isSome', () => {
