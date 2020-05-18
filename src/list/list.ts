@@ -151,9 +151,9 @@ export class List<T> {
   /**
    * Inverts the order of the elements in a sequence.
    */
-  reverse(): List<T> {
-    throw new Error('Not Implemented')
-  }
+  // reverse(): List<T> {
+  //   throw new Error('Not Implemented')
+  // }
 
   // sum<T extends number>(): number {
   //   return this.toArray()
@@ -192,5 +192,9 @@ export class List<T> {
 
   public toArray(): T[] {
     return [...this as any] as T[]
+  }
+
+  public toIterable(): Iterable<T> {
+    return this.toArray()
   }
 }

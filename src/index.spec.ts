@@ -1,4 +1,4 @@
-import { maybe, Maybe, either, Either, ok, fail, Result, reader, Reader } from './index'
+import { maybe, Maybe, either, Either, ok, fail, Result, reader, Reader, listOf, List } from './index'
 
 describe('package api', () => {
   it('should export maybe', () => {
@@ -16,5 +16,9 @@ describe('package api', () => {
 
   it('should export reader', () => {
     expect(reader(_cfg => 1)).toBeInstanceOf(Reader)
+  })
+
+  it('should export reader', () => {
+    expect(listOf(1, 2)).toBeInstanceOf(List)
   })
 })

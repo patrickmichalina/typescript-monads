@@ -1,8 +1,40 @@
 import { List } from './list'
 
 describe(List.name, () => {
+  describe('Integers', () => {
+    it('should', () => {
+      const sut = List
+        .integers()
+        .headOrUndefined()
+
+      expect(sut).toEqual(0)
+    })
+  })
+
+  describe('Range', () => {
+    it('should support stepping', () => {
+      const sut = List.range(4, 10, 2)
+
+      expect(sut.toArray()).toEqual([4, 6, 8, 10])
+    })
+  })
+
+  describe('Empty', () => {
+    it('should', () => {
+      const sut = List.empty().toArray()
+
+      expect(sut.length).toEqual(0)
+    })
+  })
+
   it('should spread to array', () => {
     const sut = List.of(1, 2, 6, 10).toArray()
+
+    expect(sut).toEqual([1, 2, 6, 10])
+  })
+
+  it('should toIterable', () => {
+    const sut = List.of(1, 2, 6, 10).toIterable()
 
     expect(sut).toEqual([1, 2, 6, 10])
   })
@@ -31,6 +63,26 @@ describe(List.name, () => {
       const sut = List.from<number>([1]).headOr(0)
 
       expect(sut).toEqual(1)
+    })
+
+    it('should headOrUndefined', () => {
+      const sut1 = List.from<number>([1]).headOrUndefined()
+      const sut2 = List.from<number>([]).headOrUndefined()
+
+      expect(sut1).toEqual(1)
+      expect(sut2).toBeUndefined()
+    })
+
+    it('should headOrCompute', () => {
+      const sut = List.from<number>([]).headOrCompute(() => 67)
+
+      expect(sut).toEqual(67)
+    })
+
+    it('should headOrThrow', () => {
+      expect(() => {
+        List.from<number>([]).headOrThrow('errrr')
+      }).toThrowError('errrr')
     })
   })
 
