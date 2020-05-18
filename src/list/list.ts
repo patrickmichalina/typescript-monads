@@ -23,7 +23,7 @@ export class List<T> {
     }, (iterable as any).length)
   }
 
-  static range<T>(start: number, end: number, step = 1): List<T> {
+  static range(start: number, end: number, step = 1): List<number> {
     return new List(function* () {
       // tslint:disable-next-line: no-let
       let i = start
@@ -34,7 +34,7 @@ export class List<T> {
     } as any, Math.floor((end - start + 1) / step))
   }
 
-  static get integers() {
+  static integers() {
     return this.range(0, Infinity)
   }
 
@@ -42,13 +42,34 @@ export class List<T> {
     return new List<T>(function* () { } as any, 0)
   }
 
-  head(): T | undefined {
+  /** 
+   * Gets the first item in the collection or returns the provided value when undefined
+   */
+  headOr(valueWhenUndefined: T): T {
+    return this.headOrUndefined() || valueWhenUndefined
+  }
+
+  /**
+   * Gets the first item in the collection or returns undefined
+   */
+  headOrUndefined(): T | undefined {
     return this[Symbol.iterator as any]().next().value as T
   }
 
-  headOr(valueWhenUndefined: T): T {
-    return this.head() || valueWhenUndefined
+  /**
+   * Gets the first item in the collection or returns a computed function
+   */
+  headOrCompute(fn: () => NonNullable<T>): T {
+    return this.headOrUndefined() || fn()
   }
+
+  /**
+   * Gets the first item in the collection or throws an error if undefined
+   */
+  headOrThrow(msg?: string): T {
+    return this.headOrUndefined() || (() => { throw new Error(msg) })()
+  }
+
 
   // unit<R>(value: R): List<R> {
   //   return new List<R>(value)

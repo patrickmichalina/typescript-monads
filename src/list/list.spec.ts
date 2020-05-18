@@ -15,9 +15,10 @@ describe(List.name, () => {
 
   describe('should get head', () => {
     it('should ...', () => {
-      const sut = List.from([1, 6]).headOr(0)
+      const sut = List.from([1, 6])
 
-      expect(sut).toEqual(1)
+      expect(sut.headOr(0)).toEqual(1)
+      expect(sut.headOr(3)).toEqual(1)
     })
 
     it('should ...', () => {
@@ -34,10 +35,9 @@ describe(List.name, () => {
   })
 
   it('should range', () => {
-    const sut = List.range<number>(2, 5).toArray()
+    const sut = List.range(2, 5).toArray()
 
     expect(sut).toEqual([2, 3, 4, 5])
 
-    console.log(List.integers.toArray())
   })
 })
