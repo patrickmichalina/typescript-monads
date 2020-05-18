@@ -8,7 +8,10 @@ export class List<T> {
 
   constructor(generator: () => Generator<T, T[]>, private readonly length = Infinity) {
     this[Symbol.iterator as any] = generator
-    this.length
+  }
+
+  private generator() {
+    return this[Symbol.iterator as any]() as Generator<T, T[]>
   }
 
   static of<T>(...args: T[]): List<T> {
@@ -19,8 +22,8 @@ export class List<T> {
 
   static from<T>(iterable: Iterable<T>): List<T> {
     return new List(function* () {
-      return yield* iterable as T[]
-    }, (iterable as any).length)
+      yield* iterable as T[]
+    } as any, (iterable as any).length)
   }
 
   static range(start: number, end: number, step = 1): List<number> {
@@ -42,6 +45,36 @@ export class List<T> {
     return new List<T>(function* () { } as any, 0)
   }
 
+  //    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
+  // reduce<T>(fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, seed: T) {
+  //   return this.toArray().reduce(fn, seed)
+  // }
+
+  // scan (scanner, seed) {
+  //   const generator = this[Symbol.iterator]
+  //   return new List(function* () {
+  //     let acc = seed
+  //     for (const value of generator()) {
+  //       yield acc = scanner(acc, value)
+  //     }
+  //   }, this.length)
+  // }
+
+  map<B>(fn: (val: T) => B): List<B> {
+    const generator = this.generator() as any
+    return new List<B>(function* () {
+      for (const value of generator) {
+        yield fn(value) as B
+      }
+    } as any, this.length)
+  }
+
+  // sum(): number {
+  //   return this.toArray().reduce((acc, curr) => {
+  //     return 1
+  //   }, 0)
+  // }
+
   /** 
    * Gets the first item in the collection or returns the provided value when undefined
    */
@@ -53,7 +86,7 @@ export class List<T> {
    * Gets the first item in the collection or returns undefined
    */
   headOrUndefined(): T | undefined {
-    return this[Symbol.iterator as any]().next().value as T
+    return this.generator().next().value as T
   }
 
   /**
@@ -69,23 +102,21 @@ export class List<T> {
   headOrThrow(msg?: string): T {
     return this.headOrUndefined() || (() => { throw new Error(msg) })()
   }
+  // ...params: [IFirst, MyEnum.FIRST] | [ISecond, MyEnum.SECOND]
 
+  concat(...args: T[]): List<T>
+  concat(iterable: Iterable<T>): List<T>
+  concat(...args: T[] | [Iterable<T>]): List<T> {
+    const generator = this.generator() as any
+    const toAdd = Array.isArray(args[0])
+      ? args[0]
+      : args
 
-  // unit<R>(value: R): List<R> {
-  //   return new List<R>(value)
-  // }
-
-  // join(value: T | T[], ...args: T[]): List<T> {
-  //   return new List<T>(this.value.concat(value, args))
-  // }
-
-  // map<R>(fn: (value: T) => R): List<R> {
-  //   const newList = this.value
-  //     .map(fn)
-  //     .reduce((acc, a) => acc.concat(a), [] as R[])
-
-  //   return new List<R>(newList)
-  // }
+    return new List(function* () {
+      yield* generator
+      yield* toAdd
+    } as any, this.length + (args as any).length)
+  }
 
   toArray(): T[] {
     return [...this as any] as T[]

@@ -40,4 +40,23 @@ describe(List.name, () => {
     expect(sut).toEqual([2, 3, 4, 5])
 
   })
+
+  it('should map', () => {
+    const sut = List.of(1, 2, 5)
+      .map(x => x + 3)
+      .toArray()
+
+    expect(sut).toEqual([4, 5, 8])
+  })
+
+  it('should join arrays', () => {
+    const sut = List.of(1)
+      .concat(2)
+      .concat(3)
+      .concat(4, 5)
+      .concat([6, 7])
+      .toArray()
+
+    expect(sut).toEqual([1, 2, 3, 4, 5, 6, 7])
+  })
 })
