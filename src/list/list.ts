@@ -1,7 +1,8 @@
 // Repurposed from this great piece of code: https://gist.github.com/gvergnaud/6e9de8e06ef65e65f18dbd05523c7ca9
+// Implements a number of functions from the .NET LINQ library: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.reverse?view=netcore-3.1
 
 /**
- * A lazily evaluated list
+ * A lazily evaluated list with useful extension methods.
  */
 export class List<T> {
   [k: string]: any;
@@ -54,20 +55,6 @@ export class List<T> {
     return new List<T>(function* () { } as any, 0)
   }
 
-  //    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
-  // reduce<T>(fn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, seed: T) {
-  //   return this.toArray().reduce(fn, seed)
-  // }
-
-  // scan (scanner, seed) {
-  //   const generator = this[Symbol.iterator]
-  //   return new List(function* () {
-  //     let acc = seed
-  //     for (const value of generator()) {
-  //       yield acc = scanner(acc, value)
-  //     }
-  //   }, this.length)
-  // }
 
   public map<B>(fn: (val: T) => B): List<B> {
     const generator = this.generator() as any
@@ -76,6 +63,21 @@ export class List<T> {
         yield fn(value) as B
       }
     } as any, this.length)
+  }
+
+  public scan<B>(fn: (acc: B, val: B) => B, seed: B): List<B> {
+    const generator = this.generator() as any
+    return new List(function* () {
+      // tslint:disable-next-line: no-let
+      let acc = seed
+      for (const value of generator) {
+        yield acc = fn(acc, value)
+      }
+    } as any, this.length)
+  }
+
+  public reduce<B>(fn: (previousValue: B, currentValue: T, currentIndex: number, array: T[]) => B, seed: B): B {
+    return this.toArray().reduce<B>(fn, seed)
   }
 
   /**
@@ -114,7 +116,7 @@ export class List<T> {
   /**
    * Determines whether all elements of a sequence satisfy a condition.
    */
-  all(fn: (val: T) => boolean): boolean {
+  public all(fn: (val: T) => boolean): boolean {
     const generator = this.generator() as any
     const newList = new List(function* () {
       for (const value of generator) {
@@ -133,7 +135,7 @@ export class List<T> {
    * Determines whether a sequence contains any elements.
    * @param fn A function to test each element for a condition.
    */
-  any(fn: (val: T) => boolean): boolean {
+  public any(fn: (val: T) => boolean): boolean {
     const generator = this.generator() as any
     const newList = new List(function* () {
       for (const value of generator) {
@@ -146,10 +148,18 @@ export class List<T> {
     return newList.toArray().length >= 1
   }
 
-  // sum(): number {
-  //   return this.toArray().reduce((acc, curr) => {
-  //     return 1
-  //   }, 0)
+  /**
+   * Inverts the order of the elements in a sequence.
+   */
+  reverse(): List<T> {
+    throw new Error('Not Implemented')
+  }
+
+  // sum<T extends number>(): number {
+  //   return this.toArray()
+  //     .reduce((acc, curr) => {
+  //       return acc + curr
+  //     }, 0)
   // }
 
   /** 

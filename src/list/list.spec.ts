@@ -51,6 +51,24 @@ describe(List.name, () => {
     })
   })
 
+  describe('should scan', () => {
+    it('should ...', () => {
+      const sut = List.from([1, 2, 3, 4])
+        .scan((acc, curr) => curr + acc, 0)
+        .toArray()
+
+      expect(sut).toEqual([1, 3, 6, 10])
+    })
+  })
+
+  describe('should reduce', () => {
+    it('should ...', () => {
+      const sut = List.of(1, 2, 3, 4).reduce((acc, curr) => acc + curr, 0)
+
+      expect(sut).toEqual(10)
+    })
+  })
+
   describe('should filter', () => {
     it('should ...', () => {
       const sut = List.of(1, 2, 5)
