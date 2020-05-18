@@ -14,19 +14,28 @@ export class List<T> {
     return this[Symbol.iterator as any]() as Generator<T, T[]>
   }
 
-  static of<T>(...args: T[]): List<T> {
+  private static flattenArgs<T>(args: T[] | Iterable<T>[]) {
+    return (args as T[])
+      .reduce((acc, curr) => {
+        return Array.isArray(curr)
+          ? [...acc, ...curr]
+          : [...acc, curr]
+      }, [] as T[])
+  }
+
+  public static of<T>(...args: T[]): List<T> {
     return new List<T>(function* () {
       return yield* args
     }, args.length)
   }
 
-  static from<T>(iterable: Iterable<T>): List<T> {
+  public static from<T>(iterable: Iterable<T>): List<T> {
     return new List(function* () {
-      yield* iterable as T[]
+      yield* iterable as any
     } as any, (iterable as any).length)
   }
 
-  static range(start: number, end: number, step = 1): List<number> {
+  public static range(start: number, end: number, step = 1): List<number> {
     return new List(function* () {
       // tslint:disable-next-line: no-let
       let i = start
@@ -37,11 +46,11 @@ export class List<T> {
     } as any, Math.floor((end - start + 1) / step))
   }
 
-  static integers() {
+  public static integers() {
     return this.range(0, Infinity)
   }
 
-  static empty<T>(): List<T> {
+  public static empty<T>(): List<T> {
     return new List<T>(function* () { } as any, 0)
   }
 
@@ -60,7 +69,7 @@ export class List<T> {
   //   }, this.length)
   // }
 
-  map<B>(fn: (val: T) => B): List<B> {
+  public map<B>(fn: (val: T) => B): List<B> {
     const generator = this.generator() as any
     return new List<B>(function* () {
       for (const value of generator) {
@@ -78,49 +87,44 @@ export class List<T> {
   /** 
    * Gets the first item in the collection or returns the provided value when undefined
    */
-  headOr(valueWhenUndefined: T): T {
+  public headOr(valueWhenUndefined: T): T {
     return this.headOrUndefined() || valueWhenUndefined
   }
 
   /**
    * Gets the first item in the collection or returns undefined
    */
-  headOrUndefined(): T | undefined {
+  public headOrUndefined(): T | undefined {
     return this.generator().next().value as T
   }
 
   /**
    * Gets the first item in the collection or returns a computed function
    */
-  headOrCompute(fn: () => NonNullable<T>): T {
+  public headOrCompute(fn: () => NonNullable<T>): T {
     return this.headOrUndefined() || fn()
   }
 
   /**
    * Gets the first item in the collection or throws an error if undefined
    */
-  headOrThrow(msg?: string): T {
+  public headOrThrow(msg?: string): T {
     return this.headOrUndefined() || (() => { throw new Error(msg) })()
   }
 
-  concat(...args: T[]): List<T>
-  concat(...iterable: Iterable<T>[]): List<T>
-  concat(...args: T[] | Iterable<T>[]): List<T> {
+  public concat(...args: T[]): List<T>
+  public concat(...iterable: Iterable<T>[]): List<T>
+  public concat(...args: T[] | Iterable<T>[]): List<T> {
     const generator = this.generator() as any
-    const toAdd = (args as T[])
-      .reduce((acc, curr) => {
-        return Array.isArray(curr)
-          ? [...acc, ...curr]
-          : [...acc, curr]
-      }, [] as T[])
+    const toAdd = List.flattenArgs(args)
 
     return new List(function* () {
       yield* generator
       yield* toAdd
-    } as any, this.length + (args as any).length)
+    } as any, this.length + toAdd.length)
   }
 
-  toArray(): T[] {
+  public toArray(): T[] {
     return [...this as any] as T[]
   }
 }
