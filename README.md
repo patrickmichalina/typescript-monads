@@ -46,7 +46,7 @@ npm install typescript-monads
 <head>
  <script src="https://unpkg.com/typescript-monads"></script>
  <!-- or use a specific version to avoid a redirect --> 
- <script src="https://unpkg.com/typescript-monads@3.8.0/index.min.js"></script>
+ <script src="https://unpkg.com/typescript-monads@4.1.0/index.min.js"></script>
 </head>
 ```
 
@@ -58,6 +58,7 @@ typescriptMonads.maybe(someRemoteValue).tapSome(console.log)
 # Example Usage
 
 * [Maybe](#maybe)
+* [List](#list)
 * [Either](#either)
 * [Reader](#reader)
 * [Result](#result)
@@ -77,7 +78,7 @@ const priceWithDiscountForLoyalty = maybe(maybeVisitedBeforeXTimes)
 
 // handle multiple maybe conditions together
 const canRideCoaster = getAge() // Maybe<number>
-  .bind(age => getTicket(age)) // Maybe<Ticket>
+  .map(age => getTicket(age)) // Maybe<Ticket>
   .match({
     some: ticket => ticket.canRide('coaster1'),
     none: () => false
@@ -85,7 +86,7 @@ const canRideCoaster = getAge() // Maybe<number>
 
 // operations with side-effects
 maybe(process.env.DB_URL)
-  .do({
+  .tap({
     some: dbUrl => {
       // value exists, can connect
     },
@@ -93,11 +94,14 @@ maybe(process.env.DB_URL)
   })
 ```
 
-# Either
+## List
 TODO
 
-# Reader
+## Either
 TODO
 
-# Result
+## Reader
+TODO
+
+## Result
 TODO
