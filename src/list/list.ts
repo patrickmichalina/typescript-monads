@@ -30,10 +30,12 @@ export class List<T> {
     }, args.length)
   }
 
-  public static from<T>(iterable: Iterable<T>): List<T> {
-    return new List(function* () {
-      yield* iterable as any
-    } as any, (iterable as any).length)
+  public static from<T>(iterable?: Iterable<T>): List<T> {
+    return iterable
+      ? new List(function* () {
+        yield* iterable as any
+      } as any, (iterable as any).length)
+      : List.empty()
   }
 
   public static range(start: number, end: number, step = 1): List<number> {
