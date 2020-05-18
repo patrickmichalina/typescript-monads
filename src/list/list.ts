@@ -102,15 +102,17 @@ export class List<T> {
   headOrThrow(msg?: string): T {
     return this.headOrUndefined() || (() => { throw new Error(msg) })()
   }
-  // ...params: [IFirst, MyEnum.FIRST] | [ISecond, MyEnum.SECOND]
 
   concat(...args: T[]): List<T>
-  concat(iterable: Iterable<T>): List<T>
-  concat(...args: T[] | [Iterable<T>]): List<T> {
+  concat(...iterable: Iterable<T>[]): List<T>
+  concat(...args: T[] | Iterable<T>[]): List<T> {
     const generator = this.generator() as any
-    const toAdd = Array.isArray(args[0])
-      ? args[0]
-      : args
+    const toAdd = (args as T[])
+      .reduce((acc, curr) => {
+        return Array.isArray(curr)
+          ? [...acc, ...curr]
+          : [...acc, curr]
+      }, [] as T[])
 
     return new List(function* () {
       yield* generator

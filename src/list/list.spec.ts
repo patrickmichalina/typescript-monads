@@ -55,8 +55,9 @@ describe(List.name, () => {
       .concat(3)
       .concat(4, 5)
       .concat([6, 7])
+      .concat([8, 9], [10, 11])
       .toArray()
 
-    expect(sut).toEqual([1, 2, 3, 4, 5, 6, 7])
+    expect(sut).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
   })
 })
