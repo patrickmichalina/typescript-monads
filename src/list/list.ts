@@ -7,7 +7,7 @@
 export class List<T> {
   [k: string]: any;
 
-  constructor(generator: () => Generator<T, T[]>, private readonly length = Infinity) {
+  constructor(generator: () => Generator<T, T[]>, private readonly length: number) {
     this[Symbol.iterator as any] = generator
   }
 
