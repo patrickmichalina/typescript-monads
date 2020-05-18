@@ -78,6 +78,74 @@ export class List<T> {
     } as any, this.length)
   }
 
+  /**
+   * Filters a sequence of values based on a predicate.
+   * @param fn A function to test each element for a condition.
+   */
+  public filter(fn: (val: T) => boolean): List<T> {
+    const generator = this.generator() as any
+    return new List(function* () {
+      for (const value of generator) {
+        if (fn(value)) yield value
+      }
+    } as any, this.length)
+  }
+
+  /**
+   * Filters a sequence of values based on a predicate. Alias to filter
+   * @param fn A function to test each element for a condition.
+   */
+  public where(fn: (val: T) => boolean): List<T> {
+    return this.filter(fn)
+  }
+
+  public concat(...args: T[]): List<T>
+  public concat(...iterable: Iterable<T>[]): List<T>
+  public concat(...args: T[] | Iterable<T>[]): List<T> {
+    const generator = this.generator() as any
+    const toAdd = List.flattenArgs(args)
+
+    return new List(function* () {
+      yield* generator
+      yield* toAdd
+    } as any, this.length + toAdd.length)
+  }
+
+  /**
+   * Determines whether all elements of a sequence satisfy a condition.
+   */
+  all(fn: (val: T) => boolean): boolean {
+    const generator = this.generator() as any
+    const newList = new List(function* () {
+      for (const value of generator) {
+        if (fn(value)) {
+          yield value
+        } else {
+          return yield value
+        }
+      }
+    } as any, this.length)
+
+    return newList.toArray().length === this.length
+  }
+
+  /**
+   * Determines whether a sequence contains any elements.
+   * @param fn A function to test each element for a condition.
+   */
+  any(fn: (val: T) => boolean): boolean {
+    const generator = this.generator() as any
+    const newList = new List(function* () {
+      for (const value of generator) {
+        if (fn(value)) {
+          return yield value
+        }
+      }
+    } as any, this.length)
+
+    return newList.toArray().length >= 1
+  }
+
   // sum(): number {
   //   return this.toArray().reduce((acc, curr) => {
   //     return 1
@@ -110,18 +178,6 @@ export class List<T> {
    */
   public headOrThrow(msg?: string): T {
     return this.headOrUndefined() || (() => { throw new Error(msg) })()
-  }
-
-  public concat(...args: T[]): List<T>
-  public concat(...iterable: Iterable<T>[]): List<T>
-  public concat(...args: T[] | Iterable<T>[]): List<T> {
-    const generator = this.generator() as any
-    const toAdd = List.flattenArgs(args)
-
-    return new List(function* () {
-      yield* generator
-      yield* toAdd
-    } as any, this.length + toAdd.length)
   }
 
   public toArray(): T[] {

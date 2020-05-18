@@ -41,12 +41,32 @@ describe(List.name, () => {
 
   })
 
-  it('should map', () => {
-    const sut = List.of(1, 2, 5)
-      .map(x => x + 3)
-      .toArray()
+  describe('should map', () => {
+    it('should ...', () => {
+      const sut = List.of(1, 2, 5)
+        .map(x => x + 3)
+        .toArray()
 
-    expect(sut).toEqual([4, 5, 8])
+      expect(sut).toEqual([4, 5, 8])
+    })
+  })
+
+  describe('should filter', () => {
+    it('should ...', () => {
+      const sut = List.of(1, 2, 5)
+        .filter(x => x > 2)
+        .toArray()
+
+      expect(sut).toEqual([5])
+    })
+
+    it('should alias where to filter', () => {
+      const sut = List.of(1, 2, 5)
+        .where(x => x > 2)
+        .toArray()
+
+      expect(sut).toEqual([5])
+    })
   })
 
   it('should join arrays', () => {
@@ -59,5 +79,31 @@ describe(List.name, () => {
       .toArray()
 
     expect(sut).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+  })
+
+  describe('should all', () => {
+    it('should', () => {
+      const sut = List.of('test 1', 'test 2', 'test 3')
+
+      expect(sut.all(a => a.includes('test'))).toEqual(true)
+    })
+    it('should', () => {
+      const sut = List.of('test 1', 'UGH!', 'test 2', 'test 3')
+
+      expect(sut.all(a => a.includes('test'))).toEqual(false)
+    })
+  })
+
+  describe('should any', () => {
+    it('should', () => {
+      const sut = List.of('test 1', 'test 2', 'test 3')
+
+      expect(sut.any(a => a.includes('test'))).toEqual(true)
+    })
+    it('should', () => {
+      const sut = List.of('test 1', 'UGH!', 'test 2', 'test 3')
+
+      expect(sut.any(a => a.includes('NOTHERE'))).toEqual(false)
+    })
   })
 })
