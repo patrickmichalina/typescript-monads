@@ -55,7 +55,6 @@ export class List<T> {
     return new List<T>(function* () { } as any, 0)
   }
 
-
   public map<B>(fn: (val: T) => B): List<B> {
     const generator = this.generator() as any
     return new List<B>(function* () {
@@ -190,10 +189,12 @@ export class List<T> {
     return this.headOrUndefined() || (() => { throw new Error(msg) })()
   }
 
+  /** Convert to standard array */
   public toArray(): T[] {
     return [...this as any] as T[]
   }
 
+  /** Convert to standard array. Alias of toArray() */
   public toIterable(): Iterable<T> {
     return this.toArray()
   }
