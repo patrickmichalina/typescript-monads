@@ -1,4 +1,17 @@
 import { List } from './list'
+import { listFrom } from './list.factory'
+
+class Animal {
+  constructor(public name: string) { }
+}
+class Dog extends Animal {
+  dogtag!: string
+  dogyear!: number
+}
+
+class Cat extends Animal {
+  likesCatnip = true
+}
 
 describe(List.name, () => {
   describe('Integers', () => {
@@ -169,11 +182,74 @@ describe(List.name, () => {
       const sut = List.of('test 1', 'test 2', 'test 3')
 
       expect(sut.any(a => a.includes('test'))).toEqual(true)
+      expect(sut.some(a => a.includes('test'))).toEqual(true)
     })
     it('should', () => {
       const sut = List.of('test 1', 'UGH!', 'test 2', 'test 3')
 
       expect(sut.any(a => a.includes('NOTHERE'))).toEqual(false)
+      expect(sut.some(a => a.includes('NOTHERE'))).toEqual(false)
     })
   })
+
+  describe('take', () => {
+    it('should ...', () => {
+      const sut = List.of(1, 2, 3)
+
+      expect(sut.take(3).toArray()).toEqual([1, 2, 3])
+      expect(sut.take(2).toArray()).toEqual([1, 2])
+      expect(sut.take(1).toArray()).toEqual([1])
+      expect(sut.take(0).toArray()).toEqual([])
+    })
+  })
+
+  describe('InstanceOf', () => {
+    it('should filter on instance', () => {
+      const dog = new Dog('Rex')
+      const cat = new Cat('Meow')
+      const sut = List.of<Animal>(dog, cat)
+
+      expect(sut.ofType(Cat).toArray().length).toEqual(1)
+      expect(sut.ofType(Cat).toArray()).toEqual([cat])
+      expect(sut.ofType(Dog).toArray().length).toEqual(1)
+      expect(sut.ofType(Dog).toArray()).toEqual([dog])
+    })
+  })
+
+  describe('Drop', () => {
+    it('should', () => {
+      const sut = List.of(1, 5, 10, 15, 20).drop(1).drop(1).toArray()
+      const sut2 = listFrom(sut).drop(2).toArray()
+      const sut3 = listFrom(sut2).tail().toArray()
+
+      expect(sut).toEqual([10, 15, 20])
+      expect(sut2).toEqual([20])
+      expect(sut3).toEqual([])
+    })
+  })
+
+  // describe('OrderBy', () => {
+  //   it('should order by object', () => {
+  //     const dog1 = new Dog('Atlas')
+  //     const dog2 = new Dog('Zues')
+  //     const sut = List.of<Dog>(dog1, dog2)
+
+  //     expect(sut.orderBy('dogtag').toEqual([]))
+  //     expect(sut.orderBy('name')).toEqual([])
+  //   })
+
+  //   it('should order by number', () => {
+  //     const sut = List.of(1, 2, 5, 3, 12)
+
+  //     expect(sut.orderBy().toEqual([]))
+  //     expect(sut.orderBy()).toEqual([])
+  //   })
+
+  //   it('should order by string', () => {
+  //     const sut = List.of('abc', 'efg', 'zel', 'lmao')
+
+  //     expect(sut.orderBy().toEqual([]))
+  //     expect(sut.orderBy()).toEqual([])
+  //   })
+  // })
 })
