@@ -66,6 +66,32 @@ export class List<T> {
     } as any, this.length)
   }
 
+  /**
+   * Delete the first N elements from a list.
+   * @param count 
+   */
+  public drop(count: number): List<T> {
+    const generator = this.generator() as any
+    return new List<T>(function* () {
+      let next = generator.next()
+      let n = 1
+
+      while (!next.done) {
+        if (n > count) yield next.value
+        n++
+        next = generator.next()
+      }
+    } as any, this.length - count)
+  }
+
+  /**
+   * Deletes the first element from a list.
+   * @param count 
+   */
+  tail(): List<T> {
+    return this.drop(1)
+  }
+
   public scan<B>(fn: (acc: B, val: B) => B, seed: B): List<B> {
     const generator = this.generator() as any
     return new List(function* () {
@@ -114,7 +140,7 @@ export class List<T> {
   }
 
   /**
-   * Returns a specified number of contiguous elements from the start of a sequence.
+   * Make a new list containing just the first N elements from an existing list.
    * @param count The number of elements to return.
    */
   public take(count: number) {
@@ -165,6 +191,15 @@ export class List<T> {
     } as any, this.length)
 
     return newList.toArray().length >= 1
+  }
+
+  /**
+   * Determines whether a sequence contains any elements matching the predicate.
+   * @param fn A function to test each element for a condition.
+   * Aliased to any()
+   */
+  public some(fn: (val: T) => boolean): boolean {
+    return this.any(fn)
   }
 
   /**

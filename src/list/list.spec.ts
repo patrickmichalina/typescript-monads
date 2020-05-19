@@ -1,4 +1,5 @@
 import { List } from './list'
+import { listFrom } from './list.factory'
 
 class Animal {
   constructor(public name: string) { }
@@ -181,11 +182,13 @@ describe(List.name, () => {
       const sut = List.of('test 1', 'test 2', 'test 3')
 
       expect(sut.any(a => a.includes('test'))).toEqual(true)
+      expect(sut.some(a => a.includes('test'))).toEqual(true)
     })
     it('should', () => {
       const sut = List.of('test 1', 'UGH!', 'test 2', 'test 3')
 
       expect(sut.any(a => a.includes('NOTHERE'))).toEqual(false)
+      expect(sut.some(a => a.includes('NOTHERE'))).toEqual(false)
     })
   })
 
@@ -210,6 +213,18 @@ describe(List.name, () => {
       expect(sut.ofType(Cat).toArray()).toEqual([cat])
       expect(sut.ofType(Dog).toArray().length).toEqual(1)
       expect(sut.ofType(Dog).toArray()).toEqual([dog])
+    })
+  })
+
+  describe('Drop', () => {
+    it('should', () => {
+      const sut = List.of(1, 5, 10, 15, 20).drop(1).drop(1).toArray()
+      const sut2 = listFrom(sut).drop(2).toArray()
+      const sut3 = listFrom(sut2).tail().toArray()
+
+      expect(sut).toEqual([10, 15, 20])
+      expect(sut2).toEqual([20])
+      expect(sut3).toEqual([])
     })
   })
 
