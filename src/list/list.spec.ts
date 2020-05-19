@@ -2,8 +2,9 @@ import { List } from './list'
 import { listFrom } from './list.factory'
 
 class Animal {
-  constructor(public name: string) { }
+  constructor(public name: string, public nickname?: string) { }
 }
+
 class Dog extends Animal {
   dogtag!: string
   dogyear!: number
@@ -225,6 +226,24 @@ describe(List.name, () => {
       expect(sut).toEqual([10, 15, 20])
       expect(sut2).toEqual([20])
       expect(sut3).toEqual([])
+    })
+  })
+
+  describe('ToDictionary', () => {
+    const Rex = new Dog('Rex', 'Rdawg')
+    const Meow = new Cat('Meow')
+    const sut = List.of<Animal>(Rex, Meow)
+
+    it('should handle nominal keyed case', () => {
+      expect(sut.toDictionary('name')).toEqual({ Rex, Meow })
+    })
+
+    it('should handle unkeyed', () => {
+      expect(sut.toDictionary()).toEqual({ 0: Rex, 1: Meow })
+    })
+
+    it('should handle missing keys', () => {
+      expect(sut.toDictionary('nickname')).toEqual({ Rdawg: Rex })
     })
   })
 

@@ -23,7 +23,12 @@
     "maybe",
     "result",
     "either",
-    "functional"
+    "list",
+    "functional",
+    "list-monad",
+    "maybe-monad",
+    "either-monad",
+    "result-monad"
   ],
   "scripts": {
     "test": "jest",

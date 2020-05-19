@@ -12,17 +12,6 @@
   </a>
 </p>
 <p align="center">
-  <a href="https://greenkeeper.io">
-    <img alt="greenkeeper" src="https://badges.greenkeeper.io/semantic-release/semantic-release.svg">
-  </a>
-  <a href="https://david-dm.org/patrickmichalina/typescript-monads">
-    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/typescript-monads/status.svg">
-  </a>
-  <a href="https://david-dm.org/patrickmichalina/typescript-monads?type=dev">
-    <img alt="greenkeeper" src="https://david-dm.org/patrickmichalina/typescript-monads/dev-status.svg">
-  </a>
-</p>
-<p align="center">
   <a href="https://github.com/semantic-release/semantic-release">
     <img alt="semantic-release" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg">
   </a>

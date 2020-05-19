@@ -210,6 +210,26 @@ export class List<T> {
     return this.filter(a => a instanceof type)
   }
 
+  
+  /**
+   * Converts the list into an object with numbered indices mathing the array position of the item.
+   */
+  public toDictionary(): { [key: number]: T }
+  
+  /**
+   * Converts the list into an object deriving key from the specified property.
+   */
+  public toDictionary(key: keyof T): { [key: string]: T }
+  public toDictionary(key?: keyof T): { [key: number]: T } | { [key: string]: T } {
+    return this.reduce((acc, curr, idx) => {
+      return key
+        ? curr[key]
+          ? { ...acc, [curr[key] as any]: curr }
+          : acc
+        : { ...acc, [idx]: curr }
+    }, {})
+  }
+
   // /**
   //  * Sorts the elements of a sequence in ascending order.
   //  */
