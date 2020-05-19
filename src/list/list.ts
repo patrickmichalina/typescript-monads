@@ -1,5 +1,6 @@
 // Repurposed from this great piece of code: https://gist.github.com/gvergnaud/6e9de8e06ef65e65f18dbd05523c7ca9
 // Implements a number of functions from the .NET LINQ library: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.reverse?view=netcore-3.1
+// tslint:disable: no-let
 
 /**
  * A lazily evaluated list with useful extension methods.
@@ -40,7 +41,6 @@ export class List<T> {
 
   public static range(start: number, end: number, step = 1): List<number> {
     return new List(function* () {
-      // tslint:disable-next-line: no-let
       let i = start
       while (i <= end) {
         yield i
@@ -69,7 +69,6 @@ export class List<T> {
   public scan<B>(fn: (acc: B, val: B) => B, seed: B): List<B> {
     const generator = this.generator() as any
     return new List(function* () {
-      // tslint:disable-next-line: no-let
       let acc = seed
       for (const value of generator) {
         yield acc = fn(acc, value)
@@ -115,6 +114,25 @@ export class List<T> {
   }
 
   /**
+   * Returns a specified number of contiguous elements from the start of a sequence.
+   * @param count The number of elements to return.
+   */
+  public take(count: number) {
+    const generator = this.generator() as any
+    return new List(function* () {
+
+      let next = generator.next()
+      let n = 0
+
+      while (!next.done && count > n) {
+        yield next.value
+        n++
+        next = generator.next()
+      }
+    } as any, this.length > count ? count : this.length)
+  }
+
+  /**
    * Determines whether all elements of a sequence satisfy a condition.
    */
   public all(fn: (val: T) => boolean): boolean {
@@ -133,7 +151,7 @@ export class List<T> {
   }
 
   /**
-   * Determines whether a sequence contains any elements.
+   * Determines whether a sequence contains any elements matching the predicate.
    * @param fn A function to test each element for a condition.
    */
   public any(fn: (val: T) => boolean): boolean {
@@ -148,6 +166,25 @@ export class List<T> {
 
     return newList.toArray().length >= 1
   }
+
+  /**
+   * Filters the elements of the list based on a specified type.
+   * @param type The type to filter the elements of the sequence on.
+   */
+  public ofType(type: Function): List<T> {
+    return this.filter(a => a instanceof type)
+  }
+
+  // /**
+  //  * Sorts the elements of a sequence in ascending order.
+  //  */
+  // public orderBy<K extends keyof T>(prop?: T extends object ? K : never): List<T> {
+  //   throw Error('Not Implemented')
+  // }
+
+  // public orderByDescending(): List<T> {
+  //   throw Error('Not Implemented')
+  // }
 
   /**
    * Inverts the order of the elements in a sequence.
@@ -196,7 +233,7 @@ export class List<T> {
     return [...this as any] as T[]
   }
 
-  /** Convert to standard array. Alias of toArray() */
+  /** Convert to standard array. Aliased to toArray() */
   public toIterable(): Iterable<T> {
     return this.toArray()
   }
