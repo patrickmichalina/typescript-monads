@@ -1,6 +1,5 @@
 // Repurposed from this great piece of code: https://gist.github.com/gvergnaud/6e9de8e06ef65e65f18dbd05523c7ca9
 // Implements a number of functions from the .NET LINQ library: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.reverse?view=netcore-3.1
-// tslint:disable: no-let
 
 /**
  * A lazily evaluated list with useful extension methods.

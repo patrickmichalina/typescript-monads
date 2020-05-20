@@ -150,7 +150,6 @@ describe('Maybe', () => {
 
   describe('when performing side-effect operations', () => {
     it('should handle "none" case', () => {
-      // tslint:disable-next-line:no-let
       let sideEffectStore = ''
       const sut = undefined as string | undefined
 
@@ -166,7 +165,6 @@ describe('Maybe', () => {
     })
 
     it('should handle "some" case', () => {
-      // tslint:disable-next-line:no-let
       let sideEffectStore = ''
       const sut = 'existing value' as string | undefined
 
