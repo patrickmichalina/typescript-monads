@@ -43,16 +43,16 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^3.1.1",
-    "@types/fs-extra": "^9.0.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/jest": "^25.2.3",
-    "@types/node": "^14.0.1",
+    "@types/node": "^14.0.4",
     "codecov": "^3.7.0",
     "fast-check": "^1.24.2",
     "fs-extra": "^9.0.0",
     "istanbul": "^0.4.5",
     "jest": "26.0.1",
     "jest-junit": "^10.0.0",
-    "rollup": "^2.10.3",
+    "rollup": "^2.10.5",
     "rxjs": "^6.5.4",
     "semantic-release": "^17.0.7",
     "terser": "^4.7.0",
@@ -60,7 +60,7 @@
     "ts-node": "^8.10.1",
     "tslint": "^6.1.2",
     "tslint-immutable": "^6.0.1",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
   },
   "peerDependencies": {
     "tslib": "^2.0.0",
