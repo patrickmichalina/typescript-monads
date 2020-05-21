@@ -74,7 +74,7 @@ export class Maybe<T> implements IMaybe<T>  {
         : [this.value as NonNullable<T>]
   }
 
-  public map<R>(fn: (t: NonNullable<T>) => R): IMaybe<R> {
+  public map<R>(fn: (t: NonNullable<T>) => NonNullable<R>): IMaybe<R> {
     return this.isSome()
       ? new Maybe<R>(fn(this.value as NonNullable<T>))
       : new Maybe<R>()
@@ -98,7 +98,7 @@ export class Maybe<T> implements IMaybe<T>  {
         : new Maybe<T>()
   }
 
-  public apply<R>(fab: IMaybe<(v: T) => R>): IMaybe<R> {
+  public apply<R>(fab: IMaybe<(v: T) => NonNullable<R>>): IMaybe<R> {
     return this.flatMap(b => fab.map(fn => fn(b)))
   }
 }
