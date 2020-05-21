@@ -76,7 +76,7 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Map output of non-empty data to a new value
    */
-  map<R>(f: (t: T) => R): IMaybe<R>
+  map<R>(f: (t: T) => NonNullable<R>): IMaybe<R>
 
   /**
    * Returns true if value is not empty

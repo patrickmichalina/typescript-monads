@@ -199,14 +199,15 @@ describe('Maybe', () => {
       const maybeNotSomeSome2 = maybe(sut)
         .map(_str => getUserService<string>(0))
         .valueOr('fallback')
+
       const maybeNotSomeSome3 = maybe(sut)
-        .map(_str => getUserService<string>(''))
+        .map(_str => 'sut')
         .valueOr('fallback')
 
       expect(maybeSomeString).toEqual('initial input mapped')
       expect(maybeNotSomeSomeString).toEqual('fallback')
       expect(maybeNotSomeSome2).toEqual(0)
-      expect(maybeNotSomeSome3).toEqual('')
+      expect(maybeNotSomeSome3).toEqual('sut')
     })
 
     it('should handle undefined input', () => {
