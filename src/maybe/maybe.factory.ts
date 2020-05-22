@@ -1,13 +1,14 @@
 import { Maybe } from './maybe'
+import { IMaybe } from './maybe.interface'
 
-export function maybe<T>(value?: T) {
+export function maybe<T>(value?: T): Maybe<T> {
   return new Maybe<T>(value)
 }
 
-export function none<T>() {
+export function none<T>(): IMaybe<T> {
   return Maybe.none<T>()
 }
 
-export function some<T>(value: T) {
+export function some<T>(value: T): IMaybe<T> {
   return maybe(value)
 }

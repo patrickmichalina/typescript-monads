@@ -4,29 +4,38 @@ import { maybe } from '../public_api'
 
 describe('maybeToPromise', () => {
   it('should flatmap', () => {
-    const sut = new Promise<IMaybe<string>>((a, b) => a(maybe('test')))
+    const sut = new Promise<IMaybe<string>>(resolve => resolve(maybe('test')))
 
     sut
       .then(maybeToPromise())
       .then(result => expect(result).toEqual('test'))
-      .catch(_shouldNotBeHere => expect(false).toBe(true))
+      .catch(() => expect(false).toBe(true))
   })
 
-  it('should catch w/ default message', () => {
-    const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
+  it('should catch w/ empty message', () => {
+    const sut = new Promise<IMaybe<string>>(resolve => resolve(maybe()))
 
     sut
       .then(maybeToPromise())
-      .then(_shouldNotBeHere => expect(false).toBe(true))
-      .catch(error => expect(error).toEqual('not found'))
+      .then(() => expect(false).toBe(true))
+      .catch(error => expect(error).toBeUndefined())
   })
 
   it('should catch w/ custom message', () => {
-    const sut = new Promise<IMaybe<string>>((a, b) => a(maybe()))
+    const sut = new Promise<IMaybe<string>>(resolve => resolve(maybe()))
 
     sut
-      .then(maybeToPromise('err'))
-      .then(_shouldNotBeHere => expect(false).toBe(true))
-      .catch(error => expect(error).toEqual('err'))
+      .then(maybeToPromise('caught!'))
+      .then(() => expect(false).toBe(true))
+      .catch(error => expect(error).toEqual('caught!'))
+  })
+
+  it('should catch w/ custom object', () => {
+    const sut = new Promise<IMaybe<string>>(resolve => resolve(maybe()))
+
+    sut
+      .then(maybeToPromise({ error: { msg: 'test' } }))
+      .then(() => expect(false).toBe(true))
+      .catch(error => expect(error).toEqual({ error: { msg: 'test' } }))
   })
 })

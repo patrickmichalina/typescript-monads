@@ -1,6 +1,5 @@
 {
   "editor.tabSize": 2,
-  "tslint.autoFixOnSave": true,
   "jest.showCoverageOnLoad": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

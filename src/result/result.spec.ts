@@ -51,7 +51,7 @@ describe('result', () => {
 
     it('should not mapFail', () => {
       const sut = ok(1)
-        .mapFail(b => '')
+        .mapFail(() => '')
         .unwrap()
       expect(sut).toEqual(1)
     })
@@ -67,7 +67,7 @@ describe('result', () => {
     it('should match', () => {
       const sut = ok(1)
         .match({
-          fail: _ => 2,
+          fail: () => 2,
           ok: val => val
         })
 
@@ -113,7 +113,7 @@ describe('result', () => {
     })
 
     it('should not map', () => {
-      const sut = fail<any, number>(1)
+      const sut = fail<string, number>(1)
         .map(b => b.toString())
         .unwrapFail()
       expect(sut).toEqual(1)
@@ -127,7 +127,7 @@ describe('result', () => {
     })
 
     it('should not flatMap', () => {
-      const sut = fail<any, number>(1)
+      const sut = fail<string, number>(1)
         .flatMap(a => ok(a.toString()))
         .unwrapFail()
 
@@ -137,7 +137,7 @@ describe('result', () => {
     it('should match', () => {
       const sut = fail(1)
         .match({
-          fail: _ => 2,
+          fail: () => 2,
           ok: val => val
         })
 

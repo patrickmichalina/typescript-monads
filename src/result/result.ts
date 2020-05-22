@@ -2,11 +2,13 @@ import { IMaybe, maybe, none } from '../maybe/public_api'
 import { IResultMatchPattern, IResult } from './result.interface'
 
 export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
-  public static ok<TOk, TFail>(value: TOk) {
+  public static ok<TOk, TFail>(value: TOk): IResult<TOk, TFail> {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return new OkResult<TOk, TFail>(value)
   }
 
-  public static fail<TOk, TFail>(value: TFail) {
+  public static fail<TOk, TFail>(value: TFail): IResult<TOk, TFail> {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return new FailResult<TOk, TFail>(value)
   }
 
@@ -40,7 +42,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     return this.successValue
   }
 
-  unwrapOr(_opt: TOk): TOk {
+  unwrapOr(): TOk {
     return this.unwrap()
   }
 
@@ -64,7 +66,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     return Result.ok<M, TFail>(fn(this.successValue))
   }
 
-  mapFail<M>(_: (err: TFail) => M): IResult<TOk, M> {
+  mapFail<M>(): IResult<TOk, M> {
     return Result.ok(this.successValue)
   }
 
@@ -74,7 +76,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
 
 }
 
-export class FailResult<TOk, TFail> extends Result<TOk, TFail>  {
+export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
   constructor(private readonly value: TFail) {
     super()
   }
@@ -115,11 +117,11 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail>  {
     return Result.fail(fn(this.value))
   }
 
-  map<M>(_fn: (val: TOk) => M): IResult<M, TFail> {
+  map<M>(): IResult<M, TFail> {
     return Result.fail(this.value)
   }
 
-  flatMap<M>(_fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
+  flatMap<M>(): IResult<M, TFail> {
     return Result.fail(this.value)
   }
 }

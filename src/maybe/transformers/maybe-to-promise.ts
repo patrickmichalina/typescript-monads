@@ -1,7 +1,7 @@
 import { IMaybe } from '../maybe.interface'
 
 export const maybeToPromise =
-  (catchResponse: any = 'not found') =>
-    <T>(maybe: IMaybe<T>) => maybe.isSome()
-      ? Promise.resolve(maybe.valueOrUndefined() as T)
-      : Promise.reject(catchResponse)
+  <TReject>(catchResponse?: TReject) =>
+    <TResolve>(maybe: IMaybe<TResolve>): Promise<TResolve> => maybe.isSome()
+      ? Promise.resolve(maybe.valueOrUndefined() as TResolve)
+      : Promise.reject(catchResponse as TReject)

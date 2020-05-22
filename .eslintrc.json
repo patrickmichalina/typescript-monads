@@ -1,0 +1,106 @@
+{
+  "ignorePatterns": [
+    "dist",
+    "vscode",
+    "node_modules",
+    "coverage",
+    "ormconfig.js",
+    "jest.config.js",
+    "jest.setup.js",
+    "scripts"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint/eslint-plugin",
+    "promise",
+    "rxjs"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:promise/recommended"
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "rules": {
+    "no-irregular-whitespace": 2,
+    "array-bracket-spacing": [
+      2,
+      "never"
+    ],
+    "space-in-parens": [
+      2,
+      "never"
+    ],
+    "promise/no-nesting": 0,
+    "semi": [
+      2,
+      "never"
+    ],
+    "@typescript-eslint/indent": [
+      "error",
+      2
+    ],
+    "@typescript-eslint/comma-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "@typescript-eslint/quotes": [
+      "error",
+      "single"
+    ],
+    "comma-dangle": 2,
+    "no-unexpected-multiline": 2,
+    "@typescript-eslint/interface-name-prefix": 0,
+    "@typescript-eslint/no-explicit-any": 2,
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/explicit-function-return-type": 2,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "after-used"
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1,
+        "maxEOF": 0
+      }
+    ],
+    "eol-last": [
+      "error",
+      "always"
+    ],
+    "@typescript-eslint/member-delimiter-style": [
+      2,
+      {
+        "multiline": {
+          "delimiter": "none",
+          "requireLast": true
+        }
+      }
+    ],
+    "rxjs/no-nested-subscribe": 2,
+    "rxjs/no-index": 2,
+    "rxjs/no-internal": 2,
+    "rxjs/no-unsafe-takeuntil": 2,
+    "rxjs/no-unsafe-first": 2,
+    "rxjs/no-unsafe-catch": 2
+  }
+}

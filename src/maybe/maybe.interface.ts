@@ -20,8 +20,7 @@ export interface IMaybePattern<TIn, TOut> {
  */
 export interface IMaybe<T> extends IMonad<T> {
 
-  // tslint:disable-next-line:readonly-array
-  of(x: T, ...args: any[]): IMaybe<T>
+  of(x: T): IMaybe<T>
 
   /**
    * Unwrap a Maybe with a default value

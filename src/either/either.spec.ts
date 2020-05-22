@@ -41,7 +41,7 @@ describe(either.name, () => {
     const eitherThing = either(leftInput, rightInput)
 
     const mapped = eitherThing.match({
-      left: num => '123',
+      left: () => '123',
       right: str => `${str}_right`
     })
 
@@ -130,7 +130,7 @@ describe(either.name, () => {
 
     const mapped1 = eitherThing
       .tap({
-        right: _rightSideEffect => fail(),
+        right: () => fail(),
         left: leftSideEffect => {
           expect(leftSideEffect).toEqual(123)
         }
@@ -142,7 +142,7 @@ describe(either.name, () => {
       })
     const mapped3 = eitherThing
       .tap({
-        right: _rightSideEffect => fail()
+        right: () => fail()
       })
 
     const mapped4 = eitherThing.tap({})
@@ -163,13 +163,13 @@ describe(either.name, () => {
 
     const mapped1 = eitherThing
       .tap({
-        left: _leftSideEffect => fail(),
+        left: () => fail(),
         right: rightSideEffect => expect(rightSideEffect).toEqual(123)
       })
 
     const mapped2 = eitherThing
       .tap({
-        left: _leftSideEffect => fail()
+        left: () => fail()
       })
     const mapped3 = eitherThing
       .tap({

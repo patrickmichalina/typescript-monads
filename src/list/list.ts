@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Repurposed from this great piece of code: https://gist.github.com/gvergnaud/6e9de8e06ef65e65f18dbd05523c7ca9
 // Implements a number of functions from the .NET LINQ library: https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.reverse?view=netcore-3.1
 
@@ -11,11 +12,11 @@ export class List<T> {
     this[Symbol.iterator as any] = generator
   }
 
-  private generator() {
-    return this[Symbol.iterator as any]() as Generator<T, T[]>
+  private generator(): Generator<T, T[], T> {
+    return this[Symbol.iterator as any]() as Generator<T, T[], T>
   }
 
-  private static flattenArgs<T>(args: T[] | Iterable<T>[]) {
+  private static flattenArgs<T>(args: T[] | Iterable<T>[]): T[] {
     return (args as T[])
       .reduce((acc, curr) => {
         return Array.isArray(curr)
@@ -48,7 +49,7 @@ export class List<T> {
     } as any, Math.floor((end - start + 1) / step))
   }
 
-  public static integers() {
+  public static integers(): List<number> {
     return this.range(0, Infinity)
   }
 
@@ -142,7 +143,7 @@ export class List<T> {
    * Make a new list containing just the first N elements from an existing list.
    * @param count The number of elements to return.
    */
-  public take(count: number) {
+  public take(count: number): List<T> {
     const generator = this.generator() as any
     return new List(function* () {
 
@@ -209,12 +210,11 @@ export class List<T> {
     return this.filter(a => a instanceof type)
   }
 
-  
   /**
    * Converts the list into an object with numbered indices mathing the array position of the item.
    */
   public toDictionary(): { [key: number]: T }
-  
+
   /**
    * Converts the list into an object deriving key from the specified property.
    */
@@ -279,7 +279,7 @@ export class List<T> {
    * Gets the first item in the collection or throws an error if undefined
    */
   public headOrThrow(msg?: string): T {
-    return this.headOrUndefined() || (() => { throw new Error(msg) })()
+    return this.headOrUndefined() || ((): never => { throw new Error(msg) })()
   }
 
   /** Convert to standard array */
