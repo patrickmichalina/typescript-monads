@@ -15,7 +15,7 @@ describe('package api', () => {
   })
 
   it('should export reader', () => {
-    expect(reader(_cfg => 1)).toBeInstanceOf(Reader)
+    expect(reader(() => 1)).toBeInstanceOf(Reader)
   })
 
   it('should export reader', () => {

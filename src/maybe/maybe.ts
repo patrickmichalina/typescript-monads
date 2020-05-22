@@ -8,11 +8,11 @@ export class Maybe<T> implements IMaybe<T>  {
     return new Maybe<T>(value)
   }
 
-  public static none<T>() {
+  public static none<T>(): IMaybe<T> {
     return new Maybe<T>()
   }
 
-  public static some<T>(value: T) {
+  public static some<T>(value: T): IMaybe<T> {
     return new Maybe<T>(value)
   }
 
@@ -37,17 +37,17 @@ export class Maybe<T> implements IMaybe<T>  {
   }
 
   public valueOrThrow(msg?: string): NonNullable<T> {
-    return this.isNone() ? (() => { throw new Error(msg) })() : this.value as NonNullable<T>
+    return this.isNone() ? ((): never => { throw new Error(msg) })() : this.value as NonNullable<T>
   }
 
   public valueOrThrowErr(err?: Error): NonNullable<T> {
     return this.isNone()
-      ? (() => err instanceof Error ? (() => { throw err })() : (() => { throw new Error() })())()
+      ? ((): never => err instanceof Error ? ((): never => { throw err })() : ((): never => { throw new Error() })())()
       : this.value as NonNullable<T>
   }
 
-  public tap(obj: Partial<IMaybePattern<T, void>>) {
-    return this.isNone()
+  public tap(obj: Partial<IMaybePattern<T, void>>): void {
+    this.isNone()
       ? typeof obj.none === 'function' && obj.none()
       : typeof obj.some === 'function' && obj.some(this.value as NonNullable<T>)
   }
@@ -60,7 +60,7 @@ export class Maybe<T> implements IMaybe<T>  {
     (this.isSome()) && fn(this.value as NonNullable<T>)
   }
 
-  public match<R>(pattern: IMaybePattern<T, R>) {
+  public match<R>(pattern: IMaybePattern<T, R>): R {
     return this.isNone()
       ? pattern.none()
       : pattern.some(this.value as NonNullable<T>)

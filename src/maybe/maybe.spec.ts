@@ -158,7 +158,7 @@ describe('Maybe', () => {
           none: () => {
             sideEffectStore = 'hit none'
           },
-          some: _original => undefined
+          some: () => undefined
         })
 
       expect(sideEffectStore).toEqual('hit none')
@@ -181,6 +181,7 @@ describe('Maybe', () => {
   })
 
   describe('when mapping', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getUserService<T>(testReturn: any): T {
       return testReturn
     }
@@ -189,19 +190,19 @@ describe('Maybe', () => {
       const sut = 'initial input' as string | undefined
 
       const maybeSomeString = maybe(sut)
-        .map(_str => getUserService<string>('initial input mapped'))
+        .map(() => getUserService<string>('initial input mapped'))
         .valueOr('fallback')
 
       const maybeNotSomeSomeString = maybe(sut)
-        .map(_str => getUserService<string>(undefined))
+        .map(() => getUserService<string>(undefined))
         .valueOr('fallback')
 
       const maybeNotSomeSome2 = maybe(sut)
-        .map(_str => getUserService<string>(0))
+        .map(() => getUserService<string>(0))
         .valueOr('fallback')
 
       const maybeNotSomeSome3 = maybe(sut)
-        .map(_str => 'sut')
+        .map(() => 'sut')
         .valueOr('fallback')
 
       expect(maybeSomeString).toEqual('initial input mapped')
@@ -214,18 +215,18 @@ describe('Maybe', () => {
       const sut = undefined as string | undefined
 
       const maybeSomeString = maybe(sut)
-        .map(_str => getUserService<string>('initial input mapped'))
+        .map(() => getUserService<string>('initial input mapped'))
         .valueOr('fallback')
 
       const maybeNotSomeSomeString = maybe(sut)
-        .map(_str => getUserService<string>(undefined))
+        .map(() => getUserService<string>(undefined))
         .valueOr('fallback')
 
       const maybeNotSomeSome2 = maybe(sut)
-        .map(_str => getUserService<string>(0))
+        .map(() => getUserService<string>(0))
         .valueOr('fallback')
       const maybeNotSomeSome3 = maybe(sut)
-        .map(_str => getUserService<string>(''))
+        .map(() => getUserService<string>(''))
         .valueOr('fallback')
 
       expect(maybeSomeString).toEqual('fallback')
@@ -238,18 +239,18 @@ describe('Maybe', () => {
       const sut = 0 as number | undefined
 
       const maybeSomeString = maybe(sut)
-        .map(_str => getUserService<string>('initial input mapped'))
+        .map(() => getUserService<string>('initial input mapped'))
         .valueOr('fallback')
 
       const maybeNotSomeSomeString = maybe(sut)
-        .map(_str => getUserService<string>(undefined))
+        .map(() => getUserService<string>(undefined))
         .valueOr('fallback')
 
       const maybeNotSomeSome2 = maybe(sut)
-        .map(_str => getUserService<string>(0))
+        .map(() => getUserService<string>(0))
         .valueOr('fallback')
       const maybeNotSomeSome3 = maybe(sut)
-        .map(_str => getUserService<string>(''))
+        .map(() => getUserService<string>(''))
         .valueOr('fallback')
 
       expect(maybeSomeString).toEqual('initial input mapped')
@@ -262,18 +263,18 @@ describe('Maybe', () => {
       const sut = '' as string | undefined
 
       const maybeSomeString = maybe(sut)
-        .map(_str => getUserService<string>('initial input mapped'))
+        .map(() => getUserService<string>('initial input mapped'))
         .valueOr('fallback')
 
       const maybeNotSomeSomeString = maybe(sut)
-        .map(_str => getUserService<string>(undefined))
+        .map(() => getUserService<string>(undefined))
         .valueOr('fallback')
 
       const maybeNotSomeSome2 = maybe(sut)
-        .map(_str => getUserService<string>(0))
+        .map(() => getUserService<string>(0))
         .valueOr('fallback')
       const maybeNotSomeSome3 = maybe(sut)
-        .map(_str => getUserService<string>(''))
+        .map(() => getUserService<string>(''))
         .valueOr('fallback')
 
       expect(maybeSomeString).toEqual('initial input mapped')
@@ -289,7 +290,7 @@ describe('Maybe', () => {
       const nsut = undefined as number | undefined
 
       const maybeSomeNumber = maybe(sut)
-        .flatMap(a => maybe(nsut))
+        .flatMap(() => maybe(nsut))
         .valueOr(1)
 
       expect(maybeSomeNumber).toEqual(1)
@@ -359,7 +360,7 @@ describe('Maybe', () => {
       maybe(thing)
         .filter(a => a.isGreen === true)
         .tap({
-          some: _thing => expect(true).toBe(false),
+          some: () => expect(true).toBe(false),
           none: () => expect(1).toEqual(1)
         })
     })
@@ -371,7 +372,7 @@ describe('Maybe', () => {
       maybe(thing)
         .filter(a => a.isGreen === true)
         .tap({
-          some: _thing => expect(true).toBe(false),
+          some: () => expect(true).toBe(false),
           none: () => expect(1).toEqual(1)
         })
     })

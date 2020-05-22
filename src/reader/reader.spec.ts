@@ -1,4 +1,5 @@
 import { reader } from './reader.factory'
+import { IReader } from './reader.interface'
 
 describe('reader', () => {
   it('should of', () => {
@@ -18,9 +19,9 @@ describe('reader', () => {
   })
 
   it('should flatMap', () => {
-    const greet = (name: string) => reader<string, string>(ctx => ctx + ', ' + name)
-    const end = (str: string) => reader<string, boolean>(a => a === 'Hello')
-      .flatMap(isH => isH ? reader(ctx => str + '!!!') : reader(ctx => str + '.'))
+    const greet = (name: string): IReader<string, string> => reader<string, string>(ctx => ctx + ', ' + name)
+    const end = (str: string): IReader<string, string> => reader<string, boolean>(a => a === 'Hello')
+      .flatMap(isH => isH ? reader(() => str + '!!!') : reader(() => str + '.'))
 
     expect(greet('Tom').flatMap(end).run('Hello')).toEqual('Hello, Tom!!!')
     expect(greet('Jerry').flatMap(end).run('Hi')).toEqual('Hi, Jerry.')
