@@ -206,6 +206,7 @@ export class List<T> {
    * Filters the elements of the list based on a specified type.
    * @param type The type to filter the elements of the sequence on.
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public ofType(type: Function): List<T> {
     return this.filter(a => a instanceof type)
   }
