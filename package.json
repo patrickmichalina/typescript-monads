@@ -51,7 +51,6 @@
     "@typescript-eslint/parser": "^3.0.0",
     "codecov": "^3.7.0",
     "eslint": "^7.1.0",
-    "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-rxjs": "0.0.2-beta.22",
     "fast-check": "^1.24.2",
@@ -69,8 +68,8 @@
     "typescript": "^3.9.3"
   },
   "peerDependencies": {
-    "tslib": "^1.13.0",
-    "rxjs": "^6"
+    "tslib": ">=1.13.0",
+    "rxjs": ">=6"
   },
   "jest": {
     "testURL": "http://localhost",
