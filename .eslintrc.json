@@ -7,6 +7,7 @@
     "ormconfig.js",
     "jest.config.js",
     "jest.setup.js",
+    "rollup.config.js",
     "scripts"
   ],
   "parser": "@typescript-eslint/parser",
@@ -27,11 +28,6 @@
   "env": {
     "node": true,
     "jest": true
-  },
-  "settings": {
-    "import/resolver": {
-      "typescript": {}
-    }
   },
   "rules": {
     "no-irregular-whitespace": 2,

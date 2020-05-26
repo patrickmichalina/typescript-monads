@@ -23,7 +23,6 @@
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
     "sourceMap": true,
     "downlevelIteration": true
   },
