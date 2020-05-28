@@ -10,7 +10,7 @@ export interface IResultMatchPattern<T, E, U> {
 export interface IResult<T, E> {
   isOk(): boolean
   isFail(): boolean
-  maybeOk(): IMaybe<T>
+  maybeOk(): IMaybe<NonNullable<T>>
   maybeFail(): IMaybe<E>
   unwrap(): T | never
   unwrapOr(opt: T): T
