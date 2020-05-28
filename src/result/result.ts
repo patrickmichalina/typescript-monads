@@ -17,7 +17,7 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract unwrap(): TOk | never
   abstract unwrapOr(opt: TOk): TOk
   abstract unwrapFail(): TFail | never
-  abstract maybeOk(): IMaybe<TOk>
+  abstract maybeOk(): IMaybe<NonNullable<TOk>>
   abstract maybeFail(): IMaybe<TFail>
   abstract match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M
   abstract map<M>(fn: (val: TOk) => M): IResult<M, TFail>
@@ -50,8 +50,8 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     throw new ReferenceError('Cannot unwrap a success as a failure')
   }
 
-  maybeOk(): IMaybe<TOk> {
-    return maybe(this.successValue)
+  maybeOk(): IMaybe<NonNullable<TOk>> {
+    return maybe(this.successValue as NonNullable<TOk>)
   }
 
   maybeFail(): IMaybe<TFail> {
@@ -101,7 +101,7 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
     return this.value
   }
 
-  maybeOk(): IMaybe<TOk> {
+  maybeOk(): IMaybe<NonNullable<TOk>> {
     return none()
   }
 

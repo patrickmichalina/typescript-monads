@@ -27,8 +27,9 @@ describe('result', () => {
     })
 
     it('should ...', () => {
-      const _sut = ok('Test')
+      const _sut = ok<string | undefined, string>('Test')
         .maybeOk()
+        .map(b => b)
         .valueOr('Some Other')
 
       expect(_sut).toEqual('Test')
