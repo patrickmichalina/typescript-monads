@@ -77,7 +77,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
-  constructor(private readonly value: TFail) {
+  constructor(private readonly failureValue: TFail) {
     super()
   }
 
@@ -98,7 +98,7 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   unwrapFail(): TFail {
-    return this.value
+    return this.failureValue
   }
 
   maybeOk(): IMaybe<NonNullable<TOk>> {
@@ -106,22 +106,22 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   maybeFail(): IMaybe<TFail> {
-    return maybe(this.value)
+    return maybe(this.failureValue)
   }
 
   match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M {
-    return fn.fail(this.value)
+    return fn.fail(this.failureValue)
   }
 
   mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M> {
-    return Result.fail(fn(this.value))
+    return Result.fail(fn(this.failureValue))
   }
 
   map<M>(): IResult<M, TFail> {
-    return Result.fail(this.value)
+    return Result.fail(this.failureValue)
   }
 
   flatMap<M>(): IResult<M, TFail> {
-    return Result.fail(this.value)
+    return Result.fail(this.failureValue)
   }
 }
