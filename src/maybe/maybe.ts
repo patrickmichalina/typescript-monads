@@ -32,6 +32,10 @@ export class Maybe<T> implements IMaybe<T>  {
     return this.isSome() ? this.value as NonNullable<T> : undefined
   }
 
+  public valueOrNull(): T | null {
+    return this.isSome() ? this.value as NonNullable<T> : null
+  }
+
   public valueOrCompute(fn: () => NonNullable<T>): NonNullable<T> {
     return this.isSome() ? this.value as NonNullable<T> : fn()
   }

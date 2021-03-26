@@ -33,6 +33,11 @@ export interface IMaybe<T> extends IMonad<T> {
   valueOrUndefined(): T | undefined
 
   /**
+   * Unwrap a Maybe with its value or return null if its empty
+   */
+  valueOrNull(): T | null
+
+  /**
    * Unwrap a Maybe with its value or return and empty list
    */
   toArray(): ReadonlyArray<T>
