@@ -8,6 +8,7 @@
       "dom"
     ],
     "outDir": "dist",
+    "downlevelIteration": true,
     "isolatedModules": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
