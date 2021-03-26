@@ -8,7 +8,7 @@
 export class List<T> {
   [k: string]: any;
 
-  constructor(generator: () => Generator<T, T[]>, private readonly length: number) {
+  constructor(generator: () => Generator<T, T[], T>, private readonly length: number) {
     this[Symbol.iterator as any] = generator
   }
 
@@ -26,7 +26,7 @@ export class List<T> {
   }
 
   public static of<T>(...args: T[]): List<T> {
-    return new List<T>(function* () {
+    return new List<T>(<() => Generator<T, T[], T>>function* () {
       return yield* args
     }, args.length)
   }
@@ -162,9 +162,9 @@ export class List<T> {
    * Determines whether all elements of a sequence satisfy a condition.
    */
   public all(fn: (val: T) => boolean): boolean {
-    const generator = this.generator() as any
-    const newList = new List(function* () {
-      for (const value of generator) {
+    const generator = this.generator()
+    const newList = new List<T>(<() => Generator<T, T, T>>function* () {
+      for (const value of generator as IterableIterator<T>) {
         if (fn(value)) {
           yield value
         } else {
@@ -181,9 +181,9 @@ export class List<T> {
    * @param fn A function to test each element for a condition.
    */
   public any(fn: (val: T) => boolean): boolean {
-    const generator = this.generator() as any
-    const newList = new List(function* () {
-      for (const value of generator) {
+    const generator = this.generator()
+    const newList = new List<T>(<() => Generator<T, T, T>>function* () {
+      for (const value of generator as IterableIterator<T>) {
         if (fn(value)) {
           return yield value
         }
