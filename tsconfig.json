@@ -7,6 +7,10 @@
       "es2015",
       "dom"
     ],
+    "types": [
+      "node",
+      "jest"
+    ],
     "isolatedModules": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -27,6 +31,6 @@
     "downlevelIteration": true
   },
   "include": [
-    "src/**/*.ts"
+    "src"
   ]
 }
