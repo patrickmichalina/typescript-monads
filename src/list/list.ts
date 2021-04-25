@@ -248,12 +248,15 @@ export class List<T> {
   //   throw new Error('Not Implemented')
   // }
 
-  // sum<T extends number>(): number {
-  //   return this.toArray()
-  //     .reduce((acc, curr) => {
-  //       return acc + curr
-  //     }, 0)
-  // }
+  sum(): number {
+    return this
+      .toArray()
+      .reduce((acc, curr) => {
+        return typeof curr === 'number'
+          ? acc + curr
+          : 0
+      }, 0)
+  }
 
   /** 
    * Gets the first item in the collection or returns the provided value when undefined
