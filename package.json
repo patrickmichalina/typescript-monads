@@ -75,7 +75,8 @@
       "src/**/*.ts"
     ],
     "coverageReporters": [
-      "lcov"
+      "lcov",
+      "text"
     ],
     "coverageThreshold": {
       "global": {
