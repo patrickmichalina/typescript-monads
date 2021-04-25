@@ -247,6 +247,16 @@ describe(List.name, () => {
     })
   })
 
+  describe('sum', () => {
+    it('should sum the list', () => {
+      const sut = List.of(3, 20, 10)
+      const sut2 = List.of('how sume this?', 'no way')
+
+      expect(sut.sum()).toEqual(33)
+      expect(sut2.sum()).toEqual(0)
+    })
+  })
+
   // describe('OrderBy', () => {
   //   it('should order by object', () => {
   //     const dog1 = new Dog('Atlas')
