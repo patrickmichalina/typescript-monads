@@ -24,11 +24,13 @@
     "result",
     "either",
     "list",
+    "state",
     "functional",
     "list-monad",
     "maybe-monad",
     "either-monad",
-    "result-monad"
+    "result-monad",
+    "state-monad"
   ],
   "scripts": {
     "test": "jest",
@@ -52,7 +54,7 @@
     "codecov": "^3.8.1",
     "eslint": "^7.25.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-rxjs": "3.1.5",
+    "eslint-plugin-rxjs": "3.2.0",
     "fast-check": "^2.14.0",
     "fs-extra": "^9.1.0",
     "istanbul": "^0.4.5",
