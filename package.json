@@ -50,7 +50,7 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "codecov": "^3.8.1",
-    "eslint": "^7.24.0",
+    "eslint": "^7.25.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-rxjs": "3.1.5",
     "fast-check": "^2.14.0",
@@ -75,7 +75,8 @@
       "src/**/*.ts"
     ],
     "coverageReporters": [
-      "lcov"
+      "lcov",
+      "text"
     ],
     "coverageThreshold": {
       "global": {
