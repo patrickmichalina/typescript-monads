@@ -111,5 +111,6 @@ export interface IMaybe<T> extends IMonad<T> {
   /**
    * Apply a function wrapped in Maybe
    */
-  apply<R>(fab: IMaybe<(t: T) => R>): IMaybe<R>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  apply(maybe: IMaybe<ReturnType<T extends (...args: any) => any ? T : any>>): IMaybe<T>
 }

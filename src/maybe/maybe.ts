@@ -102,7 +102,9 @@ export class Maybe<T> implements IMaybe<T>  {
         : new Maybe<T>()
   }
 
-  public apply<R>(fab: IMaybe<(v: T) => NonNullable<R>>): IMaybe<R> {
-    return this.flatMap(b => fab.map(fn => fn(b)))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public apply(maybe: IMaybe<ReturnType<T extends (...args: any) => any ? T : any>>): IMaybe<NonNullable<T>> {
+    return maybe.flatMap(a => this.map(b => typeof b === 'function' ? b(a) : a))
   }
+
 }
