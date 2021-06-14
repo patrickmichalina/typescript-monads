@@ -12,8 +12,8 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
     return new FailResult<TOk, TFail>(value)
   }
 
-  abstract isOk(): boolean
-  abstract isFail(): boolean
+  abstract isOk(): this is OkResult<TOk, TFail>
+  abstract isFail(): this is FailResult<TOk, TFail>
   abstract unwrap(): TOk | never
   abstract unwrapOr(opt: TOk): TOk
   abstract unwrapFail(): TFail | never
@@ -30,11 +30,11 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     super()
   }
 
-  isOk(): boolean {
+  isOk(): this is OkResult<TOk, TFail> {
     return true
   }
 
-  isFail(): boolean {
+  isFail(): this is FailResult<TOk, TFail> {
     return false
   }
 
@@ -81,11 +81,11 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
     super()
   }
 
-  isOk(): boolean {
+  isOk(): this is OkResult<TOk, TFail> {
     return false
   }
 
-  isFail(): boolean {
+  isFail(): this is FailResult<TOk, TFail> {
     return true
   }
 
