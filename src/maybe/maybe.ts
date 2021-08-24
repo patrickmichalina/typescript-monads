@@ -1,3 +1,5 @@
+import { IResult } from '../result/result.interface'
+import { FailResult, OkResult } from '../result/result'
 import { IMaybePattern, IMaybe } from './maybe.interface'
 
 export class Maybe<T> implements IMaybe<T>  {
@@ -105,6 +107,12 @@ export class Maybe<T> implements IMaybe<T>  {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public apply(maybe: IMaybe<ReturnType<T extends (...args: any) => any ? T : any>>): IMaybe<NonNullable<T>> {
     return maybe.flatMap(a => this.map(b => typeof b === 'function' ? b(a) : a))
+  }
+
+  public toResult<E>(error: E): IResult<T, E> {
+    return this
+      .map<IResult<T, E>>(b => new OkResult<T, E>(b))
+      .valueOr(new FailResult<T, E>(error))
   }
 
 }

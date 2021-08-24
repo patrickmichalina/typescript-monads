@@ -547,4 +547,20 @@ describe('Maybe', () => {
       expect(Maybe.some(1).valueOrThrowErr()).toEqual(1)
     })
   })
+
+  describe('toResult', () => {
+    it('should return result object with success', () => {
+      const hasSome = maybe('hi')
+      const sut = hasSome.toResult(new Error('oops'))
+      
+      expect(sut.unwrap()).toEqual('hi')
+    })
+
+    it('should return result object with fail', () => {
+      const hasSome = maybe()
+      const sut = hasSome.toResult(new Error('oops'))
+
+      expect(sut.unwrapFail()).toEqual(new Error('oops'))
+    })
+  })
 })
