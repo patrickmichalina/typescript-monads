@@ -66,14 +66,14 @@ describe('Maybe', () => {
     })
 
     it('should handle "some" case when input is null', () => {
-      const sut = null as string | undefined | null
-      const maybeAString = maybe(sut).valueOr('default output')
+      const sut: string | null = null
+      const maybeAString = maybe<string>(sut).valueOr('default output')
 
       expect(maybeAString).toEqual('default output')
     })
 
     it('should handle "some" case when input is ""', () => {
-      const sut = '' as string | undefined | null
+      const sut: string | undefined | null = ''
       const maybeAString = maybe(sut).valueOr('fallback')
 
       expect(maybeAString).toEqual('')

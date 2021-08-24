@@ -2,7 +2,7 @@ import { IMaybePattern, IMaybe } from './maybe.interface'
 
 export class Maybe<T> implements IMaybe<T>  {
 
-  constructor(private readonly value?: T) { }
+  constructor(private readonly value?: T | null) { }
 
   public of(value: T): IMaybe<T> {
     return new Maybe<T>(value)
