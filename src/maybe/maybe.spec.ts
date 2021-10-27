@@ -551,6 +551,7 @@ describe('Maybe', () => {
   describe('mapTo', () => {
     it('should return new maybe with some', () => {
       expect(Maybe.some(1).mapTo('deltaforce').valueOrThrowErr()).toEqual('deltaforce')
+      expect(Maybe.none().mapTo('deltaforce').valueOrNull()).toEqual(null)
     })
   })
 

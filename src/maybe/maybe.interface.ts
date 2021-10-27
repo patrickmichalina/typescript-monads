@@ -83,7 +83,7 @@ export interface IMaybe<T> extends IMonad<T> {
   map<R>(f: (t: T) => NonNullable<R>): IMaybe<R>
 
   /**
-   * Map to a new value while ignoring previous output
+   * Map to a new value while ignoring previous output value but respecting maybeness
    */
   mapTo<R>(v: NonNullable<R>): IMaybe<R>
 
