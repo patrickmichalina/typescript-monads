@@ -86,6 +86,12 @@ export class Maybe<T> implements IMaybe<T>  {
       : new Maybe<R>()
   }
 
+  public mapTo<R>(t: NonNullable<R>): IMaybe<R> {
+    return this.isSome()
+      ? new Maybe<R>(t)
+      : new Maybe<R>()
+  }
+
   public flatMap<R>(fn: (d: NonNullable<T>) => IMaybe<R>): IMaybe<R> {
     return this.isNone() ? new Maybe<R>() : fn(this.value as NonNullable<T>)
   }
