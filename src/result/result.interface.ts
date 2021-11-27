@@ -18,6 +18,7 @@ export interface IResult<T, E> {
   match<M>(fn: IResultMatchPattern<T, E, M>): M
   map<M>(fn: (val: T) => M): IResult<M, E>
   mapFail<M>(fn: (err: E) => M): IResult<T, M>
+  mapAsync<M>(fn: (val: T) => Promise<M>): Promise<IResult<M, E>>
   flatMap<M>(fn: (val: T) => IResult<M, E>): IResult<M, E>
 }
 

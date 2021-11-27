@@ -74,6 +74,22 @@ describe('result', () => {
 
       expect(sut).toEqual(1)
     })
+
+    it('should unwrap and rewrap promise for async map functions ', (done) => {
+      const okPromise = ok<number, string>(2)
+        .mapAsync(n => Promise.resolve(n ** 2))
+        .then(result => result.unwrap())
+        .then(nSquared => expect(nSquared).toEqual(4))
+
+      const failPromise = fail<number, string>('whoa there')
+        .mapAsync((n: number) => Promise.resolve(n ** 2))
+        .then(result => result.unwrapFail())
+        .then(failure => expect(failure).toEqual('whoa there'))
+
+      Promise.all([okPromise, failPromise])
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
   })
 
   describe('fail', () => {
