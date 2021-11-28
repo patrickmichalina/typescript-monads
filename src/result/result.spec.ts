@@ -65,6 +65,21 @@ describe('result', () => {
       expect(sut).toEqual('1')
     })
 
+    it('should flatMapAsync', (done) => {
+      ok(1)
+        .flatMapAsync(a => Promise.resolve(ok(a.toString())))
+        .then(result => result.unwrap())
+        .then(final => expect(final).toEqual('1'))
+        .then(done)  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+      
+      fail<number, string>('hold on')
+        .flatMapAsync(a => Promise.resolve(ok(a.toString())))
+        .then(result => result.unwrapFail())
+        .then(final => expect(final).toEqual('hold on'))
+        .catch(e => expect(e).toBeUndefined())
+    })
+
     it('should match', () => {
       const sut = ok(1)
         .match({

@@ -20,6 +20,7 @@ export interface IResult<T, E> {
   mapFail<M>(fn: (err: E) => M): IResult<T, M>
   mapAsync<M>(fn: (val: T) => Promise<M>): Promise<IResult<M, E>>
   flatMap<M>(fn: (val: T) => IResult<M, E>): IResult<M, E>
+  flatMapAsync<M>(fn: (val: T) => Promise<IResult<M, E>>): Promise<IResult<M, E>>
 }
 
 export interface IResultOk<T, E = never> extends IResult<T, E> {
@@ -28,6 +29,7 @@ export interface IResultOk<T, E = never> extends IResult<T, E> {
   unwrapFail(): never
   match<M>(fn: IResultMatchPattern<T, never, M>): M
   map<M>(fn: (val: T) => M): IResultOk<M, never>
+  mapAsync<M>(fn: (val: T) => Promise<M>): Promise<IResultOk<M, never>>
   mapFail<M>(fn: (err: E) => M): IResultOk<T, never>
 }
 
@@ -37,6 +39,8 @@ export interface IResultFail<T, E> extends IResult<T, E> {
   unwrapFail(): E
   match<M>(fn: IResultMatchPattern<never, E, M>): M
   map<M>(fn: (val: T) => M): IResultFail<never, E>
+  mapAsync<M>(fn: (val: T) => Promise<M>): Promise<IResultFail<never, E>>
   mapFail<M>(fn: (err: E) => M): IResultFail<never, M>
   flatMap<M>(fn: (val: T) => IResult<M, E>): IResultFail<never, E>
+  flatMapAsync<M>(fn: (val: T) => Promise<IResult<M, E>>): Promise<IResultFail<never, E>>
 }
