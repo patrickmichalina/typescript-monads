@@ -108,6 +108,16 @@ export interface IMaybe<T> extends IMonad<T> {
   flatMapAuto<R>(fn: (v: NonNullable<T>) => R): IMaybe<NonNullable<R>>
 
   /**
+   * Map output of non-empty promise to a new value
+   */
+  mapAsync<R>(fn: (t: T) => Promise<NonNullable<R>>): Promise<IMaybe<R>>
+
+  /**
+   * Combine multiple maybe, where maybe's output is async
+   */
+  flatMapAsync<R>(f: (t: T) => Promise<IMaybe<R>>): Promise<IMaybe<R>>
+
+  /**
    * Apply a predicate which if met, continues the Maybe chain,
    * otherwise return an empty Maybe
    */

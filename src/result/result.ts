@@ -22,7 +22,9 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract match<M>(fn: IResultMatchPattern<TOk, TFail, M>): M
   abstract map<M>(fn: (val: TOk) => M): IResult<M, TFail>
   abstract mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M>
+  abstract mapAsync<M>(fn: (val: TOk) => Promise<M>): Promise<IResult<M, TFail>>
   abstract flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail>
+  abstract flatMapAsync<M>(fn: (val: TOk) => Promise<IResult<M, TFail>>): Promise<IResult<M, TFail>>
 }
 
 export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
@@ -70,10 +72,18 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     return Result.ok(this.successValue)
   }
 
+  async mapAsync<M>(fn: (val: TOk) => Promise<M>): Promise<IResult<M, TFail>> {
+    const newValue = await fn(this.successValue)
+    return Result.ok(newValue)
+  }
+
   flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
     return fn(this.successValue)
   }
 
+  async flatMapAsync<M>(fn: (val: TOk) => Promise<IResult<M, TFail>>): Promise<IResult<M, TFail>> {
+    return await fn(this.successValue)
+  }
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
@@ -122,6 +132,14 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   flatMap<M>(): IResult<M, TFail> {
+    return Result.fail(this.failureValue)
+  }
+
+  async mapAsync<M>(): Promise<IResult<M, TFail>> {
+    return Result.fail(this.failureValue)
+  }
+
+  async flatMapAsync<M>(): Promise<IResult<M, TFail>> {
     return Result.fail(this.failureValue)
   }
 }

@@ -102,6 +102,18 @@ export class Maybe<T> implements IMaybe<T>  {
       : new Maybe<NonNullable<R>>(fn(this.value as NonNullable<T>) as NonNullable<R>)
   }
 
+  public async mapAsync<R>(fn: (t: NonNullable<T>) => Promise<NonNullable<R>>): Promise<IMaybe<R>> {
+    return this.isSome()
+      ? new Maybe<R>(await fn(this.value as NonNullable<T>))
+      : new Maybe<R>()
+  }
+
+  public async flatMapAsync<R>(fn: (d: NonNullable<T>) => Promise<IMaybe<R>>): Promise<IMaybe<R>> {
+    return this.isNone()
+      ? new Maybe<R>()
+      : await fn(this.value as NonNullable<T>)
+  }
+
   public filter(fn: (f: NonNullable<T>) => boolean): IMaybe<T> {
     return this.isNone()
       ? new Maybe<T>()

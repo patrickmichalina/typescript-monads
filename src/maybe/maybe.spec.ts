@@ -570,4 +570,148 @@ describe('Maybe', () => {
       expect(sut.unwrapFail()).toEqual(new Error('oops'))
     })
   })
+
+  describe('when async mapping', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function getUserService<T>(testReturn: any): Promise<T> {
+      return testReturn
+    }
+
+    it('should handle valid input', (done) => {
+      const sut = 'initial input' as string | undefined
+
+      const maybeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>('initial input mapped'))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('initial input mapped'))
+
+      const maybeNotSomeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>(undefined))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSome2 = maybe(sut)
+        .mapAsync(() => getUserService<string>(0))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual(0))
+
+      const maybeNotSomeSome3 = maybe(sut)
+        .mapAsync(() => Promise.resolve('sut'))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('sut'))
+      
+      Promise.all([maybeSomeString, maybeNotSomeSome2, maybeNotSomeSomeString, maybeNotSomeSome3])
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+
+    it('should handle undefined input', (done) => {
+      const sut = undefined as string | undefined
+
+      const maybeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>('initial input mapped'))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>(undefined))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSome2 = maybe(sut)
+        .mapAsync(() => getUserService<string>(0))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSome3 = maybe(sut)
+        .mapAsync(() => getUserService<string>(''))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      Promise.all([maybeSomeString, maybeNotSomeSome2, maybeNotSomeSomeString, maybeNotSomeSome3])
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+
+    it('should handle input of 0', (done) => {
+      const sut = 0 as number | undefined
+
+      const maybeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>('initial input mapped'))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('initial input mapped'))
+
+      const maybeNotSomeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>(undefined))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSome2 = maybe(sut)
+        .mapAsync(() => getUserService<string>(0))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual(0))
+
+      const maybeNotSomeSome3 = maybe(sut)
+        .mapAsync(() => getUserService<string>(''))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual(''))
+
+      Promise.all([maybeSomeString, maybeNotSomeSome2, maybeNotSomeSomeString, maybeNotSomeSome3])
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+
+    it('should handle input of ""', (done) => {
+      const sut = '' as string | undefined
+
+      const maybeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>('initial input mapped'))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('initial input mapped'))
+
+      const maybeNotSomeSomeString = maybe(sut)
+        .mapAsync(() => getUserService<string>(undefined))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual('fallback'))
+
+      const maybeNotSomeSome2 = maybe(sut)
+        .mapAsync(() => getUserService<string>(0))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual(0))
+      const maybeNotSomeSome3 = maybe(sut)
+        .mapAsync(() => getUserService<string>(''))
+        .then(result => result.valueOr('fallback'))
+        .then(final => expect(final).toEqual(''))
+
+      Promise.all([maybeSomeString, maybeNotSomeSome2, maybeNotSomeSomeString, maybeNotSomeSome3])
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+  })
+
+  describe('when async flatMapping', () => {
+    it('should handle "none" case', (done) => {
+      const sut = undefined as string | undefined
+      const nsut = undefined as number | undefined
+
+      maybe(sut)
+        .flatMapAsync(() => Promise.resolve(maybe(nsut)))
+        .then(result => result.valueOr(1))
+        .then(final => expect(final).toEqual(1))
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+
+    it('should handle "some" case', (done) => {
+      const sut = 'initial' as string | undefined
+      const nsut = 20 as number | undefined
+
+      maybe(sut)
+        .flatMapAsync(() => Promise.resolve(maybe(nsut)))
+        .then(result => result.valueOr(0))
+        .then(final => expect(final).toEqual(20))
+        .then(() => done())  // eslint-disable-line promise/no-callback-in-promise
+        .catch(e => expect(e).toBeUndefined())
+    })
+  })
 })
