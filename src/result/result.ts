@@ -23,6 +23,8 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract map<M>(fn: (val: TOk) => M): IResult<M, TFail>
   abstract mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M>
   abstract flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail>
+  abstract toFailWhenOk(fn: (val: TOk) => TFail): IResult<TOk, TFail>
+  abstract toFailWhenOkFrom(val: TFail): IResult<TOk, TFail>
 }
 
 export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
@@ -74,6 +76,13 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     return fn(this.successValue)
   }
 
+  toFailWhenOk(fn: (val: TOk) => TFail): IResult<TOk, TFail> {
+    return Result.fail(fn(this.successValue))
+  }
+
+  toFailWhenOkFrom(val: TFail): IResult<TOk, TFail> {
+    return Result.fail(val)
+  }
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
@@ -123,5 +132,13 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
 
   flatMap<M>(): IResult<M, TFail> {
     return Result.fail(this.failureValue)
+  }
+
+  toFailWhenOk(): IResult<TOk, TFail> {
+    return this
+  }
+
+  toFailWhenOkFrom(val: TFail): IResult<TOk, TFail> {
+    return Result.fail(val)
   }
 }

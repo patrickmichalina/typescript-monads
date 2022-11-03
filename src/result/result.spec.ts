@@ -157,4 +157,46 @@ describe('result', () => {
       expect(sut.isOk()).toEqual(true)
     })
   })
+
+  describe('toFailIfExists', () => {
+    it('should toFailWhenOk', () => {
+      const sut = ok<number, Error>(1)
+        .map(a => a + 2)
+        .toFailWhenOk(a => new Error(`only have ${a}`))
+
+      expect(sut.isFail()).toEqual(true)
+      expect(sut.unwrapFail()).toBeInstanceOf(Error)
+      expect(sut.unwrapFail().message).toEqual('only have 3')
+    })
+
+    it('should toFailWhenOkFrom from fail', () => {
+      const sut = fail<number, Error>(new Error('started as error'))
+        .map(a => a + 2)
+        .toFailWhenOkFrom(new Error('ended as an error'))
+
+      expect(sut.isFail()).toEqual(true)
+      expect(sut.unwrapFail()).toBeInstanceOf(Error)
+      expect(sut.unwrapFail().message).toEqual('ended as an error')
+    })
+
+    it('should toFailWhenOk from fail', () => {
+      const sut = fail<number, Error>(new Error('started as error'))
+        .map(a => a + 2)
+        .toFailWhenOk(a => new Error(`ended as an error ${a}`))
+
+      expect(sut.isFail()).toEqual(true)
+      expect(sut.unwrapFail()).toBeInstanceOf(Error)
+      expect(sut.unwrapFail().message).toEqual('started as error')
+    })
+
+    it('should toFailWhenOkFrom', () => {
+      const sut = ok<number, Error>(1)
+        .map(a => a + 2)
+        .toFailWhenOkFrom(new Error('error msg'))
+
+      expect(sut.isFail()).toEqual(true)
+      expect(sut.unwrapFail()).toBeInstanceOf(Error)
+      expect(sut.unwrapFail().message).toEqual('error msg')
+    })
+  })
 })

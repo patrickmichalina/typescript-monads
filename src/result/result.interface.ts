@@ -19,6 +19,16 @@ export interface IResult<T, E> {
   map<M>(fn: (val: T) => M): IResult<M, E>
   mapFail<M>(fn: (err: E) => M): IResult<T, M>
   flatMap<M>(fn: (val: T) => IResult<M, E>): IResult<M, E>
+
+  /**
+   * Convert Ok result into Fail using projected value from Ok
+   */
+  toFailWhenOk(fn: (val: T) => E): IResult<T, E>
+
+  /**
+   * Convert Ok result into Fail using a provided value
+   */
+  toFailWhenOkFrom(val: E): IResult<T, E>
 }
 
 export interface IResultOk<T, E = never> extends IResult<T, E> {
