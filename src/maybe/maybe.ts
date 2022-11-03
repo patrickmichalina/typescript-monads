@@ -102,6 +102,10 @@ export class Maybe<T> implements IMaybe<T>  {
       : new Maybe<NonNullable<R>>(fn(this.value as NonNullable<T>) as NonNullable<R>)
   }
 
+  public project<R extends T[keyof T]>(fn: (d: NonNullable<T>) => R): IMaybe<NonNullable<R>> {
+    return this.flatMapAuto(fn)
+  }
+
   public filter(fn: (f: NonNullable<T>) => boolean): IMaybe<T> {
     return this.isNone()
       ? new Maybe<T>()

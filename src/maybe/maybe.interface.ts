@@ -109,6 +109,11 @@ export interface IMaybe<T> extends IMonad<T> {
   flatMapAuto<R>(fn: (v: NonNullable<T>) => R): IMaybe<NonNullable<R>>
 
   /**
+   * drill into Just values
+   */
+  project<R extends T[keyof T]>(fn: (d: NonNullable<T>) => R): IMaybe<NonNullable<R>>
+
+  /**
    * Apply a predicate which if met, continues the Maybe chain,
    * otherwise return an empty Maybe
    */
