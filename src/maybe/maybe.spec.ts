@@ -485,6 +485,52 @@ describe('Maybe', () => {
 
   })
 
+  describe('chain', () => {
+    it('should', () => {
+      interface TestFace { thing: number; name: string }
+      const obj: TestFace = { thing: 1, name: 'string' }
+      const chained = maybe(obj)
+        .project(a => a.name)
+        .map(a => `${a} hello`)
+
+      expect(chained.isSome()).toEqual(true)
+      expect(chained.valueOrUndefined()).toEqual('string hello')
+    })
+
+    it('should', () => {
+      const obj = { thing: 1, name: 'string', obj: { initial: 'PJM' } }
+      const chained = maybe(obj)
+        .project(a => a.obj)
+        .project(a => a.initial)
+        .map(a => `Hello, ${a}`)
+
+      expect(chained.isSome()).toEqual(true)
+      expect(chained.valueOrUndefined()).toEqual('Hello, PJM')
+    })
+
+    it('should', () => {
+      interface TestFace { thing: number; name: string }
+      const obj: TestFace = { thing: 1, name: undefined as unknown as string }
+      const chained = maybe(obj)
+        .project(a => a.name)
+        .project(a => a)
+        .map(a => `${a} hello`)
+
+      expect(chained.isNone()).toEqual(true)
+      expect(chained.valueOrUndefined()).toBeUndefined()
+    })
+
+    it('should', () => {
+      const obj = undefined as unknown as { name: string }
+      const chained = maybe(obj)
+        .project(a => a.name)
+        .map(a => `${a} hello`)
+
+      expect(chained.isNone()).toEqual(true)
+      expect(chained.valueOrUndefined()).toBeUndefined()
+    })
+  })
+
   describe('isSome', () => {
     it('false path', () => {
       const sut = undefined as boolean | undefined
@@ -559,7 +605,7 @@ describe('Maybe', () => {
     it('should return result object with success', () => {
       const hasSome = maybe('hi')
       const sut = hasSome.toResult(new Error('oops'))
-      
+
       expect(sut.unwrap()).toEqual('hi')
     })
 
