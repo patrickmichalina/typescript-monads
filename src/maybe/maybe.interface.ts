@@ -1,4 +1,5 @@
 import { IMonad } from '../monad/monad.interface'
+import { IResult } from '../result/result.interface'
 
 /**
  * Define a contract to unwrap Maybe object
@@ -118,4 +119,6 @@ export interface IMaybe<T> extends IMonad<T> {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   apply(maybe: IMaybe<ReturnType<T extends (...args: any) => any ? T : any>>): IMaybe<T>
+
+  toResult<E>(error: E): IResult<T, E>
 }
