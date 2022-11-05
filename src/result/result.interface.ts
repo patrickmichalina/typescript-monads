@@ -21,6 +21,21 @@ export interface IResult<T, E> {
   flatMap<M>(fn: (val: T) => IResult<M, E>): IResult<M, E>
 
   /**
+   * Execute functions with side-effects.
+   */
+  tap(val: Partial<IResultMatchPattern<T, E, void>>): void
+
+  /**
+   * Execute a function with side-effects when maybe is a Fail.
+   */
+  tapFail(f: (val: E) => void): void
+
+  /**
+   * Execute a function with side-effects when maybe is an Ok.
+   */
+  tapOk(f: (val: T) => void): void
+
+  /**
    * Convert Ok result into Fail using projected value from Ok
    */
   toFailWhenOk(fn: (val: T) => E): IResult<T, E>

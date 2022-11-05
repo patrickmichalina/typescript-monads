@@ -199,4 +199,58 @@ describe('result', () => {
       expect(sut.unwrapFail().message).toEqual('error msg')
     })
   })
+
+  describe('tap', () => {
+    it('should tap.ok', done => {
+      const sut = ok(1)
+      
+      sut.tap({
+        ok: num => {
+          expect(num).toEqual(1)
+          done()
+        },
+        fail: done
+      })
+    })
+
+    it('should tap.ok', done => {
+      const sut = fail<number, string>('failed')
+      
+      sut.tap({
+        fail: str => {
+          expect(str).toEqual('failed')
+          done()
+        },
+        ok: done
+      })
+    })
+
+    it('should tapOk', done => {
+      const sut = ok<number, string>(1)
+      
+      sut.tapOk(num => {
+        expect(num).toEqual(1)
+        done()
+      })
+
+      sut.tapFail(() => {
+        expect(true).toBeFalsy()
+        done()
+      })
+    })
+
+    it('should tapFail', done => {
+      const sut = fail<number, string>('failed')
+      
+      sut.tapFail(err => {
+        expect(err).toEqual('failed')
+        done()
+      })
+
+      sut.tapOk(() => {
+        expect(true).toBeFalsy()
+        done()
+      })
+    })
+  })
 })
