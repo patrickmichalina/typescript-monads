@@ -1,6 +1,7 @@
 import { IResult } from '../result.interface'
 
-export const resultToPromise =
-  <TOk, TFail>(result: IResult<TOk, TFail>): Promise<TOk> => result.isOk()
-    ? Promise.resolve(result.unwrap() as TOk)
-    : Promise.reject(result.unwrapFail() as TFail)
+export function resultToPromise<TOk, TFail>(result: IResult<TOk, TFail>): Promise<TOk> {
+  return result.isOk()
+    ? Promise.resolve(result.unwrap())
+    : Promise.reject(result.unwrapFail())
+}
