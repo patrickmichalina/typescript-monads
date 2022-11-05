@@ -8,7 +8,7 @@ import { IMaybe } from '../maybe.interface'
  * If the Maybe is empty, the observable will immediately complete without emitting a value, otherwise it will emit
  * the value contained and complete.
  *
- * @requires rxjs@^6.0
+ * @requires rxjs@^7.0
  * @example
  * of(maybe(5)).pipe(
  *   flatMap(maybeToObservable)
@@ -20,9 +20,6 @@ import { IMaybe } from '../maybe.interface'
  * ).subscribe(a => console.log(a))
  * // immediately completes with no emitted value
  */
-export const maybeToObservable = <A>(m: IMaybe<A>): Observable<A> => {
-  return m.isNone()
-    ? EMPTY
-    : of(m.valueOrThrow('isNone returned false for empty IMaybe.'))
-      .pipe(take(1))
+export function maybeToObservable<A>(m: IMaybe<A>): Observable<A> {
+  return m.isNone() ? EMPTY : of(m.valueOrThrow('isNone returned false for empty IMaybe.')).pipe(take(1))
 }
