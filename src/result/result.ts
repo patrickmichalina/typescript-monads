@@ -25,6 +25,9 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail>
   abstract toFailWhenOk(fn: (val: TOk) => TFail): IResult<TOk, TFail>
   abstract toFailWhenOkFrom(val: TFail): IResult<TOk, TFail>
+  abstract tap(val: IResultMatchPattern<TOk, TFail, void>): void
+  abstract tapOk(f: (val: TOk) => void): void
+  abstract tapFail(f: (val: TFail) => void): void
 }
 
 export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
@@ -83,6 +86,16 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
   toFailWhenOkFrom(val: TFail): IResult<TOk, TFail> {
     return Result.fail(val)
   }
+
+  tap(val: Partial<IResultMatchPattern<TOk, TFail, void>>): void {
+    typeof val.ok === 'function' && val.ok(this.successValue)
+  }
+
+  tapOk(fn: (val: TOk) => void): void {
+    fn(this.successValue)
+  }
+
+  tapFail(): void { }
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
@@ -140,5 +153,15 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
 
   toFailWhenOkFrom(val: TFail): IResult<TOk, TFail> {
     return Result.fail(val)
+  }
+
+  tap(val: Partial<IResultMatchPattern<TOk, TFail, void>>): void {
+    typeof val.fail === 'function' && val.fail(this.failureValue)
+  }
+
+  tapOk(): void { }
+
+  tapFail(fn: (val: TFail) => void): void {
+    fn(this.failureValue)
   }
 }
