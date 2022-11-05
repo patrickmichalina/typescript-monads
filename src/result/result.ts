@@ -1,6 +1,10 @@
 import { IMaybe, maybe, none } from '../maybe/public_api'
 import { IResultMatchPattern, IResult } from './result.interface'
 
+function handleTap<TOk, TFail>(val: TOk | TFail, fn?: (val: TOk | TFail) => void): void {
+  typeof fn === 'function' && fn(val)
+}
+
 export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   public static ok<TOk, TFail>(value: TOk): IResult<TOk, TFail> {
     return new OkResult<TOk, TFail>(value)
@@ -86,7 +90,7 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
   }
 
   tap(val: Partial<IResultMatchPattern<TOk, TFail, void>>): void {
-    typeof val.ok === 'function' && val.ok(this.successValue)
+    handleTap(this.successValue, val.ok)
   }
 
   tapOk(fn: (val: TOk) => void): void {
@@ -154,7 +158,7 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   tap(val: Partial<IResultMatchPattern<TOk, TFail, void>>): void {
-    typeof val.fail === 'function' && val.fail(this.failureValue)
+    handleTap(this.failureValue, val.fail)
   }
 
   tapOk(): void { }
