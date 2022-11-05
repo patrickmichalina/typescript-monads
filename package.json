@@ -33,7 +33,7 @@
     "state-monad"
   ],
   "scripts": {
-    "test": "jest --maxWorkers=4",
+    "test": "jest",
     "test.watch": "jest --watch",
     "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tsc --noEmit && eslint '{src,apps,libs,test,e2e,tools}/**/*.ts'",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.4",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.2.2",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
