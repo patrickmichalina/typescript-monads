@@ -3,12 +3,10 @@ import { IResultMatchPattern, IResult } from './result.interface'
 
 export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   public static ok<TOk, TFail>(value: TOk): IResult<TOk, TFail> {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return new OkResult<TOk, TFail>(value)
   }
 
   public static fail<TOk, TFail>(value: TFail): IResult<TOk, TFail> {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return new FailResult<TOk, TFail>(value)
   }
 
