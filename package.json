@@ -33,7 +33,7 @@
     "state-monad"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --maxWorkers=6",
     "test.watch": "jest --watch",
     "dist": "ts-node ./scripts/publish-prep.ts",
     "lint": "tsc --noEmit && eslint '{src,apps,libs,test,e2e,tools}/**/*.ts'",
