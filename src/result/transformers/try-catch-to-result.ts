@@ -7,10 +7,10 @@ import { IResult } from '../result.interface'
  * @param fn a throwable function
  * @returns an IResult object which wraps the execution as either fail or success
  */
-export function catchResult<TValue, TError>(fn: () => TValue): IResult<TValue, TError> {
+export function catchResult<TValue, TError>(fn: () => TValue, errFn?: (err: unknown) => TError): IResult<TValue, TError> {
   try {
     return ok<TValue, TError>(fn())
   } catch(err) {
-    return fail<TValue, TError>(err as TError)
+    return fail<TValue, TError>(errFn ? errFn(err) : err as TError)
   }
 }
