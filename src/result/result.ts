@@ -103,12 +103,12 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
   }
 
   tapOkThru(fn: (val: TOk) => void): IResult<TOk, TFail> {
-    fn(this.successValue)
+    this.tapOk(fn)
     return this
   }
 
   tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail> {
-    typeof val.ok === 'function' && val.ok(this.successValue)
+    this.tap(val)
     return this
   }
 }
@@ -181,7 +181,7 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   tapFailThru(fn: (val: TFail) => void): IResult<TOk, TFail> {
-    fn(this.failureValue)
+    this.tapFail(fn)
     return this
   }
 
@@ -190,7 +190,7 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   }
 
   tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail> {
-    typeof val.fail === 'function' && val.fail(this.failureValue)
+    this.tap(val)
     return this
   }
 }
