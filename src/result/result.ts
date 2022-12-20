@@ -26,6 +26,9 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract tap(val: IResultMatchPattern<TOk, TFail, void>): void
   abstract tapOk(f: (val: TOk) => void): void
   abstract tapFail(f: (val: TFail) => void): void
+  abstract tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail>
+  abstract tapOkThru(fn: (val: TOk) => void): IResult<TOk, TFail>
+  abstract tapFailThru(fn: (val: TFail) => void): IResult<TOk, TFail>
 }
 
 export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
@@ -94,6 +97,20 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
   }
 
   tapFail(): void { }
+  
+  tapFailThru(): IResult<TOk, TFail> {
+    return this
+  }
+
+  tapOkThru(fn: (val: TOk) => void): IResult<TOk, TFail> {
+    this.tapOk(fn)
+    return this
+  }
+
+  tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail> {
+    this.tap(val)
+    return this
+  }
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
@@ -161,5 +178,19 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
 
   tapFail(fn: (val: TFail) => void): void {
     fn(this.failureValue)
+  }
+
+  tapFailThru(fn: (val: TFail) => void): IResult<TOk, TFail> {
+    this.tapFail(fn)
+    return this
+  }
+
+  tapOkThru(): IResult<TOk, TFail> {
+    return this
+  }
+
+  tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail> {
+    this.tap(val)
+    return this
   }
 }

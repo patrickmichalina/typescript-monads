@@ -203,7 +203,7 @@ describe('result', () => {
   describe('tap', () => {
     it('should tap.ok', done => {
       const sut = ok(1)
-      
+
       sut.tap({
         ok: num => {
           expect(num).toEqual(1)
@@ -215,7 +215,7 @@ describe('result', () => {
 
     it('should tap.ok', done => {
       const sut = fail<number, string>('failed')
-      
+
       sut.tap({
         fail: str => {
           expect(str).toEqual('failed')
@@ -227,7 +227,7 @@ describe('result', () => {
 
     it('should tapOk', done => {
       const sut = ok<number, string>(1)
-      
+
       sut.tapOk(num => {
         expect(num).toEqual(1)
         done()
@@ -241,7 +241,7 @@ describe('result', () => {
 
     it('should tapFail', done => {
       const sut = fail<number, string>('failed')
-      
+
       sut.tapFail(err => {
         expect(err).toEqual('failed')
         done()
@@ -251,6 +251,123 @@ describe('result', () => {
         expect(true).toBeFalsy()
         done()
       })
+    })
+
+    it('should tapThru', done => {
+      const result = ok<number, string>(1)
+
+      let sideEffect = 0
+
+      const sut = result.tapOkThru(v => {
+        sideEffect = v
+      }).map(a => a + 2)
+
+      expect(sut.unwrap()).toEqual(3)
+      expect(sideEffect).toEqual(1)
+
+      done()
+    })
+
+    it('should tapThru failed side', done => {
+      const result = fail<number, string>('failed')
+
+      let sideEffect = 0
+
+      const sut = result.tapOkThru(v => {
+        sideEffect = v
+      }).map(a => a + 2)
+
+      expect(sut.unwrapFail()).toEqual('failed')
+      expect(sideEffect).toEqual(0)
+
+      done()
+    })
+
+    it('should tapFailThru', done => {
+      const result = fail<number, string>('failed')
+
+      let sideEffect = ''
+
+      const sut = result.tapFailThru(v => {
+        sideEffect = v + ' inside'
+      }).map(a => a + 2)
+
+      expect(sut.unwrapFail()).toEqual('failed')
+      expect(sideEffect).toEqual('failed inside')
+
+      done()
+    })
+
+    it('should tapFailThru Ok side', done => {
+      const result = ok<number, string>(1)
+
+      let sideEffect = ''
+
+      const sut = result.tapFailThru(v => {
+        sideEffect = v + ' inside'
+      }).map(a => a + 2)
+
+      expect(sut.unwrap()).toEqual(3)
+      expect(sideEffect).toEqual('')
+
+      done()
+    })
+
+    it('should tapThru', done => {
+      const result = ok<number, string>(1)
+
+      let sideEffect = 0
+
+      const sut = result.tapThru({
+        ok: v => {
+          sideEffect = v
+        }
+      }).map(a => a + 2)
+
+      expect(sut.unwrap()).toEqual(3)
+      expect(sideEffect).toEqual(1)
+
+      done()
+    })
+
+    it('should tapThru', done => {
+      const result = ok<number, string>(1)
+
+      let sideEffect = 0
+
+      const sut = result.tapThru({
+        ok: v => {
+          sideEffect = v
+        },
+        fail: f => {
+          sideEffect = +f
+        }
+      }).map(a => a + 2)
+
+      expect(sut.unwrap()).toEqual(3)
+      expect(sideEffect).toEqual(1)
+
+      done()
+    })
+
+    it('should tapThru', done => {
+      const result = fail<number, string>('failed')
+
+      let sideEffect = ''
+
+      const sut = result.tapThru({
+        ok: v => {
+          sideEffect = v + ''
+        },
+        fail: f => {
+          sideEffect = f + ' in here'
+        }
+      }).map(a => a + 2)
+
+      expect(sut.unwrapFail()).toEqual('failed')
+      expect(sideEffect).toEqual('failed in here')
+
+      done()
     })
   })
 })

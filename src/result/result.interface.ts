@@ -44,6 +44,24 @@ export interface IResult<T, E> {
    * Convert Ok result into Fail using a provided value
    */
   toFailWhenOkFrom(val: E): IResult<T, E>
+
+  /**
+   * Execute a function with side-effects.
+   * Returns this to continue operations
+   */
+  tapThru(val: Partial<IResultMatchPattern<T, E, void>>): IResult<T, E>
+
+  /**
+   * Execute a function with side-effects when maybe is a OK.
+   * Returns this to continue operations
+   */
+  tapOkThru(fn: (val: T) => void): IResult<T, E>
+
+  /**
+   * Execute a function with side-effects when maybe is a Fail.
+   * Returns this to continue operations
+   */
+  tapFailThru(fn: (val: E) => void): IResult<T, E>
 }
 
 export interface IResultOk<T, E = never> extends IResult<T, E> {
