@@ -1,4 +1,4 @@
-import { maybe, Maybe, either, Either, ok, fail, Result, reader, Reader, listOf, List } from './index'
+import { maybe, Maybe, either, Either, ok, fail, Result, reader, Reader, listOf, List, unwrapResultAsObservable } from './index'
 
 describe('package api', () => {
   it('should export maybe', () => {
@@ -20,5 +20,9 @@ describe('package api', () => {
 
   it('should export reader', () => {
     expect(listOf(1, 2)).toBeInstanceOf(List)
+  })
+
+  it('should export unwrapResult', () => {
+    expect(unwrapResultAsObservable()).toBeInstanceOf(Function)
   })
 })
