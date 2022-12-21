@@ -156,6 +156,11 @@ describe('result', () => {
       const sut = result(() => 1 + 1 === 2, true, 'FAILURE!')
       expect(sut.isOk()).toEqual(true)
     })
+
+    it('should return fail when predicate yields false', () => {
+      const sut = result(() => 1 + 1 === 1, true, 'FAILURE!')
+      expect(sut.isFail()).toEqual(true)
+    })
   })
 
   describe('toFailIfExists', () => {
