@@ -5,7 +5,7 @@ import { IMaybePattern, IMaybe } from './maybe.interface'
 export class Maybe<T> implements IMaybe<T>  {
 
   constructor(private readonly value?: T | null) { }
-
+  
   public of(value: T): IMaybe<T> {
     return new Maybe<T>(value)
   }
@@ -64,6 +64,21 @@ export class Maybe<T> implements IMaybe<T>  {
 
   public tapSome(fn: (val: NonNullable<T>) => void): void {
     (this.isSome()) && fn(this.value as NonNullable<T>)
+  }
+
+  public tapThru(val: Partial<IMaybePattern<T, void>>): IMaybe<T> {
+    this.tap(val)
+    return this
+  }
+
+  public tapThruNone(fn: () => void): IMaybe<T> {
+    this.tapNone(fn)
+    return this
+  }
+
+  public tapThruSome(fn: (val: T) => void): IMaybe<T> {
+    this.tapSome(fn)
+    return this
   }
 
   public match<R>(pattern: IMaybePattern<T, R>): R {
