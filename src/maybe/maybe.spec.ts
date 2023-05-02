@@ -1,4 +1,4 @@
-import { maybe } from './public_api'
+import { maybe, none } from './public_api'
 import { Maybe } from './maybe'
 
 describe('Maybe', () => {
@@ -614,6 +614,66 @@ describe('Maybe', () => {
       const sut = hasSome.toResult(new Error('oops'))
 
       expect(sut.unwrapFail()).toEqual(new Error('oops'))
+    })
+  })
+
+  describe('tapThruSome', () => {
+    it('should tapThruSome', () => {
+      // eslint-disable-next-line prefer-const
+      let variable: undefined | number = undefined
+      const hasSome = maybe(1)
+      const sut = hasSome.tapThruSome((v) => {
+        variable = v + 9
+      })
+      expect(sut.isSome()).toBeTruthy()
+      expect(sut.valueOrThrowErr()).toEqual(1)
+      expect(variable).toEqual(10)
+      expect(sut).toBeInstanceOf(Maybe)
+    })
+  })
+
+  describe('tapThruNone', () => {
+    it('should tapThruNone', () => {
+      // eslint-disable-next-line prefer-const
+      let variable: undefined | string = undefined
+      const hasSome = none<string>()
+      const sut = hasSome.tapThruNone(() => {
+        variable = 'whatever'
+      })
+      expect(sut.isNone()).toBeTruthy()
+      expect(sut.valueOrUndefined()).toBeUndefined()
+      expect(variable).toEqual('whatever')
+      expect(sut).toBeInstanceOf(Maybe)
+    })
+  })
+
+  describe('tapThru', () => {
+    it('should tap on some ', () => {
+      // eslint-disable-next-line prefer-const
+      let variable: undefined | string = undefined
+      const hasSome = maybe<string>('hi there')
+      const sut = hasSome.tapThru({
+        none: () => {},
+        some: (v) => { variable = v + ' joe'}
+      })
+      expect(sut.isSome()).toBeTruthy()
+      expect(sut.valueOrThrowErr()).toBeTruthy()
+      expect(variable).toEqual('hi there joe')
+      expect(sut).toBeInstanceOf(Maybe)
+    })
+
+    it('should tap on none ', () => {
+      // eslint-disable-next-line prefer-const
+      let variable: undefined | string = undefined
+      const hasSome = none<string>()
+      const sut = hasSome.tapThru({
+        none: () => { variable = 'sorry joe' },
+        some: (v) => { variable = v + ' joe' }
+      })
+      expect(sut.isNone()).toBeTruthy()
+      expect(sut.valueOrUndefined()).toBeUndefined()
+      expect(variable).toEqual('sorry joe')
+      expect(sut).toBeInstanceOf(Maybe)
     })
   })
 })
