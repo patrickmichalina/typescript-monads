@@ -573,18 +573,30 @@ describe('Maybe', () => {
   })
 
   describe('apply', () => {
+    it('should return none in nullish cases', () => {
+      const thisNone = maybe<number>()
+      const fnNone = maybe<(n: number) => number>()
+      const thisSome = maybe(5)
+      const fnSome = maybe((a: number) => a * 2)
+
+      expect(thisNone.apply(fnNone).isNone()).toBe(true)
+      expect(thisNone.apply(fnSome).isNone()).toBe(true)
+      expect(thisSome.apply(fnNone).isNone()).toBe(true)
+    })
+
     it('should apply the IMaybe<function>', () => {
-      const a = maybe((a: number) => a * 2)
-      const b = maybe(5)
+      const a = maybe(5) 
+      const b = maybe((a: number) => a * 2)
 
       expect(a.apply(b).valueOrThrow()).toBe(10)
     })
 
-    it('should apply the non-function maybe', () => {
+    it('should apply none objects gracefully', () => {
       const a = maybe(2)
-      const b = maybe(5)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const b: Maybe<(a: number) => number> = maybe(() => undefined as any)
 
-      expect(a.apply(b).valueOrThrow()).toBe(5)
+      expect(a.apply(b).isNone()).toBe(true)
     })
   })
 
