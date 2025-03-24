@@ -27,10 +27,11 @@ export class List<T> {
 
   public static of<T>(...args: T[]): List<T> {
     return new List<T>(<() => Generator<T, T[], T>>function* () {
-      return yield* args
+      yield* args
+      return args
     }, args.length)
   }
-
+  
   public static from<T>(iterable?: Iterable<T>): List<T> {
     return iterable
       ? new List(function* () {
