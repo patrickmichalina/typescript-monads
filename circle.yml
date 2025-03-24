@@ -51,6 +51,9 @@ workflows:
     jobs:
       - build
       - semver:
+          context:
+            - SharedKeys
+            - Test
           requires:
             - build
           filters:
