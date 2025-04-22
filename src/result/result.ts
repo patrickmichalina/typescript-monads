@@ -21,6 +21,7 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   abstract map<M>(fn: (val: TOk) => M): IResult<M, TFail>
   abstract mapFail<M>(fn: (err: TFail) => M): IResult<TOk, M>
   abstract flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail>
+  abstract flatMapMaybe<M>(fn: (val: TOk) => IMaybe<M>, err: TFail): IResult<M, TFail>
   abstract toFailWhenOk(fn: (val: TOk) => TFail): IResult<TOk, TFail>
   abstract toFailWhenOkFrom(val: TFail): IResult<TOk, TFail>
   abstract tap(val: IResultMatchPattern<TOk, TFail, void>): void
@@ -78,6 +79,29 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
 
   flatMap<M>(fn: (val: TOk) => IResult<M, TFail>): IResult<M, TFail> {
     return fn(this.successValue)
+  }
+
+  /**
+   * Maps the success value to a Maybe, and flattens the resulting structure.
+   * 
+   * Since this is an Ok Result, the function is applied to the contained value.
+   * The result depends on whether the Maybe is Some or None:
+   * - If Some: Returns an Ok Result with the unwrapped value
+   * - If None: Returns a Fail Result with the provided error
+   * 
+   * This implementation follows the monadic bind operation pattern where we:
+   * 1. Apply the function to get a Maybe
+   * 2. Match on the Maybe to convert it back to a Result
+   * 
+   * @param fn Function mapping the contained value to a Maybe
+   * @param err Error value to use if the Maybe is None
+   * @returns Either an Ok Result with the unwrapped value or a Fail Result with the provided error
+   */
+  flatMapMaybe<M>(fn: (val: TOk) => IMaybe<M>, err: TFail): IResult<M, TFail> {
+    return fn(this.successValue).match({
+      some: (val) => Result.ok<M, TFail>(val),
+      none: () => Result.fail<M, TFail>(err)
+    })
   }
 
   toFailWhenOk(fn: (val: TOk) => TFail): IResult<TOk, TFail> {
@@ -160,6 +184,18 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
 
   flatMap<M>(): IResult<M, TFail> {
     return Result.fail(this.failureValue)
+  }
+  
+  /**
+   * Short-circuits the flatMapMaybe operation for Fail Results.
+   * 
+   * Since this is a Fail Result, the function is not applied and the original error is preserved.
+   * This follows the monadic law that operations on failures should not execute the transformation.
+   * 
+   * @returns A Fail Result containing the original error
+   */
+  flatMapMaybe<M>(): IResult<M, TFail> {
+    return Result.fail<M, TFail>(this.failureValue)
   }
 
   toFailWhenOk(): IResult<TOk, TFail> {
