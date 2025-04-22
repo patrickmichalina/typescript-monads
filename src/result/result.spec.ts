@@ -389,7 +389,6 @@ describe('result', () => {
     it('should return Fail with error when Result is Ok but Maybe is None', () => {
       const okResult = ok<number, string>(5)
       const res = okResult.flatMapMaybe(() => none<number>(), 'No value found')
-
       expect(res.isFail()).toEqual(true)
       expect(res.unwrapFail()).toEqual('No value found')
     })
