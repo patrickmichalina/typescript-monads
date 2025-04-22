@@ -1,4 +1,5 @@
 import { ok, fail, result } from './result.factory'
+import { IMaybe, maybe, none, some } from '../maybe/public_api'
 
 describe('result', () => {
   describe('ok', () => {
@@ -373,6 +374,72 @@ describe('result', () => {
       expect(sideEffect).toEqual('failed in here')
 
       done()
+    })
+  })
+
+  describe('flatMapMaybe', () => {
+    it('should return Ok with value when Result is Ok and Maybe is Some', () => {
+      const okResult = ok<number, string>(5)
+      const res = okResult.flatMapMaybe((val) => maybe(val * 2), 'No value found')
+
+      expect(res.isOk()).toEqual(true)
+      expect(res.unwrap()).toEqual(10)
+    })
+
+    it('should return Fail with error when Result is Ok but Maybe is None', () => {
+      const okResult = ok<number, string>(5)
+      const res = okResult.flatMapMaybe(() => none<number>(), 'No value found')
+      expect(res.isFail()).toEqual(true)
+      expect(res.unwrapFail()).toEqual('No value found')
+    })
+
+    it('should return Fail with original error when Result is Fail', () => {
+      const failResult = fail<number, string>('Original error')
+      const res = failResult.flatMapMaybe((val: number) => maybe(val * 2), 'No value found')
+
+      expect(res.isFail()).toEqual(true)
+      expect(res.unwrapFail()).toEqual('Original error')
+    })
+
+    it('should ', () => {
+      const okResult = ok<{ result: number; data: IMaybe<{ zeta: number }> }, Error>({ result: 1, data: some({ zeta: 2 }) })
+      const res = okResult.flatMapMaybe((a) => a.data, new Error('No value found'))
+
+      expect(res.isFail()).toEqual(false)
+      expect(res.unwrap()).toEqual({ zeta: 2 })
+    })
+
+    it('should work with complex object properties', () => {
+      type User = {
+        id: number
+        profile?: {
+          name: string
+        }
+      }
+
+      // User with profile
+      const userWithProfile: User = { id: 1, profile: { name: 'John' } }
+      const okResult = ok<User, string>(userWithProfile)
+
+      const res1 = okResult.flatMapMaybe(
+        (user: User) => maybe(user.profile),
+        'Profile not found'
+      )
+
+      expect(res1.isOk()).toEqual(true)
+      expect(res1.unwrap().name).toEqual('John')
+
+      // User without profile
+      const userWithoutProfile: User = { id: 2 }
+      const okResult2 = ok<User, string>(userWithoutProfile)
+
+      const res2 = okResult2.flatMapMaybe(
+        (user: User) => maybe(user.profile),
+        'Profile not found'
+      )
+
+      expect(res2.isFail()).toEqual(true)
+      expect(res2.unwrapFail()).toEqual('Profile not found')
     })
   })
 })
