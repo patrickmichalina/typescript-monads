@@ -807,5 +807,110 @@ describe('Maybe', () => {
           done()
         })
     })
+    
+    it('should convert an array of Maybes to a Maybe of array with sequence', () => {
+      const maybes = [maybe(1), maybe(2), maybe(3)]
+      const result = Maybe.sequence(maybes)
+      
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr([])).toEqual([1, 2, 3])
+    })
+    
+    it('should return None from sequence if any Maybe is None', () => {
+      const maybes = [maybe(1), maybe<number>(), maybe(3)]
+      const result = Maybe.sequence(maybes)
+      
+      expect(result.isNone()).toBe(true)
+    })
+    
+    it('should handle empty arrays with sequence', () => {
+      const maybes: Maybe<number>[] = []
+      const result = Maybe.sequence(maybes)
+      
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr([])).toEqual([])
+    })
+  })
+  
+  describe('zipWith', () => {
+    it('should combine two Some values', () => {
+      const first = maybe('Hello')
+      const second = maybe('World')
+      
+      const result = first.zipWith(second, (a, b) => `${a}, ${b}!`)
+      
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr('default')).toBe('Hello, World!')
+    })
+    
+    it('should return None if first value is None', () => {
+      const first = maybe<string>()
+      const second = maybe('World')
+      
+      const result = first.zipWith(second, (a, b) => `${a}, ${b}!`)
+      
+      expect(result.isNone()).toBe(true)
+    })
+    
+    it('should return None if second value is None', () => {
+      const first = maybe('Hello')
+      const second = maybe<string>()
+      
+      const result = first.zipWith(second, (a, b) => `${a}, ${b}!`)
+      
+      expect(result.isNone()).toBe(true)
+    })
+    
+    it('should return None if both values are None', () => {
+      const first = maybe<string>()
+      const second = maybe<string>()
+      
+      const result = first.zipWith(second, (a, b) => `${a}, ${b}!`)
+      
+      expect(result.isNone()).toBe(true)
+    })
+  })
+  
+  describe('flatMapMany', () => {
+    it('should execute multiple promises in parallel when Some', async () => {
+      const source = maybe(42)
+      const result = await source.flatMapMany(val => [
+        Promise.resolve(val * 2),
+        Promise.resolve(val * 3),
+        Promise.resolve(val * 4)
+      ])
+      
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr([])).toEqual([84, 126, 168])
+    })
+    
+    it('should return None when initial Maybe is None', async () => {
+      const source = maybe<number>()
+      const result = await source.flatMapMany(val => [
+        Promise.resolve(val * 2),
+        Promise.resolve(val * 3)
+      ])
+      
+      expect(result.isNone()).toBe(true)
+    })
+    
+    it('should return None when any promise rejects', async () => {
+      const source = maybe(42)
+      const result = await source.flatMapMany(val => [
+        Promise.resolve(val * 2),
+        Promise.reject(new Error('test error')),
+        Promise.resolve(val * 4)
+      ])
+      
+      expect(result.isNone()).toBe(true)
+    })
+    
+    it('should handle empty promise arrays', async () => {
+      const source = maybe(42)
+      const result = await source.flatMapMany(() => [])
+      
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr([])).toEqual([])
+    })
   })
 })

@@ -506,4 +506,53 @@ export interface IMaybe<T> extends IMonad<T> {
    *   }));
    */
   flatMapObservable<R>(fn: (val: NonNullable<T>) => import('rxjs').Observable<R>): Promise<IMaybe<NonNullable<R>>>
+
+  /**
+   * Maps and flattens multiple Promises in parallel, preserving the Maybe context.
+   * 
+   * This operation allows processing an array of async operations concurrently
+   * while maintaining the Maybe context. If the original Maybe is None, the
+   * function is never called. Otherwise, all Promises are executed in parallel.
+   * 
+   * @typeParam R - The type returned by each Promise in the results array
+   * @param fn - A function that takes the value from this Maybe and returns an array of Promises
+   * @returns A Promise that resolves to a Maybe containing an array of results
+   * 
+   * @example
+   * // Load multiple resources concurrently from a user ID
+   * maybe(userId)
+   *   .flatMapMany(id => [
+   *     api.fetchProfile(id),
+   *     api.fetchPermissions(id),
+   *     api.fetchSettings(id)
+   *   ])
+   *   .then(resultsMaybe => resultsMaybe.match({
+   *     some: ([profile, permissions, settings]) => displayDashboard(profile, permissions, settings),
+   *     none: () => showError('Failed to load user data')
+   *   }));
+   */
+  flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>>
+
+  /**
+   * Combines this Maybe with another Maybe using a combiner function.
+   * 
+   * If both Maybes are Some, applies the function to their values and returns
+   * a new Some containing the result. If either is None, returns None.
+   * 
+   * @typeParam U - The type of the value in the other Maybe
+   * @typeParam R - The type of the combined result
+   * @param other - Another Maybe to combine with this one
+   * @param fn - A function that combines the values from both Maybes
+   * @returns A new Maybe containing the combined result if both inputs are Some, otherwise None
+   * 
+   * @example
+   * // Combine user name and email into a display string
+   * const name = maybe(user.name);
+   * const email = maybe(user.email);
+   * 
+   * const display = name.zipWith(email, (name, email) => `${name} <${email}>`);
+   * // Some("John Doe <john@example.com>") if both name and email exist
+   * // None if either is missing
+   */
+  zipWith<U extends NonNullable<unknown>, R>(other: IMaybe<U>, fn: (a: NonNullable<T>, b: U) => NonNullable<R>): IMaybe<R>
 }

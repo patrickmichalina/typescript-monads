@@ -113,6 +113,39 @@ export class Maybe<T> implements IMaybe<T>  {
     )
   }
 
+  /**
+   * Transforms an array of Maybe values into a Maybe containing an array of values.
+   * 
+   * If all Maybes in the input array are Some, returns a Some containing an array of all values.
+   * If any Maybe in the input array is None, returns None.
+   * 
+   * @param maybes An array of Maybe values
+   * @returns A Maybe containing an array of all values if all inputs are Some, otherwise None
+   * 
+   * @example
+   * // All Maybes are Some
+   * const result1 = Maybe.sequence([maybe(1), maybe(2), maybe(3)]);
+   * // result1 is Some([1, 2, 3])
+   * 
+   * // One Maybe is None
+   * const result2 = Maybe.sequence([maybe(1), maybe(null), maybe(3)]);
+   * // result2 is None
+   */
+  public static sequence<T>(maybes: ReadonlyArray<IMaybe<T>>): IMaybe<ReadonlyArray<T>> {
+    if (maybes.length === 0) {
+      return new Maybe<ReadonlyArray<T>>([])
+    }
+
+    const values: T[] = []
+    for (const m of maybes) {
+      if (m.isNone()) {
+        return new Maybe<ReadonlyArray<T>>()
+      }
+      values.push(m.valueOrThrow())
+    }
+    return new Maybe<ReadonlyArray<T>>(values)
+  }
+
   public isSome(): boolean {
     return !this.isNone()
   }
@@ -263,5 +296,18 @@ export class Maybe<T> implements IMaybe<T>  {
       () => new Maybe<NonNullable<R>>()
     )
   }
-}
 
+  public flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>> {
+    if (this.isNone()) {
+      return Promise.resolve(new Maybe<NonNullable<R>[]>())
+    }
+
+    return Promise.all(fn(this.value as NonNullable<T>))
+      .then((values: R[]) => new Maybe<NonNullable<R>[]>(values as NonNullable<R>[]))
+      .catch(() => new Maybe<NonNullable<R>[]>())
+  }
+
+  public zipWith<U extends NonNullable<unknown>, R>(other: IMaybe<U>, fn: (a: NonNullable<T>, b: U) => NonNullable<R>): IMaybe<R> {
+    return this.flatMap(a => other.map(b => fn(a, b)))
+  }
+}
