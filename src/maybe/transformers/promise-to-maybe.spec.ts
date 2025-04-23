@@ -39,7 +39,7 @@ describe('promiseToMaybe', () => {
   it('should work with Maybe.flatMapPromise', (done) => {
     interface User { name: string }
     
-    const fetchUser = (id: number) => Promise.resolve(id === 1 ? { name: 'User' } : null)
+    const fetchUser = (id: number): Promise<User | null> => Promise.resolve(id === 1 ? { name: 'User' } : null)
     maybe(1).flatMapPromise(fetchUser)
       .then(result => {
         expect(result.isSome()).toBe(true)
@@ -52,7 +52,7 @@ describe('promiseToMaybe', () => {
   })
 
   it('should create None from Maybe.flatMapPromise when promise rejects', (done) => {
-    const fetchUser = () => Promise.reject(new Error('error'))
+    const fetchUser = (): Promise<never> => Promise.reject(new Error('error'))
     maybe(1).flatMapPromise(fetchUser)
       .then(result => {
         expect(result.isNone()).toBe(true)
@@ -61,7 +61,7 @@ describe('promiseToMaybe', () => {
   })
 
   it('should create None from Maybe.flatMapPromise when initial Maybe is None', (done) => {
-    const fetchUser = () => Promise.resolve({ name: 'User' })
+    const fetchUser = (): Promise<{name: string}> => Promise.resolve({ name: 'User' })
     maybe<number>().flatMapPromise(fetchUser)
       .then(result => {
         expect(result.isNone()).toBe(true)
@@ -72,7 +72,7 @@ describe('promiseToMaybe', () => {
   it('should work with Maybe.fromPromise', (done) => {
     interface User { name: string }
     
-    const fetchUser = () => Promise.resolve({ name: 'User' })
+    const fetchUser = (): Promise<User> => Promise.resolve({ name: 'User' })
     Maybe.fromPromise(fetchUser())
       .then(result => {
         expect(result.isSome()).toBe(true)

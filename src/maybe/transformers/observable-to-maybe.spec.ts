@@ -49,7 +49,7 @@ describe('observableToMaybe', () => {
   it('should work with Maybe.flatMapObservable', (done) => {
     interface User { name: string }
     
-    const getUser = (id: number) => of(id === 1 ? { name: 'User' } : null)
+    const getUser = (id: number): import('rxjs').Observable<User | null> => of(id === 1 ? { name: 'User' } : null)
     maybe(1).flatMapObservable(getUser)
       .then(result => {
         expect(result.isSome()).toBe(true)
@@ -62,7 +62,7 @@ describe('observableToMaybe', () => {
   })
 
   it('should create None from Maybe.flatMapObservable when observable errors', (done) => {
-    const getUser = () => throwError(() => new Error('error'))
+    const getUser = (): import('rxjs').Observable<never> => throwError(() => new Error('error'))
     maybe(1).flatMapObservable(getUser)
       .then(result => {
         expect(result.isNone()).toBe(true)
@@ -71,7 +71,7 @@ describe('observableToMaybe', () => {
   })
 
   it('should create None from Maybe.flatMapObservable when initial Maybe is None', (done) => {
-    const getUser = () => of({ name: 'User' })
+    const getUser = (): import('rxjs').Observable<{name: string}> => of({ name: 'User' })
     maybe<number>().flatMapObservable(getUser)
       .then(result => {
         expect(result.isNone()).toBe(true)
@@ -82,7 +82,7 @@ describe('observableToMaybe', () => {
   it('should work with Maybe.fromObservable', (done) => {
     interface User { name: string }
     
-    const getUser = () => of({ name: 'User' })
+    const getUser = (): import('rxjs').Observable<User> => of({ name: 'User' })
     Maybe.fromObservable(getUser())
       .then(result => {
         expect(result.isSome()).toBe(true)
