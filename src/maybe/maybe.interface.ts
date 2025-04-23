@@ -435,4 +435,124 @@ export interface IMaybe<T> extends IMonad<T> {
    * // Converts a Maybe<User> to a Result<User, Error>
    */
   toResult<E>(error: E): IResult<T, E>
+
+  /**
+   * Chains Maybe operations with a function that returns a Promise.
+   * 
+   * This allows for seamless integration with asynchronous operations.
+   * The Promise result is automatically wrapped in a Maybe, with null/undefined
+   * or rejected promises resulting in None.
+   * 
+   * Note on resolution preservation: This method preserves both the Maybe context and 
+   * the asynchronous nature of Promises:
+   * - None values short-circuit (the Promise-returning function is never called)
+   * - Some values are passed to the function, and its Promise result is processed
+   * - Promise rejections become None values in the resulting Maybe
+   * - Promise resolutions become Some values if non-nullish, None otherwise
+   * 
+   * This approach preserves the monadic semantics while adding asynchronicity.
+   * 
+   * @typeParam R - The type of the value in the resulting Promise
+   * @param fn - A function that takes the value from this Maybe and returns a Promise
+   * @returns A Promise that resolves to a Maybe containing the resolved value
+   * 
+   * @example
+   * maybe(userId)
+   *   .flatMapPromise(id => api.fetchUserProfile(id))
+   *   .then(profileMaybe => profileMaybe.match({
+   *     some: profile => displayProfile(profile),
+   *     none: () => showProfileNotFound()
+   *   }));
+   * 
+   * // Chain multiple promises
+   * maybe(user)
+   *   .flatMapPromise(user => fetchPermissions(user.id))
+   *   .then(permissionsMaybe => permissionsMaybe.flatMap(permissions => 
+   *     maybe(user).map(user => ({ ...user, permissions }))
+   *   ))
+   *   .then(userWithPermissions => renderUserDashboard(userWithPermissions));
+   */
+  flatMapPromise<R>(fn: (val: NonNullable<T>) => Promise<R>): Promise<IMaybe<NonNullable<R>>>
+
+  /**
+   * Chains Maybe operations with a function that returns an Observable.
+   * 
+   * This allows for seamless integration with reactive streams.
+   * The Observable result is automatically wrapped in a Maybe, with null/undefined
+   * or empty/error emissions resulting in None.
+   * 
+   * Note on resolution transformation: This method transforms between context types while
+   * preserving semantic meaning:
+   * - None values short-circuit (the Observable-returning function is never called)
+   * - Some values are passed to the function to generate an Observable
+   * - Only the first emission from the Observable is captured (timing loss)
+   * - Observable emissions become Some values in the resulting Maybe
+   * - Observable completion without emissions or errors becomes None
+   * - Observable errors become None values
+   * 
+   * There is timing model transformation: from continuous reactive to one-time asynchronous.
+   * 
+   * @typeParam R - The type of the value emitted by the resulting Observable
+   * @param fn - A function that takes the value from this Maybe and returns an Observable
+   * @returns A Promise that resolves to a Maybe containing the first emitted value
+   * 
+   * @requires rxjs@^7.0
+   * @example
+   * maybe(userId)
+   *   .flatMapObservable(id => userService.getUserSettings(id))
+   *   .then(settingsMaybe => settingsMaybe.match({
+   *     some: settings => applyUserSettings(settings),
+   *     none: () => applyDefaultSettings()
+   *   }));
+   */
+  flatMapObservable<R>(fn: (val: NonNullable<T>) => import('rxjs').Observable<R>): Promise<IMaybe<NonNullable<R>>>
+
+  /**
+   * Maps and flattens multiple Promises in parallel, preserving the Maybe context.
+   * 
+   * This operation allows processing an array of async operations concurrently
+   * while maintaining the Maybe context. If the original Maybe is None, the
+   * function is never called. Otherwise, all Promises are executed in parallel.
+   * 
+   * @typeParam R - The type returned by each Promise in the results array
+   * @param fn - A function that takes the value from this Maybe and returns an array of Promises
+   * @returns A Promise that resolves to a Maybe containing an array of results
+   * 
+   * @example
+   * // Load multiple resources concurrently from a user ID
+   * maybe(userId)
+   *   .flatMapMany(id => [
+   *     api.fetchProfile(id),
+   *     api.fetchPermissions(id),
+   *     api.fetchSettings(id)
+   *   ])
+   *   .then(resultsMaybe => resultsMaybe.match({
+   *     some: ([profile, permissions, settings]) => displayDashboard(profile, permissions, settings),
+   *     none: () => showError('Failed to load user data')
+   *   }));
+   */
+  flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>>
+
+  /**
+   * Combines this Maybe with another Maybe using a combiner function.
+   * 
+   * If both Maybes are Some, applies the function to their values and returns
+   * a new Some containing the result. If either is None, returns None.
+   * 
+   * @typeParam U - The type of the value in the other Maybe
+   * @typeParam R - The type of the combined result
+   * @param other - Another Maybe to combine with this one
+   * @param fn - A function that combines the values from both Maybes
+   * @returns A new Maybe containing the combined result if both inputs are Some, otherwise None
+   * 
+   * @example
+   * // Combine user name and email into a display string
+   * const name = maybe(user.name);
+   * const email = maybe(user.email);
+   * 
+   * const display = name.zipWith(email, (name, email) => `${name} <${email}>`);
+   * // Some("John Doe <john@example.com>") if both name and email exist
+   * // None if either is missing
+   */
+  zipWith<U extends NonNullable<unknown>, R>(other: IMaybe<U>, fn: (a: NonNullable<T>, b: U) => NonNullable<R>): IMaybe<R>
 }

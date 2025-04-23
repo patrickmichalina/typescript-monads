@@ -1,5 +1,6 @@
-import { IMaybe, maybe, none } from '../maybe/public_api'
-import { IResultMatchPattern, IResult } from './result.interface'
+import type { IMaybe } from '../maybe/maybe.interface'
+import type { IResultMatchPattern, IResult } from './result.interface'
+import { maybe, none } from '../maybe/maybe.factory'
 
 export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   public static ok<TOk, TFail>(value: TOk): IResult<TOk, TFail> {
