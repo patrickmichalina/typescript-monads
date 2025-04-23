@@ -2,9 +2,9 @@ import type { IResult } from '../result/result.interface'
 import type { IMaybePattern, IMaybe } from './maybe.interface'
 import { FailResult, OkResult } from '../result/result'
 
-export class Maybe<T> implements IMaybe<T>  {
+export class Maybe<T> implements IMaybe<T> {
   constructor(private readonly value?: T | null) { }
-  
+
   public of(value: T): IMaybe<T> {
     return new Maybe<T>(value)
   }
@@ -98,19 +98,18 @@ export class Maybe<T> implements IMaybe<T>  {
    *   .then(name => displayUserName(name));
    */
   public static fromObservable<T>(observable: import('rxjs').Observable<T>): Promise<IMaybe<NonNullable<T>>> {
-    const { firstValueFrom, EMPTY } = require('rxjs')
-    const { take, map, catchError } = require('rxjs/operators')
-    
-    return firstValueFrom(
-      observable.pipe(
-        take(1),
-        map((value: unknown) => new Maybe<NonNullable<T>>(value as NonNullable<T>)),
-        catchError(() => EMPTY)
+    return import('rxjs').then(({ firstValueFrom, EMPTY, take, map, catchError }) => {
+      return firstValueFrom(
+        observable.pipe(
+          take(1),
+          map((value) => new Maybe<NonNullable<T>>(value as NonNullable<T>)),
+          catchError(() => EMPTY)
+        )
+      ).then(
+        (maybeValue: IMaybe<NonNullable<T>>) => maybeValue,
+        () => new Maybe<NonNullable<T>>()
       )
-    ).then(
-      (maybeValue: IMaybe<NonNullable<T>>) => maybeValue,
-      () => new Maybe<NonNullable<T>>()
-    )
+    })
   }
 
   /**
@@ -271,7 +270,7 @@ export class Maybe<T> implements IMaybe<T>  {
     if (this.isNone()) {
       return Promise.resolve(new Maybe<NonNullable<R>>())
     }
-    
+
     return fn(this.value as NonNullable<T>)
       .then((value: R) => new Maybe<NonNullable<R>>(value as NonNullable<R>))
       .catch(() => new Maybe<NonNullable<R>>())
@@ -281,11 +280,7 @@ export class Maybe<T> implements IMaybe<T>  {
     if (this.isNone()) {
       return Promise.resolve(new Maybe<NonNullable<R>>())
     }
-    
-    const { firstValueFrom, EMPTY } = require('rxjs')
-    const { take, map, catchError } = require('rxjs/operators')
-    
-    return firstValueFrom(
+    return import('rxjs').then(({ firstValueFrom, EMPTY, take, map, catchError }) => firstValueFrom(
       fn(this.value as NonNullable<T>).pipe(
         take(1),
         map((value: unknown) => new Maybe<NonNullable<R>>(value as NonNullable<R>)),
@@ -294,7 +289,7 @@ export class Maybe<T> implements IMaybe<T>  {
     ).then(
       (maybeValue: IMaybe<NonNullable<R>>) => maybeValue,
       () => new Maybe<NonNullable<R>>()
-    )
+    ))
   }
 
   public flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>> {
