@@ -1,7 +1,7 @@
+import type { IMaybe } from './maybe.interface'
 import { Maybe } from './maybe'
-import { IMaybe } from './maybe.interface'
 
-export function maybe<T>(value?: T | null): Maybe<T> {
+export function maybe<T>(value?: T | null): IMaybe<T> {
   return new Maybe<T>(value)
 }
 

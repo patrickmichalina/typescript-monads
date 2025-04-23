@@ -435,4 +435,75 @@ export interface IMaybe<T> extends IMonad<T> {
    * // Converts a Maybe<User> to a Result<User, Error>
    */
   toResult<E>(error: E): IResult<T, E>
+
+  /**
+   * Chains Maybe operations with a function that returns a Promise.
+   * 
+   * This allows for seamless integration with asynchronous operations.
+   * The Promise result is automatically wrapped in a Maybe, with null/undefined
+   * or rejected promises resulting in None.
+   * 
+   * Note on resolution preservation: This method preserves both the Maybe context and 
+   * the asynchronous nature of Promises:
+   * - None values short-circuit (the Promise-returning function is never called)
+   * - Some values are passed to the function, and its Promise result is processed
+   * - Promise rejections become None values in the resulting Maybe
+   * - Promise resolutions become Some values if non-nullish, None otherwise
+   * 
+   * This approach preserves the monadic semantics while adding asynchronicity.
+   * 
+   * @typeParam R - The type of the value in the resulting Promise
+   * @param fn - A function that takes the value from this Maybe and returns a Promise
+   * @returns A Promise that resolves to a Maybe containing the resolved value
+   * 
+   * @example
+   * maybe(userId)
+   *   .flatMapPromise(id => api.fetchUserProfile(id))
+   *   .then(profileMaybe => profileMaybe.match({
+   *     some: profile => displayProfile(profile),
+   *     none: () => showProfileNotFound()
+   *   }));
+   * 
+   * // Chain multiple promises
+   * maybe(user)
+   *   .flatMapPromise(user => fetchPermissions(user.id))
+   *   .then(permissionsMaybe => permissionsMaybe.flatMap(permissions => 
+   *     maybe(user).map(user => ({ ...user, permissions }))
+   *   ))
+   *   .then(userWithPermissions => renderUserDashboard(userWithPermissions));
+   */
+  flatMapPromise<R>(fn: (val: NonNullable<T>) => Promise<R>): Promise<IMaybe<NonNullable<R>>>
+
+  /**
+   * Chains Maybe operations with a function that returns an Observable.
+   * 
+   * This allows for seamless integration with reactive streams.
+   * The Observable result is automatically wrapped in a Maybe, with null/undefined
+   * or empty/error emissions resulting in None.
+   * 
+   * Note on resolution transformation: This method transforms between context types while
+   * preserving semantic meaning:
+   * - None values short-circuit (the Observable-returning function is never called)
+   * - Some values are passed to the function to generate an Observable
+   * - Only the first emission from the Observable is captured (timing loss)
+   * - Observable emissions become Some values in the resulting Maybe
+   * - Observable completion without emissions or errors becomes None
+   * - Observable errors become None values
+   * 
+   * There is timing model transformation: from continuous reactive to one-time asynchronous.
+   * 
+   * @typeParam R - The type of the value emitted by the resulting Observable
+   * @param fn - A function that takes the value from this Maybe and returns an Observable
+   * @returns A Promise that resolves to a Maybe containing the first emitted value
+   * 
+   * @requires rxjs@^7.0
+   * @example
+   * maybe(userId)
+   *   .flatMapObservable(id => userService.getUserSettings(id))
+   *   .then(settingsMaybe => settingsMaybe.match({
+   *     some: settings => applyUserSettings(settings),
+   *     none: () => applyDefaultSettings()
+   *   }));
+   */
+  flatMapObservable<R>(fn: (val: NonNullable<T>) => import('rxjs').Observable<R>): Promise<IMaybe<NonNullable<R>>>
 }

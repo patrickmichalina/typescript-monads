@@ -594,7 +594,7 @@ describe('Maybe', () => {
     it('should apply none objects gracefully', () => {
       const a = maybe(2)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const b: Maybe<(a: number) => number> = maybe(() => undefined as any)
+      const b = maybe<(a: number) => number>(() => undefined as any)
 
       expect(a.apply(b).isNone()).toBe(true)
     })
@@ -686,6 +686,126 @@ describe('Maybe', () => {
       expect(sut.valueOrUndefined()).toBeUndefined()
       expect(variable).toEqual('sorry joe')
       expect(sut).toBeInstanceOf(Maybe)
+    })
+  })
+
+  describe('flatMapPromise', () => {
+    it('should handle a Some value with a resolved promise', (done) => {
+      const hasSome = maybe(42)
+      hasSome.flatMapPromise(value => Promise.resolve(`Value: ${value}`))
+        .then(result => {
+          expect(result.isSome()).toBe(true)
+          expect(result.valueOr('default')).toBe('Value: 42')
+          done()
+        })
+    })
+
+    it('should handle a Some value with a rejected promise', (done) => {
+      const hasSome = maybe(42)
+      hasSome.flatMapPromise(() => Promise.reject(new Error('test error')))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+
+    it('should handle a None value', (done) => {
+      const hasNone = maybe<number>()
+      hasNone.flatMapPromise(value => Promise.resolve(`Value: ${value}`))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+  })
+
+  describe('flatMapObservable', () => {
+    it('should handle a Some value with emitting observable', (done) => {
+      const { of } = require('rxjs')
+      const hasSome = maybe(42)
+      hasSome.flatMapObservable(value => of(`Value: ${value}`))
+        .then(result => {
+          expect(result.isSome()).toBe(true)
+          expect(result.valueOr('default')).toBe('Value: 42')
+          done()
+        })
+    })
+
+    it('should handle a Some value with empty observable', (done) => {
+      const { EMPTY } = require('rxjs')
+      const hasSome = maybe(42)
+      hasSome.flatMapObservable(() => EMPTY)
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+
+    it('should handle a Some value with erroring observable', (done) => {
+      const { throwError } = require('rxjs')
+      const hasSome = maybe(42)
+      hasSome.flatMapObservable(() => throwError(() => new Error('test error')))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+
+    it('should handle a None value', (done) => {
+      const { of } = require('rxjs')
+      const hasNone = maybe<number>()
+      hasNone.flatMapObservable(value => of(`Value: ${value}`))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+  })
+  
+  describe('static methods', () => {
+    it('should create a Maybe from Promise with static fromPromise', (done) => {
+      Maybe.fromPromise(Promise.resolve(42))
+        .then(result => {
+          expect(result.isSome()).toBe(true)
+          expect(result.valueOr(0)).toBe(42)
+          done()
+        })
+    })
+    
+    it('should create a Maybe from Promise that rejects with static fromPromise', (done) => {
+      Maybe.fromPromise(Promise.reject(new Error('error')))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+    
+    it('should create a Maybe from Observable with static fromObservable', (done) => {
+      const { of } = require('rxjs')
+      Maybe.fromObservable(of(42))
+        .then(result => {
+          expect(result.isSome()).toBe(true)
+          expect(result.valueOr(0)).toBe(42)
+          done()
+        })
+    })
+    
+    it('should create a Maybe from empty Observable with static fromObservable', (done) => {
+      const { EMPTY } = require('rxjs')
+      Maybe.fromObservable(EMPTY)
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
+    })
+    
+    it('should create a Maybe from erroring Observable with static fromObservable', (done) => {
+      const { throwError } = require('rxjs')
+      Maybe.fromObservable(throwError(() => new Error('test error')))
+        .then(result => {
+          expect(result.isNone()).toBe(true)
+          done()
+        })
     })
   })
 })
