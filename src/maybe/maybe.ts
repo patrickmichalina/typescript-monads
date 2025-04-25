@@ -29,12 +29,11 @@ export class Maybe<T> implements IMaybe<T> {
    * 
    * @example
    * // Convert a promise to a Maybe
-   * const userMaybe = await Maybe.fromPromise(api.fetchUser(userId));
-   * 
-   * userMaybe.match({
-   *   some: user => console.log(user.name),
-   *   none: () => console.log('User not found')
-   * });
+   * Maybe.fromPromise(api.fetchUser(userId))
+   *   .then(userMaybe => userMaybe.match({
+   *     some: user => console.log(user.name),
+   *     none: () => console.log('User not found')
+   *   }));
    */
   /**
    * Creates a Maybe from a Promise.
