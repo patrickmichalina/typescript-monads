@@ -12,6 +12,177 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
   }
 
   /**
+   * Creates a Result from a Promise.
+   * 
+   * Creates a Promise that will resolve to a Result that is:
+   * - Ok containing the resolved value if the promise resolves successfully
+   * - Fail containing the rejection reason if the promise rejects
+   * 
+   * This static method makes it easy to convert Promise-based APIs to Result-based
+   * error handling, giving you more explicit control flow and type safety.
+   * 
+   * @param promise The promise to convert to a Result
+   * @returns A Promise that resolves to a Result containing either the value or error
+   * 
+   * @example
+   * // Convert a promise to a Result
+   * const resultPromise = Result.fromPromise(fetchData());
+   * 
+   * resultPromise.then(result => {
+   *   result.match({
+   *     ok: data => renderData(data),
+   *     fail: error => showError(error)
+   *   });
+   * });
+   * 
+   * // With Promise chaining
+   * Result.fromPromise(fetchData())
+   *   .then(result => {
+   *     if (result.isOk()) {
+   *       const data = result.unwrap();
+   *       return renderData(data);
+   *     } else {
+   *       const error = result.unwrapFail();
+   *       return showError(error);
+   *     }
+   *   });
+   */
+  public static fromPromise<TOk, TFail = unknown>(promise: Promise<TOk>): Promise<IResult<TOk, TFail>> {
+    return promise
+      .then((value: TOk) => new OkResult<TOk, TFail>(value))
+      .catch((error: TFail) => new FailResult<TOk, TFail>(error))
+  }
+
+  /**
+   * Creates a Result from an Observable.
+   * 
+   * Creates a Promise that will resolve to a Result that is:
+   * - Ok containing the first emitted value if the observable emits a value
+   * - Fail containing the provided error if the observable completes without emitting
+   * - Fail containing the error if the observable errors
+   * 
+   * This static method bridges the reactive Observable world with the Result monad,
+   * providing a way to handle emissions, completion, and errors in a functional style.
+   * 
+   * Note that this transformation changes the timing model from continuous/reactive
+   * to a one-time asynchronous result. Only the first emission is captured, and the
+   * observable is no longer reactive after transformation.
+   * 
+   * @param observable The observable to convert to a Result
+   * @param defaultError The error to use if the observable completes without emitting
+   * @returns A Promise that resolves to a Result containing either the value or error
+   * 
+   * @requires rxjs@^7.0
+   * @example
+   * // Convert an observable to a Result
+   * Result.fromObservable(
+   *   userService.getUser(userId),
+   *   new Error('User not found')
+   * ).then(result => {
+   *   result.match({
+   *     ok: user => renderUser(user),
+   *     fail: error => showUserNotFound(error)
+   *   });
+   * });
+   */
+  public static fromObservable<TOk, TFail>(
+    observable: import('rxjs').Observable<TOk>, 
+    defaultError: TFail
+  ): Promise<IResult<TOk, TFail>> {
+    return import('rxjs').then(({ firstValueFrom, take, map, catchError }) => {
+      return firstValueFrom(
+        observable.pipe(
+          take(1),
+          map((value: TOk) => new OkResult<TOk, TFail>(value)),
+          catchError((error: unknown) => {
+            // Return the error from the observable directly rather than using EMPTY
+            return [new FailResult<TOk, TFail>(error as TFail)]
+          })
+        )
+      ).then(
+        (result: IResult<TOk, TFail>) => result,
+        () => new FailResult<TOk, TFail>(defaultError) // Handle the case where firstValueFrom rejects
+      )
+    })
+  }
+
+  /**
+   * Transforms an array of Result values into a Result containing an array of values.
+   * 
+   * If all Results in the input array are Ok, returns an Ok Result containing an array of all values.
+   * If any Result in the input array is Fail, returns a Fail Result containing the first error encountered.
+   * 
+   * This is similar to how Promise.all works but for Results, allowing you to combine
+   * multiple Results and propagate errors if any occur.
+   * 
+   * @param results An array of Result values
+   * @returns A Result containing either an array of all Ok values or the first Fail error
+   * 
+   * @example
+   * // All Results are Ok
+   * const result1 = Result.sequence([
+   *   ok(1), 
+   *   ok(2), 
+   *   ok(3)
+   * ]);
+   * // result1 is Ok([1, 2, 3])
+   * 
+   * // One Result is Fail
+   * const result2 = Result.sequence([
+   *   ok(1), 
+   *   fail(new Error('Failed')), 
+   *   ok(3)
+   * ]);
+   * // result2 is Fail(Error('Failed'))
+   */
+  public static sequence<T, E>(results: ReadonlyArray<IResult<T, E>>): IResult<ReadonlyArray<T>, E> {
+    if (results.length === 0) {
+      return new OkResult<ReadonlyArray<T>, E>([])
+    }
+
+    const values: T[] = []
+    for (const r of results) {
+      if (r.isFail()) {
+        return new FailResult<ReadonlyArray<T>, E>(r.unwrapFail())
+      }
+      values.push(r.unwrap())
+    }
+    return new OkResult<ReadonlyArray<T>, E>(values)
+  }
+
+  /**
+   * Alias for sequence, transforms an array of Result values into a Result containing an array of values.
+   * 
+   * If all Results in the input array are Ok, returns an Ok Result containing an array of all values.
+   * If any Result in the input array is Fail, returns a Fail Result containing the first error encountered.
+   * 
+   * Named to align with Promise.all for familiarity.
+   * 
+   * @param results An array of Result values
+   * @returns A Result containing either an array of all Ok values or the first Fail error
+   * 
+   * @example
+   * // All Results are Ok
+   * const result1 = Result.all([
+   *   ok(1), 
+   *   ok(2), 
+   *   ok(3)
+   * ]);
+   * // result1 is Ok([1, 2, 3])
+   * 
+   * // One Result is Fail
+   * const result2 = Result.all([
+   *   ok(1), 
+   *   fail(new Error('Failed')), 
+   *   ok(3)
+   * ]);
+   * // result2 is Fail(Error('Failed'))
+   */
+  public static all<T, E>(results: ReadonlyArray<IResult<T, E>>): IResult<ReadonlyArray<T>, E> {
+    return Result.sequence(results)
+  }
+
+  /**
    * Type guard that determines if this Result is an Ok variant.
    * 
    * This method acts as a TypeScript type guard, narrowing the type of the Result
@@ -723,6 +894,287 @@ export abstract class Result<TOk, TFail> implements IResult<TOk, TFail> {
    *   });
    */
   abstract tapFailThru(fn: (val: TFail) => void): IResult<TOk, TFail>
+
+  /**
+   * Transforms a Fail Result into an Ok Result using a recovery function.
+   * 
+   * This method provides error handling by:
+   * - If this Result is a Fail variant, it applies the function to the error to generate a recovery value
+   *   and returns a new Ok Result with that value
+   * - If this Result is an Ok variant, it returns the original Result unchanged
+   * 
+   * This is similar to a catch block in try/catch, but in a functional style.
+   * 
+   * @param fn - A function that transforms the Fail value into a recovery value
+   * @returns An Ok Result with either the original value or the recovered value
+   * 
+   * @example
+   * // Providing default values
+   * const userResult = getUserById(userId)
+   *   .recover(error => ({
+   *     id: 0,
+   *     name: "Guest User",
+   *     isGuest: true
+   *   }));
+   * 
+   * // userResult is guaranteed to be Ok
+   * const user = userResult.unwrap(); // Safe, will never throw
+   * 
+   * // Error logging with recovery
+   * fetchData()
+   *   .tapFail(error => logError(error))
+   *   .recover(error => {
+   *     const fallbackData = getLocalData();
+   *     trackRecovery("data_fetch", error);
+   *     return fallbackData;
+   *   })
+   *   .map(data => processData(data)); // This will always run with either fetched or fallback data
+   */
+  abstract recover(fn: (err: TFail) => TOk): IResult<TOk, TFail>
+
+  /**
+   * Transforms a Fail Result by applying a function that returns another Result.
+   * 
+   * This method provides advanced error recovery by:
+   * - If this Result is a Fail variant, it applies the function to the error, which returns a new Result
+   * - If this Result is an Ok variant, it returns the original Result unchanged
+   * 
+   * This is useful for fallback operations that might themselves fail.
+   * 
+   * @param fn - A function that takes the Fail value and returns a new Result
+   * @returns The original Result if Ok, or the Result returned by the function if Fail
+   * 
+   * @example
+   * // Trying a fallback operation that might also fail
+   * fetchFromPrimaryAPI()
+   *   .recoverWith(error => {
+   *     logFailure(error, "primary_api");
+   *     // Try the backup API, which might also fail
+   *     return fetchFromBackupAPI();
+   *   })
+   *   .match({
+   *     ok: data => renderData(data),
+   *     fail: error => showFatalError("All data sources failed")
+   *   });
+   * 
+   * // Authentication with multiple strategies
+   * authenticateWithPassword(credentials)
+   *   .recoverWith(error => {
+   *     if (error.code === "CREDENTIALS_EXPIRED") {
+   *       return authenticateWithToken(refreshToken);
+   *     }
+   *     return fail(error); // Pass through other errors
+   *   })
+   *   .recoverWith(error => {
+   *     if (error.code === "TOKEN_EXPIRED") {
+   *       return authenticateWithOAuth();
+   *     }
+   *     return fail(error); // Pass through other errors
+   *   });
+   */
+  abstract recoverWith(fn: (err: TFail) => IResult<TOk, TFail>): IResult<TOk, TFail>
+
+  /**
+   * Returns this Result if it's Ok, otherwise returns the provided fallback Result.
+   * 
+   * This method allows for specifying an alternative Result:
+   * - If this Result is an Ok variant, it is returned unchanged
+   * - If this Result is a Fail variant, the fallback Result is returned
+   * 
+   * @param fallback - The Result to return if this Result is Fail
+   * @returns This Result if Ok, or the fallback Result if Fail
+   * 
+   * @example
+   * // Try multiple data sources in order
+   * const userData = getUserFromCache(userId)
+   *   .orElse(getUserFromDatabase(userId))
+   *   .orElse(getUserFromBackupService(userId));
+   * 
+   * // Providing a default value as a Result
+   * const config = loadConfig()
+   *   .orElse(ok(DEFAULT_CONFIG));
+   * 
+   * // config is guaranteed to be Ok
+   * const configValue = config.unwrap(); // Safe, will never throw
+   */
+  abstract orElse(fallback: IResult<TOk, TFail>): IResult<TOk, TFail>
+
+  /**
+   * Swaps the Ok and Fail values, creating a new Result with inversed variants.
+   * 
+   * This method transforms:
+   * - An Ok Result into a Fail Result with the same value (now as an error)
+   * - A Fail Result into an Ok Result with the same error (now as a value)
+   * 
+   * This can be useful for inverting logic or for protocols where the error case
+   * is actually the expected or desired outcome.
+   * 
+   * @returns A new Result with the Ok and Fail variants swapped
+   * 
+   * @example
+   * // Inverting validation logic
+   * const isInvalid = validateInput(input)  // Returns Ok if valid, Fail if invalid
+   *   .swap()                              // Returns Fail if valid, Ok if invalid
+   *   .isOk();                             // true if the input was invalid
+   * 
+   * // Working with negative conditions
+   * const userNotFound = findUser(userId)
+   *   .swap()
+   *   .isOk();  // true if the user was not found
+   * 
+   * // Converting between error domains
+   * checkPermission(user, resource)  // Returns Ok(true) if permitted, Fail(error) if not
+   *   .swap()                        // Returns Fail(true) if permitted, Ok(error) if not
+   *   .map(error => ({               // Only runs for permission errors
+   *     type: 'ACCESS_DENIED',
+   *     message: `Access denied: ${error.message}`,
+   *     resource
+   *   }))
+   *   .swap();                       // Back to Ok for permitted, Fail for denied
+   */
+  abstract swap(): IResult<TFail, TOk>
+
+  /**
+   * Combines this Result with another Result using a combining function.
+   * 
+   * This method allows for working with two independent Results together:
+   * - If both Results are Ok, applies the function to both values and returns an Ok Result
+   * - If either Result is Fail, returns the first Fail Result encountered
+   * 
+   * This is useful for combining data that comes from different sources where both
+   * are needed to proceed.
+   * 
+   * @param other - Another Result to combine with this one
+   * @param fn - A function that combines the two Ok values
+   * @returns A new Result containing either the combined values or the first error
+   * 
+   * @example
+   * // Combining user data and preferences that are loaded separately
+   * const userData = fetchUserData(userId);
+   * const userPrefs = fetchUserPreferences(userId);
+   * 
+   * const userProfile = userData.zipWith(
+   *   userPrefs,
+   *   (data, prefs) => ({
+   *     ...data,
+   *     preferences: prefs,
+   *     theme: prefs.theme || 'default'
+   *   })
+   * );
+   * 
+   * // Working with multiple API responses
+   * const orders = fetchOrders(userId);
+   * const payments = fetchPayments(userId);
+   * 
+   * const combinedData = orders.zipWith(
+   *   payments,
+   *   (orderList, paymentList) => {
+   *     return orderList.map(order => ({
+   *       ...order,
+   *       payments: paymentList.filter(p => p.orderId === order.id)
+   *     }));
+   *   }
+   * );
+   */
+  abstract zipWith<U, R>(other: IResult<U, TFail>, fn: (a: TOk, b: U) => R): IResult<R, TFail>
+
+  /**
+   * Maps the Ok value of this Result to a Promise, and then flattens the resulting structure.
+   * 
+   * This method allows for seamless integration with asynchronous code:
+   * - If this Result is an Ok variant, it applies the function to the contained value, 
+   *   resolves the Promise, and wraps the resolved value in a new Ok Result
+   * - If the Promise rejects, it returns a Fail Result with the rejection reason
+   * - If this Result is a Fail variant, it returns a Promise that resolves to the 
+   *   original Fail Result without calling the function
+   * 
+   * @param fn - A function that takes the Ok value and returns a Promise
+   * @returns A Promise that resolves to a new Result
+   * 
+   * @example
+   * // Chaining synchronous and asynchronous operations
+   * validateUser(userData)
+   *   .flatMapPromise(user => saveUserToDatabase(user))
+   *   .then(result => result.match({
+   *     ok: savedUser => sendWelcomeEmail(savedUser),
+   *     fail: error => logError("Failed to save user", error)
+   *   }));
+   * 
+   * // Multi-step asynchronous workflow
+   * function processOrder(orderData) {
+   *   // Start with sync validation returning a Result
+   *   return validateOrder(orderData)
+   *     .flatMapPromise(order => {
+   *       // Async payment processing
+   *       return processPayment(order.paymentDetails).then(paymentResult => {
+   *         if (!paymentResult.success) {
+   *           throw new Error(`Payment failed: ${paymentResult.message}`);
+   *         }
+   *         
+   *         // Async inventory check and allocation
+   *         return allocateInventory(order.items).then(() => {
+   *           // Return the processed order
+   *           return {
+   *             ...order,
+   *             status: 'PAID',
+   *             paymentId: paymentResult.id
+   *           };
+   *         });
+   *       });
+   *     })
+   *     .flatMapPromise(paidOrder => {
+   *       // Final database save
+   *       return saveOrderToDatabase(paidOrder).then(orderId => {
+   *         return { ...paidOrder, id: orderId };
+   *       });
+   *     });
+   * }
+   */
+  abstract flatMapPromise<M>(fn: (val: TOk) => Promise<M>): Promise<IResult<M, TFail>>
+
+  /**
+   * Maps the Ok value of this Result to an Observable, and then flattens the resulting structure.
+   * 
+   * This method allows for seamless integration with reactive code:
+   * - If this Result is an Ok variant, it applies the function to the contained value,
+   *   subscribes to the Observable, and wraps the first emitted value in a new Ok Result
+   * - If the Observable errors, it returns a Fail Result with the error
+   * - If the Observable completes without emitting, it returns a Fail Result with the provided default error
+   * - If this Result is a Fail variant, it returns a Promise that resolves to the 
+   *   original Fail Result without calling the function
+   * 
+   * @param fn - A function that takes the Ok value and returns an Observable
+   * @param defaultError - The error to use if the Observable completes without emitting
+   * @returns A Promise that resolves to a new Result
+   * 
+   * @requires rxjs@^7.0
+   * @example
+   * // Chaining Result with reactive code
+   * validateUser(userData)
+   *   .flatMapObservable(
+   *     user => userService.save(user),
+   *     new Error("Failed to save user")
+   *   )
+   *   .then(result => result.match({
+   *     ok: savedUser => notifyUserCreated(savedUser),
+   *     fail: error => logError("User creation failed", error)
+   *   }));
+   * 
+   * // Processing real-time data
+   * getSensorData()
+   *   .flatMapObservable(
+   *     config => sensorApi.connectAndGetReading(config),
+   *     new Error("No sensor reading received")
+   *   )
+   *   .then(result => result.match({
+   *     ok: reading => updateDashboard(reading),
+   *     fail: error => showSensorError(error)
+   *   }));
+   */
+  abstract flatMapObservable<M>(
+    fn: (val: TOk) => import('rxjs').Observable<M>,
+    defaultError: TFail
+  ): Promise<IResult<M, TFail>>
 }
 
 export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
@@ -994,6 +1446,119 @@ export class OkResult<TOk, TFail> extends Result<TOk, TFail> {
     this.tap(val)
     return this
   }
+
+  /**
+   * No-op for OkResult, returns this Result unchanged.
+   * 
+   * Since this is already an OkResult, there's no need to recover from an error.
+   * This method simply returns the current Result.
+   * 
+   * @returns This Result unchanged
+   */
+  recover(): IResult<TOk, TFail> {
+    return this
+  }
+
+  /**
+   * No-op for OkResult, returns this Result unchanged.
+   * 
+   * Since this is already an OkResult, there's no need to recover with another Result.
+   * This method simply returns the current Result.
+   * 
+   * @returns This Result unchanged
+   */
+  recoverWith(): IResult<TOk, TFail> {
+    return this
+  }
+
+  /**
+   * Returns this Result since it's already an Ok variant.
+   * 
+   * For OkResult instances, this method ignores the fallback Result and
+   * returns the current Result unchanged.
+   * 
+   * @returns This Result unchanged
+   */
+  orElse(): IResult<TOk, TFail> {
+    return this
+  }
+
+  /**
+   * Swaps the Ok and Fail values, creating a new Fail Result.
+   * 
+   * For OkResult instances, this method transforms the contained success value
+   * into an error and returns a new Fail Result with that error.
+   * 
+   * @returns A new Fail Result with the success value as an error
+   */
+  swap(): IResult<TFail, TOk> {
+    return Result.fail<TFail, TOk>(this.successValue)
+  }
+
+  /**
+   * Combines this Result with another Result using a combining function.
+   * 
+   * For OkResult instances, this method applies the function to both values
+   * if the other Result is also Ok, or returns the other Result if it's a Fail.
+   * 
+   * @param other - Another Result to combine with this one
+   * @param fn - A function that combines the two Ok values
+   * @returns A new Result containing either the combined values or the error from the other Result
+   */
+  zipWith<U, R>(other: IResult<U, TFail>, fn: (a: TOk, b: U) => R): IResult<R, TFail> {
+    return other.flatMap(otherValue => Result.ok<R, TFail>(fn(this.successValue, otherValue)))
+  }
+
+  /**
+   * Maps the Ok value of this Result to a Promise, and then flattens the resulting structure.
+   * 
+   * For OkResult instances, this method applies the function to the contained value,
+   * awaits the Promise, and wraps the resolved value in a new Ok Result.
+   * If the Promise rejects, it returns a Fail Result with the rejection reason.
+   * 
+   * @param fn - A function that takes the Ok value and returns a Promise
+   * @returns A Promise that resolves to a new Result
+   */
+  flatMapPromise<M>(fn: (val: TOk) => Promise<M>): Promise<IResult<M, TFail>> {
+    return fn(this.successValue)
+      .then((value: M) => Result.ok<M, TFail>(value))
+      .catch((error: TFail) => Result.fail<M, TFail>(error))
+  }
+
+  /**
+   * Maps the Ok value of this Result to an Observable, and then flattens the resulting structure.
+   * 
+   * For OkResult instances, this method applies the function to the contained value,
+   * subscribes to the Observable, and wraps the first emitted value in a new Ok Result.
+   * If the Observable errors, it returns a Fail Result with the error.
+   * If the Observable completes without emitting, it returns a Fail Result with the provided default error.
+   * 
+   * @param fn - A function that takes the Ok value and returns an Observable
+   * @param defaultError - The error to use if the Observable completes without emitting
+   * @returns A Promise that resolves to a new Result
+   * 
+   * @requires rxjs@^7.0
+   */
+  flatMapObservable<M>(
+    fn: (val: TOk) => import('rxjs').Observable<M>,
+    defaultError: TFail
+  ): Promise<IResult<M, TFail>> {
+    return import('rxjs').then(({ firstValueFrom, take, map, catchError }) => {
+      return firstValueFrom(
+        fn(this.successValue).pipe(
+          take(1),
+          map((value: M) => Result.ok<M, TFail>(value)),
+          catchError((error: unknown) => {
+            // Return the error from the observable directly rather than using EMPTY
+            return [Result.fail<M, TFail>(error as TFail)]
+          })
+        )
+      ).then(
+        (result: IResult<M, TFail>) => result,
+        () => Result.fail<M, TFail>(defaultError) // Handle the case where firstValueFrom rejects
+      )
+    })
+  }
 }
 
 export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResult<TOk, TFail>  {
@@ -1253,5 +1818,95 @@ export class FailResult<TOk, TFail> extends Result<TOk, TFail> implements IResul
   tapThru(val: Partial<IResultMatchPattern<TOk, TFail, void>>): IResult<TOk, TFail> {
     this.tap(val)
     return this
+  }
+
+  /**
+   * Transforms this Fail Result into an Ok Result using a recovery function.
+   * 
+   * For FailResult instances, this method applies the function to the contained error
+   * to generate a recovery value and returns a new Ok Result with that value.
+   * 
+   * @param fn - A function that transforms the Fail value into a recovery value
+   * @returns A new Ok Result with the recovered value
+   */
+  recover(fn: (err: TFail) => TOk): IResult<TOk, TFail> {
+    return Result.ok<TOk, TFail>(fn(this.failureValue))
+  }
+
+  /**
+   * Transforms this Fail Result by applying a function that returns another Result.
+   * 
+   * For FailResult instances, this method applies the function to the contained error,
+   * which returns a new Result.
+   * 
+   * @param fn - A function that takes the Fail value and returns a new Result
+   * @returns The Result returned by the function
+   */
+  recoverWith(fn: (err: TFail) => IResult<TOk, TFail>): IResult<TOk, TFail> {
+    return fn(this.failureValue)
+  }
+
+  /**
+   * Returns the provided fallback Result since this is a Fail variant.
+   * 
+   * For FailResult instances, this method returns the provided fallback Result
+   * instead of the current Result.
+   * 
+   * @param fallback - The Result to return instead of this one
+   * @returns The provided fallback Result
+   */
+  orElse(fallback: IResult<TOk, TFail>): IResult<TOk, TFail> {
+    return fallback
+  }
+
+  /**
+   * Swaps the Ok and Fail values, creating a new Ok Result.
+   * 
+   * For FailResult instances, this method transforms the contained error
+   * into a value and returns a new Ok Result with that value.
+   * 
+   * @returns A new Ok Result with the error as a value
+   */
+  swap(): IResult<TFail, TOk> {
+    return Result.ok<TFail, TOk>(this.failureValue)
+  }
+
+  /**
+   * No-op for FailResult, returns this Result unchanged.
+   * 
+   * For FailResult instances, this method short-circuits and returns the
+   * current Result without calling the function, since there's no Ok value
+   * to combine with the other Result.
+   * 
+   * @returns This Result unchanged
+   */
+  zipWith<R>(): IResult<R, TFail> {
+    return Result.fail<R, TFail>(this.failureValue)
+  }
+
+  /**
+   * No-op for FailResult, returns a Promise that resolves to this Result.
+   * 
+   * For FailResult instances, this method short-circuits and returns a Promise
+   * that resolves to the current Result without calling the function, since
+   * there's no Ok value to transform.
+   * 
+   * @returns A Promise that resolves to this Result
+   */
+  flatMapPromise<M>(): Promise<IResult<M, TFail>> {
+    return Promise.resolve(Result.fail<M, TFail>(this.failureValue))
+  }
+
+  /**
+   * No-op for FailResult, returns a Promise that resolves to this Result.
+   * 
+   * For FailResult instances, this method short-circuits and returns a Promise
+   * that resolves to the current Result without calling the function, since
+   * there's no Ok value to transform.
+   * 
+   * @returns A Promise that resolves to this Result
+   */
+  flatMapObservable<M>(): Promise<IResult<M, TFail>> {
+    return Promise.resolve(Result.fail<M, TFail>(this.failureValue))
   }
 }
