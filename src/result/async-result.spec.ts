@@ -61,6 +61,17 @@ describe(AsyncResult.name, () => {
     expect(final.unwrap()).toBe(5)
   })
 
+  it('chain should convert sync throws in the callback into Fail (no rejection)', async () => {
+    const boom = (n: number): AsyncResult<number, string> => {
+      void n
+      throw 'oops'
+    }
+    const ar = AsyncResult.ok<number, string>(1).chain(boom)
+    const final = await ar.toPromise()
+    expect(final.isFail()).toBe(true)
+    expect(final.unwrapFail()).toBe('oops')
+  })
+
   it('all should collect Ok values and fail on the first failure', async () => {
     const a = AsyncResult.ok<number, string>(1)
     const b = AsyncResult.fromPromise<number, string>(Promise.resolve(2))
@@ -74,6 +85,31 @@ describe(AsyncResult.name, () => {
     const allFail = await AsyncResult.all([a, bad, c]).toPromise()
     expect(allFail.isFail()).toBe(true)
     expect(allFail.unwrapFail()).toBe('oops')
+  })
+
+  it('all should short-circuit on first Fail (does not wait for later items)', async () => {
+    let thirdCompleted = false
+    const a = AsyncResult.ok<number, string>(1)
+    const b = AsyncResult.fromPromise<number, string>(
+      new Promise<number>((_, reject) => setTimeout(() => reject('boom'), 10))
+    )
+    const c = AsyncResult.fromPromise<number, string>(
+      new Promise<number>((resolve) => setTimeout(() => {
+        thirdCompleted = true
+        resolve(3)
+      }, 1000))
+    )
+
+    const startedAt = Date.now()
+    const res = await AsyncResult.all([a, b, c]).toPromise()
+    const elapsed = Date.now() - startedAt
+
+    expect(res.isFail()).toBe(true)
+    expect(res.unwrapFail()).toBe('boom')
+    // Should finish well before the third completes (1000ms)
+    expect(elapsed).toBeLessThan(500)
+    // And third should not be marked completed yet at the moment of resolution
+    expect(thirdCompleted).toBe(false)
   })
 
   it('fromResult and fromResultPromise should wrap existing Results', async () => {
@@ -128,13 +164,13 @@ describe(AsyncResult.name, () => {
   })
 
   it('match and matchAsync should resolve with the proper branch', async () => {
-    const m1 = await AsyncResult.ok<number, string>(2).match({ ok: n => n * 2, fail: _ => -1 })
+    const m1 = await AsyncResult.ok<number, string>(2).match({ ok: n => n * 2, fail: (e) => { void e; return -1 } })
     expect(m1).toBe(4)
 
-    const m2 = await AsyncResult.ok<number, string>(3).matchAsync({ ok: async n => n * 3, fail: async _ => -1 })
+    const m2 = await AsyncResult.ok<number, string>(3).matchAsync({ ok: async n => n * 3, fail: async (e) => { void e; return -1 } })
     expect(m2).toBe(9)
 
-    const m3 = await AsyncResult.fail<number, string>('x').matchAsync({ ok: async _ => 0, fail: async e => e.length })
+    const m3 = await AsyncResult.fail<number, string>('x').matchAsync({ ok: async (n) => { void n; return 0 }, fail: async e => e.length })
     expect(m3).toBe(1)
   })
 })

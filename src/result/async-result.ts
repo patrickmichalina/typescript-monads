@@ -43,7 +43,7 @@ export class AsyncResult<TOk, TFail> {
    * collected values preserving order; otherwise returns the first Fail seen.
    */
   static all<T, E>(items: ReadonlyArray<AsyncResult<T, E>>): AsyncResult<ReadonlyArray<T>, E> {
-    const p = (async () => {
+    const run = async (): Promise<IResult<ReadonlyArray<T>, E>> => {
       const acc: T[] = []
       for (const ar of items) {
         const r = await ar.toPromise()
@@ -51,8 +51,8 @@ export class AsyncResult<TOk, TFail> {
         acc.push(r.unwrap())
       }
       return Result.ok<ReadonlyArray<T>, E>(acc)
-    })()
-    return new AsyncResult<ReadonlyArray<T>, E>(p)
+    }
+    return new AsyncResult<ReadonlyArray<T>, E>(run())
   }
 
   // Core instance methods
@@ -92,11 +92,13 @@ export class AsyncResult<TOk, TFail> {
   }
 
   chain<M>(fn: (val: TOk) => AsyncResult<M, TFail>): AsyncResult<M, TFail> {
-    const p = this.promise.then(r => {
-      if (r.isOk()) {
-        return fn(r.unwrap()).promise
+    const p = this.promise.then(async (r): Promise<IResult<M, TFail>> => {
+      if (!r.isOk()) return Result.fail<M, TFail>(r.unwrapFail())
+      try {
+        return await fn(r.unwrap()).toPromise()
+      } catch (e) {
+        return Result.fail<M, TFail>(e as TFail)
       }
-      return Promise.resolve(Result.fail<M, TFail>(r.unwrapFail()))
     })
     return new AsyncResult<M, TFail>(p)
   }
