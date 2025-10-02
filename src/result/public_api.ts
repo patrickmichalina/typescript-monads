@@ -1,6 +1,7 @@
 export * from './result'
 export * from './result.factory'
 export * from './result.interface'
+export * from './async-result'
 export * from './transformers/result-to-promise'
 export * from './transformers/try-catch-to-result'
 export * from './transformers/unwrap-result'
