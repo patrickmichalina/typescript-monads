@@ -36,8 +36,22 @@ export class AsyncResult<TOk, TFail> {
     return new AsyncResult<TOk, TFail>(Result.fromPromise<TOk, TFail>(promise))
   }
 
+  /**
+   * Aggregate a list of AsyncResult values, short-circuiting on the first Fail.
+   * Note: evaluation is sequential to enable early exit; this method does not
+   * guarantee concurrent execution of inputs. If all are Ok, returns Ok of the
+   * collected values preserving order; otherwise returns the first Fail seen.
+   */
   static all<T, E>(items: ReadonlyArray<AsyncResult<T, E>>): AsyncResult<ReadonlyArray<T>, E> {
-    const p = Promise.all(items.map(i => i.promise)).then(results => Result.sequence(results))
+    const p = (async () => {
+      const acc: T[] = []
+      for (const ar of items) {
+        const r = await ar.toPromise()
+        if (r.isFail()) return Result.fail<ReadonlyArray<T>, E>(r.unwrapFail())
+        acc.push(r.unwrap())
+      }
+      return Result.ok<ReadonlyArray<T>, E>(acc)
+    })()
     return new AsyncResult<ReadonlyArray<T>, E>(p)
   }
 
