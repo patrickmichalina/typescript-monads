@@ -133,6 +133,20 @@ describe(AsyncResult.name, () => {
     expect(viaFromResult.unwrap()).toBe(42)
   })
 
+  it('fromResult should convert a rejecting Promise<IResult> into Fail (non-throwing invariant)', async () => {
+    const rejecting = Promise.reject('reject-me') as Promise<ReturnType<typeof ok<number, string>>> // type doesn't matter here
+    const res = await AsyncResult.fromResult<number, string>(rejecting).toPromise()
+    expect(res.isFail()).toBe(true)
+    expect(res.unwrapFail()).toBe('reject-me')
+  })
+
+  it('fromResultPromise should convert a rejecting Promise<IResult> into Fail (non-throwing invariant)', async () => {
+    const rejecting = Promise.reject('nope') as unknown as Promise<ReturnType<typeof ok<number, string>>>
+    const res = await AsyncResult.fromResultPromise<number, string>(rejecting).toPromise()
+    expect(res.isFail()).toBe(true)
+    expect(res.unwrapFail()).toBe('nope')
+  })
+
   it('mapFail should transform the error', async () => {
     const ar = AsyncResult.fail<number, Error>(new Error('x')).mapFail(e => e.message)
     const final = await ar.toPromise()

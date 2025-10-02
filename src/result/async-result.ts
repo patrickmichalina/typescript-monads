@@ -24,12 +24,16 @@ export class AsyncResult<TOk, TFail> {
   }
 
   static fromResult<TOk, TFail>(result: IResult<TOk, TFail> | Promise<IResult<TOk, TFail>>): AsyncResult<TOk, TFail> {
-    const p = result instanceof Promise ? result : Promise.resolve(result)
+    // Normalize sync values and thenables; convert unexpected rejections into Fail
+    const p = Promise
+      .resolve(result)
+      .catch((e) => Result.fail<TOk, TFail>(e as TFail))
     return new AsyncResult<TOk, TFail>(p)
   }
 
   static fromResultPromise<TOk, TFail>(promise: Promise<IResult<TOk, TFail>>): AsyncResult<TOk, TFail> {
-    return new AsyncResult<TOk, TFail>(promise)
+    const p = promise.catch((e) => Result.fail<TOk, TFail>(e as TFail))
+    return new AsyncResult<TOk, TFail>(p)
   }
 
   static fromPromise<TOk, TFail = unknown>(promise: Promise<TOk>): AsyncResult<TOk, TFail> {
