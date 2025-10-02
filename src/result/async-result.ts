@@ -72,8 +72,8 @@ export class AsyncResult<TOk, TFail> {
   }
 
   mapAsync<M>(fn: (val: TOk) => Promise<M>): AsyncResult<M, TFail> {
-    const p = this.promise.then(r => r.flatMapPromise(fn))
-    return new AsyncResult<M, TFail>(p)
+    // Delegate to flatMapAsync so async error handling is centralized.
+    return this.flatMapAsync(async (v) => Result.ok<M, TFail>(await fn(v)))
   }
 
   flatMapAsync<M>(fn: (val: TOk) => Promise<IResult<M, TFail>>): AsyncResult<M, TFail> {
