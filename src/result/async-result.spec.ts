@@ -1,5 +1,6 @@
 import { ok, fail } from './result.factory'
 import { AsyncResult } from './async-result'
+import { of, filter } from 'rxjs'
 
 describe(AsyncResult.name, () => {
   it('should allow point-free async chaining with map/mapAsync/flatMap/flatMapAsync', async () => {
@@ -186,5 +187,242 @@ describe(AsyncResult.name, () => {
 
     const m3 = await AsyncResult.fail<number, string>('x').matchAsync({ ok: async (n) => { void n; return 0 }, fail: async e => e.length })
     expect(m3).toBe(1)
+  })
+
+  // New method tests
+  describe('recover', () => {
+    it('should not transform an Ok AsyncResult', async () => {
+      const ar = AsyncResult.ok<number, string>(5).recover(() => 10)
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(5)
+    })
+
+    it('should transform a Fail AsyncResult to Ok', async () => {
+      const ar = AsyncResult.fail<number, string>('error').recover(() => 10)
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(10)
+    })
+  })
+
+  describe('recoverWith', () => {
+    it('should not transform an Ok AsyncResult', async () => {
+      const ar = AsyncResult.ok<number, string>(5).recoverWith(() => ok(10))
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(5)
+    })
+
+    it('should transform a Fail AsyncResult using the provided Result', async () => {
+      const ar = AsyncResult.fail<number, string>('error').recoverWith(() => ok(10))
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(10)
+    })
+
+    it('should allow returning a Fail Result from recovery', async () => {
+      const ar = AsyncResult.fail<number, string>('original').recoverWith(err => fail(`recovered: ${err}`))
+      const result = await ar.toPromise()
+      expect(result.isFail()).toBe(true)
+      expect(result.unwrapFail()).toBe('recovered: original')
+    })
+  })
+
+  describe('orElse', () => {
+    it('should return the original AsyncResult when Ok', async () => {
+      const ar = AsyncResult.ok<number, string>(5).orElse(AsyncResult.ok(10))
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(5)
+    })
+
+    it('should return the fallback AsyncResult when Fail', async () => {
+      const ar = AsyncResult.fail<number, string>('error').orElse(AsyncResult.ok(10))
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(10)
+    })
+
+    it('should chain multiple orElse calls', async () => {
+      const ar = AsyncResult.fail<number, string>('e1')
+        .orElse(AsyncResult.fail('e2'))
+        .orElse(AsyncResult.ok(42))
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(42)
+    })
+  })
+
+  describe('tap', () => {
+    it('should execute ok side effect without changing the result', async () => {
+      let sideEffect = 0
+      const ar = AsyncResult.ok<number, string>(5).tap({ ok: n => { sideEffect = n * 2 } })
+      const result = await ar.toPromise()
+      expect(sideEffect).toBe(10)
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(5)
+    })
+
+    it('should execute fail side effect without changing the result', async () => {
+      let sideEffect = ''
+      const ar = AsyncResult.fail<number, string>('error').tap({ fail: e => { sideEffect = e.toUpperCase() } })
+      const result = await ar.toPromise()
+      expect(sideEffect).toBe('ERROR')
+      expect(result.isFail()).toBe(true)
+      expect(result.unwrapFail()).toBe('error')
+    })
+  })
+
+  describe('tapOk', () => {
+    it('should execute side effect for Ok AsyncResult', async () => {
+      let sideEffect = 0
+      const ar = AsyncResult.ok<number, string>(5).tapOk(n => { sideEffect = n * 2 })
+      const result = await ar.toPromise()
+      expect(sideEffect).toBe(10)
+      expect(result.unwrap()).toBe(5)
+    })
+
+    it('should not execute side effect for Fail AsyncResult', async () => {
+      let sideEffect = 0
+      const ar = AsyncResult.fail<number, string>('error').tapOk(n => { sideEffect = n * 2 })
+      await ar.toPromise()
+      expect(sideEffect).toBe(0)
+    })
+  })
+
+  describe('tapFail', () => {
+    it('should execute side effect for Fail AsyncResult', async () => {
+      let sideEffect = ''
+      const ar = AsyncResult.fail<number, string>('error').tapFail(e => { sideEffect = e })
+      const result = await ar.toPromise()
+      expect(sideEffect).toBe('error')
+      expect(result.unwrapFail()).toBe('error')
+    })
+
+    it('should not execute side effect for Ok AsyncResult', async () => {
+      let sideEffect = ''
+      const ar = AsyncResult.ok<number, string>(5).tapFail(e => { sideEffect = e })
+      await ar.toPromise()
+      expect(sideEffect).toBe('')
+    })
+  })
+
+  describe('isOk', () => {
+    it('should return true for Ok AsyncResult', async () => {
+      const result = await AsyncResult.ok(42).isOk()
+      expect(result).toBe(true)
+    })
+
+    it('should return false for Fail AsyncResult', async () => {
+      const result = await AsyncResult.fail('error').isOk()
+      expect(result).toBe(false)
+    })
+  })
+
+  describe('isFail', () => {
+    it('should return false for Ok AsyncResult', async () => {
+      const result = await AsyncResult.ok(42).isFail()
+      expect(result).toBe(false)
+    })
+
+    it('should return true for Fail AsyncResult', async () => {
+      const result = await AsyncResult.fail('error').isFail()
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('unwrapOr', () => {
+    it('should return the Ok value', async () => {
+      const result = await AsyncResult.ok(42).unwrapOr(0)
+      expect(result).toBe(42)
+    })
+
+    it('should return the default value for Fail', async () => {
+      const result = await AsyncResult.fail<number, string>('error').unwrapOr(0)
+      expect(result).toBe(0)
+    })
+  })
+
+  describe('unwrap', () => {
+    it('should return the Ok value', async () => {
+      const result = await AsyncResult.ok(42).unwrap()
+      expect(result).toBe(42)
+    })
+
+    it('should throw for Fail AsyncResult', async () => {
+      await expect(AsyncResult.fail('error').unwrap()).rejects.toThrow()
+    })
+  })
+
+  describe('unwrapFail', () => {
+    it('should return the Fail value', async () => {
+      const result = await AsyncResult.fail('error').unwrapFail()
+      expect(result).toBe('error')
+    })
+
+    it('should throw for Ok AsyncResult', async () => {
+      await expect(AsyncResult.ok(42).unwrapFail()).rejects.toThrow()
+    })
+  })
+
+  describe('swap', () => {
+    it('should swap Ok to Fail', async () => {
+      const result = await AsyncResult.ok<number, string>(42).swap().toPromise()
+      expect(result.isFail()).toBe(true)
+      expect(result.unwrapFail()).toBe(42)
+    })
+
+    it('should swap Fail to Ok', async () => {
+      const result = await AsyncResult.fail<number, string>('error').swap().toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe('error')
+    })
+  })
+
+  describe('sequence', () => {
+    it('should be an alias for all', async () => {
+      const items = [AsyncResult.ok(1), AsyncResult.ok(2), AsyncResult.ok(3)]
+      const result = await AsyncResult.sequence(items).toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toEqual([1, 2, 3])
+    })
+  })
+
+  describe('fromObservable', () => {
+    it('should convert an observable that emits to Ok', async () => {
+      const obs = of(42)
+      const result = await AsyncResult.fromObservable(obs, 'no value').toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(42)
+    })
+
+    it('should convert an empty observable to Fail', async () => {
+      const obs = of<number>().pipe(filter(() => false))
+      const result = await AsyncResult.fromObservable(obs, 'no value').toPromise()
+      expect(result.isFail()).toBe(true)
+      expect(result.unwrapFail()).toBe('no value')
+    })
+  })
+
+  describe('flatMapObservable', () => {
+    it('should flatMap an Ok value to an observable', async () => {
+      const ar = AsyncResult.ok(5).flatMapObservable(n => of(n * 2), 'error')
+      const result = await ar.toPromise()
+      expect(result.isOk()).toBe(true)
+      expect(result.unwrap()).toBe(10)
+    })
+
+    it('should short-circuit for Fail AsyncResult', async () => {
+      let called = false
+      const ar = AsyncResult.fail<number, string>('error').flatMapObservable(() => {
+        called = true
+        return of(10)
+      }, 'default')
+      const result = await ar.toPromise()
+      expect(called).toBe(false)
+      expect(result.isFail()).toBe(true)
+      expect(result.unwrapFail()).toBe('error')
+    })
   })
 })
