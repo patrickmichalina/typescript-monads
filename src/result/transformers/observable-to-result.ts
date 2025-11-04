@@ -57,7 +57,8 @@ export function observableToResult<T, E = Error>(
       take(1),
       map(value => ok<T, E>(value)),
       catchError((error: unknown) => {
-        // Return the error from the observable directly rather than using EMPTY
+        // Return as array - RxJS automatically converts arrays to observables
+        // This allows catchError to return a Result value rather than EMPTY
         return [fail<T, E>(error as E)]
       })
     )

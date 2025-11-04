@@ -291,6 +291,44 @@ export class Maybe<T> implements IMaybe<T> {
     ))
   }
 
+  /**
+   * Maps the Some value to an array of Promises and waits for all to complete.
+   *
+   * **IMPORTANT - All-or-Nothing Behavior**: This method uses `Promise.all()` internally,
+   * which means if ANY promise in the array rejects, the entire result becomes None.
+   * All promises must succeed for the result to be Some.
+   *
+   * - If this Maybe is None: Returns a Promise resolving to None (short-circuits)
+   * - If this Maybe is Some and ALL promises resolve: Returns Some containing array of all results
+   * - If this Maybe is Some but ANY promise rejects: Returns None (entire operation fails)
+   *
+   * @param fn A function that takes the Some value and returns an array of Promises
+   * @returns A Promise resolving to Maybe<Array<R>> - Some if all succeed, None if any fail
+   *
+   * @example
+   * // Success case - all promises resolve
+   * maybe(user)
+   *   .flatMapMany(u => [
+   *     fetchPosts(u.id),
+   *     fetchComments(u.id),
+   *     fetchLikes(u.id)
+   *   ])
+   *   .then(resultMaybe => resultMaybe.match({
+   *     some: ([posts, comments, likes]) => renderUserData(posts, comments, likes),
+   *     none: () => showError('Failed to load user data')
+   *   }));
+   * // Result: Some([posts, comments, likes]) if ALL succeed
+   *
+   * // Failure case - any promise rejects
+   * maybe(user)
+   *   .flatMapMany(u => [
+   *     fetchPosts(u.id),      // ✅ Succeeds
+   *     fetchComments(u.id),   // ❌ Fails
+   *     fetchLikes(u.id)       // ✅ Succeeds
+   *   ])
+   *   .then(resultMaybe => /* ... */);
+   * // Result: None (entire result is None, even though 2 of 3 succeeded)
+   */
   public flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>> {
     if (this.isNone()) {
       return Promise.resolve(new Maybe<NonNullable<R>[]>())
