@@ -219,16 +219,25 @@ export class AsyncResult<TOk, TFail> {
    * });
    */
   static all<T, E>(items: ReadonlyArray<AsyncResult<T, E>>): AsyncResult<ReadonlyArray<T>, E> {
-    const run = async (): Promise<IResult<ReadonlyArray<T>, E>> => {
-      const acc: T[] = []
-      for (const ar of items) {
-        const r = await ar.toPromise()
-        if (r.isFail()) return Result.fail<ReadonlyArray<T>, E>(r.unwrapFail())
-        acc.push(r.unwrap())
+    function processSequentially(
+      remaining: ReadonlyArray<AsyncResult<T, E>>,
+      accumulated: T[]
+    ): Promise<IResult<ReadonlyArray<T>, E>> {
+      if (remaining.length === 0) {
+        return Promise.resolve(Result.ok<ReadonlyArray<T>, E>(accumulated))
       }
-      return Result.ok<ReadonlyArray<T>, E>(acc)
+
+      const [first, ...rest] = remaining
+      return first.toPromise().then(r => {
+        if (r.isFail()) {
+          return Result.fail<ReadonlyArray<T>, E>(r.unwrapFail())
+        }
+        accumulated.push(r.unwrap())
+        return processSequentially(rest, accumulated)
+      })
     }
-    return new AsyncResult<ReadonlyArray<T>, E>(run())
+
+    return new AsyncResult<ReadonlyArray<T>, E>(processSequentially(items, []))
   }
 
   /**
@@ -306,13 +315,13 @@ export class AsyncResult<TOk, TFail> {
   }
 
   /**
-   * Maps the Ok value using an async function that returns a plain value.
+   * Maps the Ok value using a Promise-returning function.
    *
-   * **Error handling**: If the async function throws or rejects, the error is caught
+   * **Error handling**: If the Promise rejects, the error is caught
    * and converted to a Fail Result. If this AsyncResult is already Fail, the function
    * is not called.
    *
-   * @param fn - Async function to transform the Ok value
+   * @param fn - Function that returns a Promise of the transformed value
    * @returns A new AsyncResult with the transformed value
    *
    * @example
@@ -322,18 +331,18 @@ export class AsyncResult<TOk, TFail> {
    *   .match({ ok: console.log, fail: console.error });
    */
   mapAsync<M>(fn: (val: TOk) => Promise<M>): AsyncResult<M, TFail> {
-    // Delegate to flatMapAsync so async error handling is centralized.
-    return this.flatMapAsync(async (v) => Result.ok<M, TFail>(await fn(v)))
+    // Delegate to flatMapAsync so error handling is centralized
+    return this.flatMapAsync((v) => fn(v).then(m => Result.ok<M, TFail>(m)))
   }
 
   /**
    * Chains a function that returns Promise<Result>.
    *
-   * **Error handling**: If the async function throws or rejects, the error is caught
+   * **Error handling**: If the Promise rejects, the error is caught
    * and converted to a Fail Result. If this AsyncResult is already Fail, the function
    * is not called.
    *
-   * @param fn - Async function that returns a Result
+   * @param fn - Function that returns a Promise<Result>
    * @returns A new AsyncResult with the flattened Result
    *
    * @example
@@ -343,14 +352,11 @@ export class AsyncResult<TOk, TFail> {
    *   .match({ ok: console.log, fail: console.error });
    */
   flatMapAsync<M>(fn: (val: TOk) => Promise<IResult<M, TFail>>): AsyncResult<M, TFail> {
-    const p = this.promise.then(async r => {
+    const p = this.promise.then(r => {
       if (r.isOk()) {
-        try {
-          const next = await fn(r.unwrap())
-          return next
-        } catch (e) {
-          return Result.fail<M, TFail>(e as TFail)
-        }
+        return fn(r.unwrap())
+          .then(next => next)
+          .catch(e => Result.fail<M, TFail>(e as TFail))
       }
       return Result.fail<M, TFail>(r.unwrapFail())
     })
@@ -407,12 +413,14 @@ export class AsyncResult<TOk, TFail> {
    *   .match({ ok: console.log, fail: console.error });
    */
   chain<M>(fn: (val: TOk) => AsyncResult<M, TFail>): AsyncResult<M, TFail> {
-    const p = this.promise.then(async (r): Promise<IResult<M, TFail>> => {
-      if (!r.isOk()) return Result.fail<M, TFail>(r.unwrapFail())
+    const p = this.promise.then((r): Promise<IResult<M, TFail>> => {
+      if (!r.isOk()) {
+        return Promise.resolve(Result.fail<M, TFail>(r.unwrapFail()))
+      }
       try {
-        return await fn(r.unwrap()).toPromise()
+        return fn(r.unwrap()).toPromise()
       } catch (e) {
-        return Result.fail<M, TFail>(e as TFail)
+        return Promise.resolve(Result.fail<M, TFail>(e as TFail))
       }
     })
     return new AsyncResult<M, TFail>(p)
@@ -477,8 +485,10 @@ export class AsyncResult<TOk, TFail> {
    *   .match({ ok: console.log, fail: console.error });
    */
   orElse(fallback: AsyncResult<TOk, TFail>): AsyncResult<TOk, TFail> {
-    const p = this.promise.then(async r => {
-      if (r.isOk()) return r
+    const p = this.promise.then(r => {
+      if (r.isOk()) {
+        return r
+      }
       return fallback.toPromise()
     })
     return new AsyncResult<TOk, TFail>(p)
@@ -550,8 +560,8 @@ export class AsyncResult<TOk, TFail> {
    * @returns A Promise that resolves to true if Ok, false if Fail
    *
    * @example
-   * const isOk = await AsyncResult.ok(42).isOk(); // true
-   * const isFail = await AsyncResult.fail('error').isOk(); // false
+   * AsyncResult.ok(42).isOk().then(isOk => console.log(isOk)); // true
+   * AsyncResult.fail('error').isOk().then(isOk => console.log(isOk)); // false
    */
   isOk(): Promise<boolean> {
     return this.promise.then(r => r.isOk())
@@ -563,8 +573,8 @@ export class AsyncResult<TOk, TFail> {
    * @returns A Promise that resolves to true if Fail, false if Ok
    *
    * @example
-   * const isOk = await AsyncResult.ok(42).isFail(); // false
-   * const isFail = await AsyncResult.fail('error').isFail(); // true
+   * AsyncResult.ok(42).isFail().then(isFail => console.log(isFail)); // false
+   * AsyncResult.fail('error').isFail().then(isFail => console.log(isFail)); // true
    */
   isFail(): Promise<boolean> {
     return this.promise.then(r => r.isFail())
@@ -577,8 +587,8 @@ export class AsyncResult<TOk, TFail> {
    * @returns A Promise that resolves to the Ok value or default
    *
    * @example
-   * const value = await AsyncResult.ok(42).unwrapOr(0); // 42
-   * const fallback = await AsyncResult.fail('error').unwrapOr(0); // 0
+   * AsyncResult.ok(42).unwrapOr(0).then(v => console.log(v)); // 42
+   * AsyncResult.fail('error').unwrapOr(0).then(v => console.log(v)); // 0
    */
   unwrapOr(defaultValue: TOk): Promise<TOk> {
     return this.promise.then(r => r.unwrapOr(defaultValue))
@@ -593,8 +603,8 @@ export class AsyncResult<TOk, TFail> {
    * @throws If the AsyncResult is Fail
    *
    * @example
-   * const value = await AsyncResult.ok(42).unwrap(); // 42
-   * const throws = await AsyncResult.fail('error').unwrap(); // Throws!
+   * AsyncResult.ok(42).unwrap().then(v => console.log(v)); // 42
+   * AsyncResult.fail('error').unwrap(); // Throws!
    */
   unwrap(): Promise<TOk> {
     return this.promise.then(r => r.unwrap())
@@ -609,8 +619,8 @@ export class AsyncResult<TOk, TFail> {
    * @throws If the AsyncResult is Ok
    *
    * @example
-   * const error = await AsyncResult.fail('boom').unwrapFail(); // 'boom'
-   * const throws = await AsyncResult.ok(42).unwrapFail(); // Throws!
+   * AsyncResult.fail('boom').unwrapFail().then(e => console.log(e)); // 'boom'
+   * AsyncResult.ok(42).unwrapFail(); // Throws!
    */
   unwrapFail(): Promise<TFail> {
     return this.promise.then(r => r.unwrapFail())
@@ -622,8 +632,9 @@ export class AsyncResult<TOk, TFail> {
    * @returns A new AsyncResult with Ok and Fail types swapped
    *
    * @example
-   * const swapped = await AsyncResult.ok(42).swap().toPromise();
-   * // swapped is Fail(42)
+   * AsyncResult.ok(42).swap().toPromise().then(result => {
+   *   // result is Fail(42)
+   * });
    */
   swap(): AsyncResult<TFail, TOk> {
     const p = this.promise.then(r => r.swap())
@@ -641,29 +652,30 @@ export class AsyncResult<TOk, TFail> {
    * @returns A Promise that resolves to the result of the matching handler
    *
    * @example
-   * const message = await AsyncResult.fromPromise(fetchUser(id))
+   * AsyncResult.fromPromise(fetchUser(id))
    *   .match({
    *     ok: user => `Hello, ${user.name}`,
    *     fail: err => `Error: ${err}`
-   *   });
-   * console.log(message);
+   *   })
+   *   .then(message => console.log(message));
    */
   match<M>(pattern: { ok: (val: TOk) => M; fail: (err: TFail) => M }): Promise<M> {
     return this.promise.then(r => r.match(pattern))
   }
 
   /**
-   * Pattern matches on the Result with async handlers.
+   * Pattern matches on the Result with Promise-returning handlers.
    *
-   * @param pattern - Object with async `ok` and `fail` handlers
+   * @param pattern - Object with Promise-returning `ok` and `fail` handlers
    * @returns A Promise that resolves to the result of the matching handler
    *
    * @example
-   * await AsyncResult.fromPromise(fetchUser(id))
+   * AsyncResult.fromPromise(fetchUser(id))
    *   .matchAsync({
-   *     ok: async user => await renderUser(user),
-   *     fail: async err => await showError(err)
-   *   });
+   *     ok: user => renderUser(user),
+   *     fail: err => showError(err)
+   *   })
+   *   .then(result => console.log('Done'));
    */
   matchAsync<M>(pattern: { ok: (val: TOk) => Promise<M>; fail: (err: TFail) => Promise<M> }): Promise<M> {
     return this.promise.then(r => (r.isOk() ? pattern.ok(r.unwrap()) : pattern.fail(r.unwrapFail())))
@@ -678,13 +690,14 @@ export class AsyncResult<TOk, TFail> {
    * @returns The underlying Promise<Result>
    *
    * @example
-   * const result: Result<User, Error> = await AsyncResult.fromPromise(fetchUser(id))
+   * AsyncResult.fromPromise(fetchUser(id))
    *   .map(user => user.name)
-   *   .toPromise();
-   *
-   * if (result.isOk()) {
-   *   console.log(result.unwrap());
-   * }
+   *   .toPromise()
+   *   .then(result => {
+   *     if (result.isOk()) {
+   *       console.log(result.unwrap());
+   *     }
+   *   });
    */
   toPromise(): Promise<IResult<TOk, TFail>> {
     return this.promise
