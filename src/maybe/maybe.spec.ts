@@ -858,13 +858,110 @@ describe('Maybe', () => {
     it('should return None if both values are None', () => {
       const first = maybe<string>()
       const second = maybe<string>()
-      
+
       const result = first.zipWith(second, (a, b) => `${a}, ${b}!`)
-      
+
       expect(result.isNone()).toBe(true)
     })
+
+    it('should combine three Some values', () => {
+      const a = maybe(1)
+      const b = maybe(2)
+      const c = maybe(3)
+
+      const result = a.zipWith(b, c, (x, y, z) => x + y + z)
+
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr(0)).toBe(6)
+    })
+
+    it('should return None if any of three values is None', () => {
+      const a = maybe(1)
+      const b = maybe<number>()
+      const c = maybe(3)
+
+      const result = a.zipWith(b, c, (x, y, z) => x + y + z)
+
+      expect(result.isNone()).toBe(true)
+    })
+
+    it('should combine four Some values', () => {
+      const a = maybe('a')
+      const b = maybe('b')
+      const c = maybe('c')
+      const d = maybe('d')
+
+      const result = a.zipWith(b, c, d, (w, x, y, z) => w + x + y + z)
+
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr('')).toBe('abcd')
+    })
+
+    it('should return None if any of four values is None', () => {
+      const a = maybe('a')
+      const b = maybe('b')
+      const c = maybe<string>()
+      const d = maybe('d')
+
+      const result = a.zipWith(b, c, d, (w, x, y, z) => w + x + y + z)
+
+      expect(result.isNone()).toBe(true)
+    })
+
+    it('should combine five Some values', () => {
+      const a = maybe(1)
+      const b = maybe(2)
+      const c = maybe(3)
+      const d = maybe(4)
+      const e = maybe(5)
+
+      const result = a.zipWith(b, c, d, e, (v1, v2, v3, v4, v5) => v1 + v2 + v3 + v4 + v5)
+
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr(0)).toBe(15)
+    })
+
+    it('should return None if any of five values is None', () => {
+      const a = maybe(1)
+      const b = maybe(2)
+      const c = maybe(3)
+      const d = maybe(4)
+      const e = maybe<number>()
+
+      const result = a.zipWith(b, c, d, e, (v1, v2, v3, v4, v5) => v1 + v2 + v3 + v4 + v5)
+
+      expect(result.isNone()).toBe(true)
+    })
+
+    it('should return None if any of six values is None', () => {
+      const a = maybe(1)
+      const b = maybe(2)
+      const c = maybe(3)
+      const d = maybe(4)
+      const e = maybe(5)
+      const f = maybe<number>()
+
+      const result = a.zipWith(b, c, d, e, f, (v1, v2, v3, v4, v5, v6) => v1 + v2 + v3 + v4 + v5 + v6)
+
+      expect(result.isNone()).toBe(true)
+    })
+
+    it('should work with mixed types', () => {
+      const name = maybe('John')
+      const age = maybe(30)
+      const active = maybe(true)
+
+      const result = name.zipWith(age, active, (n, a, act) => ({ name: n, age: a, active: act }))
+
+      expect(result.isSome()).toBe(true)
+      expect(result.valueOr({ name: '', age: 0, active: false })).toEqual({
+        name: 'John',
+        age: 30,
+        active: true
+      })
+    })
   })
-  
+
   describe('flatMapMany', () => {
     it('should execute multiple promises in parallel when Some', async () => {
       const source = maybe(42)
