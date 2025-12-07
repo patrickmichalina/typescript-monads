@@ -301,7 +301,23 @@ export class Maybe<T> implements IMaybe<T> {
       .catch(() => new Maybe<NonNullable<R>[]>())
   }
 
-  public zipWith<U extends NonNullable<unknown>, R>(other: IMaybe<U>, fn: (a: NonNullable<T>, b: U) => NonNullable<R>): IMaybe<R> {
-    return this.flatMap(a => other.map(b => fn(a, b)))
+  public zipWith<R>(...args: unknown[]): IMaybe<R> {
+    if (this.isNone()) {
+      return new Maybe<R>()
+    }
+
+    const fn = args[args.length - 1] as (...values: unknown[]) => NonNullable<R>
+    const maybes = args.slice(0, -1) as IMaybe<unknown>[]
+
+    const values: unknown[] = [this.value]
+
+    for (const m of maybes) {
+      if (m.isNone()) {
+        return new Maybe<R>()
+      }
+      values.push(m.valueOrThrow())
+    }
+
+    return new Maybe<R>(fn(...values))
   }
 }

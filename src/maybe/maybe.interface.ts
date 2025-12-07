@@ -534,25 +534,80 @@ export interface IMaybe<T> extends IMonad<T> {
   flatMapMany<R>(fn: (val: NonNullable<T>) => Promise<R>[]): Promise<IMaybe<NonNullable<R>[]>>
 
   /**
-   * Combines this Maybe with another Maybe using a combiner function.
-   * 
-   * If both Maybes are Some, applies the function to their values and returns
-   * a new Some containing the result. If either is None, returns None.
-   * 
+   * Combines this Maybe with one or more other Maybes using a combiner function.
+   *
+   * If all Maybes are Some, applies the function to their values and returns
+   * a new Some containing the result. If any is None, returns None.
+   *
    * @typeParam U - The type of the value in the other Maybe
    * @typeParam R - The type of the combined result
    * @param other - Another Maybe to combine with this one
    * @param fn - A function that combines the values from both Maybes
-   * @returns A new Maybe containing the combined result if both inputs are Some, otherwise None
-   * 
+   * @returns A new Maybe containing the combined result if all inputs are Some, otherwise None
+   *
    * @example
-   * // Combine user name and email into a display string
+   * // Combine two values
    * const name = maybe(user.name);
    * const email = maybe(user.email);
-   * 
+   *
    * const display = name.zipWith(email, (name, email) => `${name} <${email}>`);
-   * // Some("John Doe <john@example.com>") if both name and email exist
+   * // Some("John Doe <john@example.com>") if both exist
    * // None if either is missing
+   *
+   * @example
+   * // Combine three values
+   * const firstName = maybe(user.firstName);
+   * const lastName = maybe(user.lastName);
+   * const email = maybe(user.email);
+   *
+   * const contact = firstName.zipWith(lastName, email, (first, last, email) => ({
+   *   fullName: `${first} ${last}`,
+   *   email
+   * }));
+   * // Some({ fullName: "John Doe", email: "john@example.com" }) if all exist
+   * // None if any is missing
+   *
+   * @example
+   * // Combine many values
+   * const result = a.zipWith(b, c, d, e, (a, b, c, d, e) => a + b + c + d + e);
    */
-  zipWith<U extends NonNullable<unknown>, R>(other: IMaybe<U>, fn: (a: NonNullable<T>, b: U) => NonNullable<R>): IMaybe<R>
+  zipWith<U extends NonNullable<unknown>, R>(
+    other: IMaybe<U>,
+    fn: (a: NonNullable<T>, b: U) => NonNullable<R>
+  ): IMaybe<R>
+
+  zipWith<U extends NonNullable<unknown>, V extends NonNullable<unknown>, R>(
+    m1: IMaybe<U>,
+    m2: IMaybe<V>,
+    fn: (a: NonNullable<T>, b: U, c: V) => NonNullable<R>
+  ): IMaybe<R>
+
+  zipWith<U extends NonNullable<unknown>, V extends NonNullable<unknown>, W extends NonNullable<unknown>, R>(
+    m1: IMaybe<U>,
+    m2: IMaybe<V>,
+    m3: IMaybe<W>,
+    fn: (a: NonNullable<T>, b: U, c: V, d: W) => NonNullable<R>
+  ): IMaybe<R>
+
+  zipWith<U extends NonNullable<unknown>, V extends NonNullable<unknown>, W extends NonNullable<unknown>, X extends NonNullable<unknown>, R>(
+    m1: IMaybe<U>,
+    m2: IMaybe<V>,
+    m3: IMaybe<W>,
+    m4: IMaybe<X>,
+    fn: (a: NonNullable<T>, b: U, c: V, d: W, e: X) => NonNullable<R>
+  ): IMaybe<R>
+
+  zipWith<U extends NonNullable<unknown>, V extends NonNullable<unknown>, W extends NonNullable<unknown>, X extends NonNullable<unknown>, Z extends NonNullable<unknown>, R>(
+    m1: IMaybe<U>,
+    m2: IMaybe<V>,
+    m3: IMaybe<W>,
+    m4: IMaybe<X>,
+    m5: IMaybe<Z>,
+    fn: (a: NonNullable<T>, b: U, c: V, d: W, e: X, f: Z) => NonNullable<R>
+  ): IMaybe<R>
+
+  // Variadic overload for 5+ Maybes
+  zipWith<R>(
+    ...args: [...IMaybe<NonNullable<unknown>>[], (...values: NonNullable<unknown>[]) => NonNullable<R>]
+  ): IMaybe<R>
 }
